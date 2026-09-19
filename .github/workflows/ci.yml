@@ -17,7 +17,7 @@ jobs:
       OPENAI_API_KEY: ""
       OPENAI_MODEL: gpt-5-mini
       ALLOW_LIVE_PUBLIC: "false"
-      ANALYST_DATA_DIR: ${{ runner.temp }}/analyst-test-data
+      ANALYST_DATA_DIR: /tmp/analyst-test-data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5

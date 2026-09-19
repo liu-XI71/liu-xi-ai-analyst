@@ -19,7 +19,7 @@ jobs:
     env:
       OPENAI_API_KEY: ""
       ALLOW_LIVE_PUBLIC: "false"
-      ANALYST_DATA_DIR: ${{ runner.temp }}/analyst-pages-data
+      ANALYST_DATA_DIR: /tmp/analyst-pages-data
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
