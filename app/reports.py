@@ -38,6 +38,8 @@ def _table_html(columns, rows):
 def markdown_report(run: dict) -> str:
     fence = chr(96) * 3
     lines = [f"# {run.get('title', '分析报告')}", "", f"运行编号：{run.get('run_id', '—')} · 模式：{run.get('mode', 'demo')} · 时间：{run.get('created_at', '—')}", "", "**数据说明：合成演示数据，不代表任何企业真实经营结果。**", "", run.get("summary", "")]
+    for key,label in [('decision','决策备忘录'),('data_quality','数据质量'),('experiment_contract','实验设计'),('hypotheses','假设与验证'),('plan','分析步骤')]:
+        if run.get(key):lines += ['',f'## {label}','',fence+'json',json.dumps(run[key],ensure_ascii=False,indent=2),fence]
     lines += ["", "## 指标口径", "", fence+"json", json.dumps(run.get("metric_contract", {}), ensure_ascii=False, indent=2), fence]
     for kind, label in (("fact", "核验事实"), ("hypothesis", "待验证假设"), ("action", "后续行动")):
         lines += ["", f"## {label}", ""]
@@ -56,7 +58,25 @@ def markdown_report(run: dict) -> str:
         lines += [f"### {evidence.get('id')} · {evidence.get('label', '查询')}", "", f"来源：{evidence.get('source', '演示数据库')}；口径版本：{evidence.get('metric_version', '—')}", "", fence+"sql", evidence.get("sql", ""), fence, "参数：" + json.dumps(evidence.get("parameters", {}), ensure_ascii=False)]
     lines += ["", "## 边界与限制", ""] + ["- " + str(item) for item in run.get("limitations", [])]
     lines += ["", "## 执行记录", ""] + ["- " + item.get("tool", "") + "：" + item.get("description", "") for item in run.get("trace", [])]
+    if run.get('provenance'):lines += ['', '## 版本与来源', '', fence+'json',json.dumps(run['provenance'],ensure_ascii=False,indent=2),fence]
     return "\n".join(lines) + "\n"
+
+
+def _decision_html(run):
+    decision=run.get('decision') or {}
+    if not decision:return ''
+    label=decision.get('label',decision.get('status','决策建议'))
+    detail=''.join(f'<p>{_esc(decision[k])}</p>' for k in ['reason','action','review_trigger'] if decision.get(k))
+    actions=decision.get('actions',[])
+    if isinstance(actions,list):detail+='<ul>'+''.join('<li>'+_esc(x)+'</li>' for x in actions)+'</ul>'
+    return f'<h2>决策备忘录</h2><section class="decision"><h3>{_esc(label)}</h3>{detail}</section>'
+
+
+def _audit_html(run):
+    blocks=[]
+    for key,label in [('data_quality','数据质量'),('experiment_contract','实验设计'),('hypotheses','假设与区分性验证'),('plan','分析步骤'),('provenance','版本与来源')]:
+        if run.get(key):blocks.append(f'<details><summary>{label}</summary><pre>{_esc(json.dumps(run[key],ensure_ascii=False,indent=2))}</pre></details>')
+    return ''.join(blocks)
 
 def _svg_chart(chart: dict) -> str:
     data, series = chart.get("data", []), chart.get("y_keys", [])
@@ -126,7 +146,7 @@ def html_report(run: dict) -> str:
     cards = "".join(f'<article><span>{_esc(kpi.get("label", ""))}</span><strong>{_esc(_value(kpi.get("value"), kpi.get("unit", "")))} {_esc("" if kpi.get("unit") in ("ratio", "%") else kpi.get("unit", ""))}</strong></article>' for kpi in run.get("kpis", []))
     findings = "".join(f'<li><b>{_esc({"fact": "事实", "hypothesis": "假设", "action": "行动"}.get(item.get("kind"), "说明"))}</b> {_esc(item.get("text", ""))}<small>{_esc(", ".join(item.get("evidence_ids", [])))}</small></li>' for item in run.get("findings", []))
     tables = "".join(f'<h3>{_esc(table.get("title", "结果"))}</h3><p class="meta">完整结果：{len(table.get("rows", []))}行。</p>' + _table_html(table.get("columns", []), table.get("rows", [])) for table in run.get("tables", []))
-    evidence = "".join(f'<details><summary>{_esc(item.get("id"))} · {_esc(item.get("label", "查询"))}</summary><pre>{_esc(item.get("sql", ""))}</pre><pre>{_esc(json.dumps(item.get("parameters", {}), ensure_ascii=False))}</pre><p>{_esc(item.get("source", ""))}</p></details>' for item in run.get("evidence", []))
+    evidence = "".join(f'<details id="{_esc(item.get("id"))}"><summary>{_esc(item.get("id"))} · {_esc(item.get("label", "查询"))}</summary><pre>{_esc(item.get("sql", ""))}</pre><pre>{_esc(json.dumps(item.get("parameters", {}), ensure_ascii=False))}</pre><p>{_esc(item.get("source", ""))} · {_esc(item.get("metric_version", ""))}</p><pre>{_esc(json.dumps(item.get("rows", []),ensure_ascii=False,indent=2))}</pre></details>' for item in run.get("evidence", []))
     charts = "".join(_svg_chart(chart) for chart in run.get("charts", []))
     limitations = "".join("<li>" + _esc(item) + "</li>" for item in run.get("limitations", []))
-    return f'''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{_esc(run.get('title', '分析报告'))}</title><style>body{{font:16px/1.7 system-ui,sans-serif;color:#152b3c;max-width:1100px;margin:40px auto;padding:0 24px}}h1{{font-size:32px}}h2{{margin-top:40px;border-top:1px solid #dce5eb;padding-top:24px}}.meta,small{{color:#596c7c}}small{{display:block}}.kpis{{display:flex;gap:16px;flex-wrap:wrap}}article{{background:#f0f5f7;padding:18px;min-width:140px;border-radius:12px}}strong{{display:block;font-size:24px}}table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{padding:9px;text-align:left;border-bottom:1px solid #dce5eb}}.overflow{{overflow:auto}}pre{{background:#eef3f7;overflow:auto;padding:14px;white-space:pre-wrap}}details{{padding:12px 0;border-bottom:1px solid #dce5eb}}svg{{width:100%;max-width:950px}}@media print{{details{{display:block}}body{{margin:0}}tr{{break-inside:avoid}}}}</style><header><p>刘希 · AI 数据分析工作台</p><h1>{_esc(run.get('title', '分析报告'))}</h1><p class="meta">{_esc(run.get('run_id', ''))} · {_esc(run.get('mode', 'demo'))} · {_esc(run.get('created_at', ''))}</p><p>合成演示数据，不代表任何企业实际经营结果。</p></header><p>{_esc(run.get('summary', ''))}</p><section class="kpis">{cards}</section><h2>事实、假设与行动</h2><ul>{findings}</ul><h2>图表与结果</h2>{charts}{tables}<h2>指标口径</h2><pre>{_esc(json.dumps(run.get('metric_contract', {}), ensure_ascii=False, indent=2))}</pre><h2>SQL 与证据</h2>{evidence}<h2>适用边界</h2><ul>{limitations}</ul></html>'''
+    return f'''<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>{_esc(run.get('title', '分析报告'))}</title><style>body{{font:16px/1.7 system-ui,sans-serif;color:#152b3c;max-width:1100px;margin:40px auto;padding:0 24px}}h1{{font-size:32px}}h2{{margin-top:40px;border-top:1px solid #dce5eb;padding-top:24px}}.meta,small{{color:#596c7c}}small{{display:block}}.kpis{{display:flex;gap:16px;flex-wrap:wrap}}article,.decision{{background:#f0f5f7;padding:18px;min-width:140px;border-radius:12px}}strong{{display:block;font-size:24px}}table{{border-collapse:collapse;width:100%;font-size:14px}}td,th{{padding:9px;text-align:left;border-bottom:1px solid #dce5eb}}.overflow{{overflow:auto}}pre{{background:#eef3f7;overflow:auto;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}}details{{padding:12px 0;border-bottom:1px solid #dce5eb}}svg{{width:100%;max-width:950px}}@media print{{details{{display:block}}body{{margin:0}}tr{{break-inside:avoid}}}}</style><header><p>刘希 · AI 数据分析工作台</p><h1>{_esc(run.get('title', '分析报告'))}</h1><p class="meta">{_esc(run.get('run_id', ''))} · {_esc(run.get('mode', 'demo'))} · {_esc(run.get('created_at', ''))}</p><p>合成演示数据，不代表任何企业实际经营结果。</p></header><p>{_esc(run.get('summary', ''))}</p><section class="kpis">{cards}</section>{_decision_html(run)}<h2>事实、假设与行动</h2><ul>{findings}</ul><h2>图表与结果</h2>{charts}{tables}<h2>指标口径与分析合同</h2><pre>{_esc(json.dumps(run.get('metric_contract', {}), ensure_ascii=False, indent=2))}</pre>{_audit_html(run)}<h2>SQL 与证据</h2>{evidence}<h2>适用边界</h2><ul>{limitations}</ul></html>'''

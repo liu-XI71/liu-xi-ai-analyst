@@ -1,0 +1,252 @@
+{
+  "title": "刘希 · AI 数据分析",
+  "headline": "从增长问题，到有证据的业务决定。",
+  "version": "0.2.0",
+  "generated_at": "2026-09-19T09:24:37.144573+00:00",
+  "data_source": "匿名合成增长与电商数据；原有业务经历与项目单独标注来源",
+  "kpis": [
+    {
+      "label": "可复现分析场景",
+      "value": 13,
+      "unit": "个"
+    },
+    {
+      "label": "业务分析域",
+      "value": 3,
+      "unit": "个"
+    },
+    {
+      "label": "注册指标合同",
+      "value": 17,
+      "unit": "项"
+    },
+    {
+      "label": "主要案例SQL证据",
+      "value": 18,
+      "unit": "组"
+    }
+  ],
+  "cases": [
+    {
+      "id": "onboarding",
+      "title": "新用户留存下降：从指标到干预方案",
+      "context": "增长负责人需要判断优先优化流量结构还是注册后的首次体验。",
+      "summary": "本期 精确 D7 留存率 21.27%（191/898），对比期 27.22%（233/856），变化 -5.95 个百分点。渠道 × 端对称分解中，结构贡献 -0.92、组内表现贡献 -5.03 个百分点；质量检查已通过。",
+      "decision": {
+        "status": "investigate_then_experiment",
+        "label": "先定位路径问题，再验证修复增量",
+        "actions": [
+          "复核 自然流量 / iOS 的来源、端与版本关联。",
+          "检查「首屏加载成功」路径的首屏请求和用户反馈。",
+          "预注册修复实验、D7 主要结果、样本量与负反馈/性能围栏，再评审增量。"
+        ],
+        "review_trigger": "下一批完整成熟 cohort；如进入实验，等待预注册观察窗口与样本条件",
+        "owner": "待分配",
+        "evidence_ids": [
+          "onboarding-strata",
+          "onboarding-version-slices",
+          "onboarding-totals"
+        ]
+      },
+      "kpis": [
+        {
+          "id": "new_user_retention_d7",
+          "label": "精确 D7 留存率",
+          "value": 21.269,
+          "previous": 27.22,
+          "delta": -5.95,
+          "unit": "%"
+        },
+        {
+          "id": "new_registered_users",
+          "label": "本期成熟注册用户",
+          "value": 898,
+          "previous": 856,
+          "delta": 42,
+          "unit": "人"
+        },
+        {
+          "id": "mix_pp",
+          "label": "结构变化贡献",
+          "value": -0.916,
+          "unit": "百分点"
+        },
+        {
+          "id": "performance_pp",
+          "label": "组内表现贡献",
+          "value": -5.034,
+          "unit": "百分点"
+        }
+      ],
+      "evidence_count": 11,
+      "href": "#growth",
+      "report": "demo/onboarding-report.html",
+      "data_source": "合成数据方法验证"
+    },
+    {
+      "id": "onboarding-late_data",
+      "title": "数据延迟：先恢复完整性，再判断业务",
+      "context": "数据批次迟到时，需要暂停受影响判断，回填后再核对业务变化。",
+      "summary": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+      "decision": {
+        "status": "repair_data",
+        "label": "先修复数据，暂停经营判断",
+        "actions": [
+          "核对相关源端批次清单与导入日志。",
+          "保持原 cohort 和指标口径，回填后重新执行同一查询。"
+        ],
+        "review_trigger": "2026-09-07 00:00:00"
+      },
+      "kpis": [],
+      "evidence_count": 5,
+      "href": "#growth",
+      "report": "demo/onboarding-late_data-report.html",
+      "data_source": "合成数据方法验证"
+    },
+    {
+      "id": "experiments-guardrail",
+      "title": "主指标正向：仍需检查体验代价",
+      "context": "产品实验需要同时满足业务收益、数据可信和负向体验约束。",
+      "summary": "处理组精确 D7 留存 33.33%，对照组 27.98%；差异 +5.35 pp，95% 区间 [3.92, 6.78] pp。建议停止或调整。负反馈恶化已超过预设界值。",
+      "decision": {
+        "code": "stop_or_adjust",
+        "label": "建议停止或调整",
+        "reason": "负反馈恶化已超过预设界值。",
+        "action": "复查体验机制和受影响人群，调整方案后另登记实验；不进入放量。",
+        "gates": {
+          "source_reconciliation": true,
+          "identity": true,
+          "eligibility": true,
+          "configuration": true,
+          "collection": true,
+          "events": true,
+          "srm": true,
+          "maturity": true,
+          "planned_sample": true,
+          "primary_effect": true,
+          "negative_feedback": false
+        },
+        "executes_rollout": false
+      },
+      "kpis": [
+        {
+          "id": "assigned_users",
+          "label": "随机分配用户",
+          "value": 16000,
+          "unit": "人",
+          "evidence_ids": [
+            "experiment-quality"
+          ]
+        },
+        {
+          "id": "immature_users",
+          "label": "尚未成熟用户",
+          "value": 0,
+          "unit": "人",
+          "evidence_ids": [
+            "experiment-quality"
+          ]
+        },
+        {
+          "id": "required_users",
+          "label": "设计所需总样本",
+          "value": 10392,
+          "unit": "人",
+          "evidence_ids": [
+            "experiment-registry"
+          ]
+        },
+        {
+          "id": "srm_p",
+          "label": "SRM p 值",
+          "value": 0.009958807962165991,
+          "unit": "",
+          "evidence_ids": [
+            "experiment-registry",
+            "experiment-groups"
+          ]
+        },
+        {
+          "id": "experiment_d7_lift_pp",
+          "label": "D7 绝对提升",
+          "value": 5.3492,
+          "unit": "百分点",
+          "evidence_ids": [
+            "experiment-groups"
+          ]
+        },
+        {
+          "id": "negative_feedback_lift_pp",
+          "label": "负反馈绝对变化",
+          "value": 4.4892,
+          "unit": "百分点",
+          "evidence_ids": [
+            "experiment-groups"
+          ]
+        }
+      ],
+      "evidence_count": 4,
+      "href": "#experiments",
+      "report": "demo/experiments-guardrail-report.html",
+      "data_source": "合成数据方法验证"
+    },
+    {
+      "id": "repurchase",
+      "title": "复购运营：有限预算中的候选与验证",
+      "context": "运营需要在预算内圈定候选，并保留随机对照以验证后续增量。",
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "decision": null,
+      "kpis": [
+        {
+          "id": "rfm_customers",
+          "label": "截至日分群客户",
+          "value": 1005,
+          "unit": "count"
+        },
+        {
+          "id": "candidates",
+          "label": "预算内候选（含留出）",
+          "value": 100,
+          "unit": "count"
+        },
+        {
+          "id": "planned_cost",
+          "label": "计划处理成本",
+          "value": 160.0,
+          "unit": "CNY"
+        },
+        {
+          "id": "holdout",
+          "label": "随机留出人数",
+          "value": 20,
+          "unit": "count"
+        }
+      ],
+      "evidence_count": 3,
+      "href": "#repurchase",
+      "report": "demo/repurchase-report.html",
+      "data_source": "合成数据方法验证"
+    }
+  ],
+  "primary_result": "本期 精确 D7 留存率 21.27%（191/898），对比期 27.22%（233/856），变化 -5.95 个百分点。渠道 × 端对称分解中，结构贡献 -0.92、组内表现贡献 -5.03 个百分点；质量检查已通过。",
+  "capabilities": [
+    "指标语义与成熟窗口",
+    "事件数据与质量门",
+    "有序漏斗与分群诊断",
+    "随机实验与围栏评审",
+    "受控自然语言工具调用",
+    "SQL与报告证据追溯",
+    "告警恢复与幂等回填",
+    "任务运行与自愿反馈"
+  ],
+  "validation": {
+    "deterministic": "computed",
+    "live_model": "not_run",
+    "user_study": "not_conducted",
+    "business_lift": "not_measured"
+  },
+  "links": {
+    "github": "https://github.com/liu-XI71/liu-xi-ai-analyst",
+    "original": "https://liu-xi71.github.io/"
+  }
+}

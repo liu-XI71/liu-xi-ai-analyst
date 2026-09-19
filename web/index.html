@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#122631">
-  <meta name="description" content="刘希的 AI 数据分析作品集。以增长诊断、实验复盘和复购运营为场景，展示业务口径、Python 数据工具、可核验的 AI 分析与自动报告。">
+  <meta name="theme-color" content="#112936">
+  <meta name="description" content="刘希的 AI 数据分析作品集。围绕新用户留存、数据质量、实验评审与复购运营，用 SQL、Python 和 AI 工具调用交付可复算的业务分析。">
   <title>刘希 · AI 数据分析作品集</title>
   <link rel="icon" href="./favicon.svg" type="image/svg+xml">
   <link rel="stylesheet" href="./styles.css">
@@ -15,47 +15,51 @@
   <div class="app-shell">
     <aside class="sidebar" id="sidebar" aria-label="主导航">
       <a class="brand" href="#overview" aria-label="刘希作品集首页"><span class="brand-mark">l<span>×</span></span><span class="brand-text">刘希<span>AI DATA ANALYST</span></span></a>
-      <div class="sidebar-caption">工作与探索 <span>2026</span></div>
+      <div class="sidebar-caption">SELECTED WORK <span>2026</span></div>
       <nav id="navigation">
         <a href="#overview" class="nav-link" data-page="overview"><span data-icon="grid"></span><span>作品总览</span><span class="nav-hint">01</span></a>
-        <div class="nav-label">分析工作台</div>
-        <a href="#growth" class="nav-link" data-page="growth"><span data-icon="trend"></span><span>增长诊断</span><span class="nav-live-dot"></span></a>
+        <div class="nav-label">业务工作台</div>
+        <a href="#growth" class="nav-link" data-page="growth"><span data-icon="trend"></span><span>增长诊断</span></a>
+        <a href="#experiments" class="nav-link" data-page="experiments"><span data-icon="target"></span><span>实验评审</span></a>
         <a href="#repurchase" class="nav-link" data-page="repurchase"><span data-icon="users"></span><span>复购运营</span></a>
-        <div class="nav-label">方法与证据</div>
-        <a href="#evaluation" class="nav-link" data-page="evaluation"><span data-icon="check"></span><span>评测与可靠性</span></a>
-        <a href="#about" class="nav-link" data-page="about"><span data-icon="book"></span><span>项目资料</span></a>
+        <a href="#monitoring" class="nav-link" data-page="monitoring"><span data-icon="clock"></span><span>监控与运行</span></a>
+        <div class="nav-label">案例与证据</div>
+        <a href="#cases" class="nav-link" data-page="cases"><span data-icon="layers"></span><span>完整案例</span></a>
+        <a href="#evaluation" class="nav-link" data-page="evaluation"><span data-icon="check"></span><span>评测与验证</span></a>
+        <a href="#about" class="nav-link" data-page="about"><span data-icon="book"></span><span>方法与资料</span></a>
       </nav>
       <div class="sidebar-bottom">
         <div class="sidebar-note"><span class="note-dot"></span><span>业务有口径，结论有证据。</span></div>
-        <a href="https://github.com/liu-XI71/liu-xi-ai-analyst" target="_blank" rel="noopener" class="sidebar-external" data-source-link><span data-icon="github"></span>查看项目源码<span data-icon="arrow-up"></span></a>
+        <a href="https://github.com/liu-XI71/liu-xi-ai-analyst" target="_blank" rel="noopener" class="sidebar-external"><span data-icon="github"></span>项目源码<span data-icon="arrow-up"></span></a>
         <a href="https://liu-xi71.github.io/" target="_blank" rel="noopener" class="sidebar-external"><span data-icon="external"></span>原版作品集<span data-icon="arrow-up"></span></a>
-        <div class="sidebar-foot">独立个人项目 · 合成数据演示</div>
+        <div class="sidebar-foot">个人项目 / 可复现分析</div>
       </div>
     </aside>
+    <button id="nav-scrim" class="nav-scrim" aria-label="收起导航" tabindex="-1"></button>
     <div class="main-shell">
       <header class="topbar">
         <button class="icon-button mobile-toggle" id="mobile-toggle" aria-label="展开导航" aria-expanded="false" aria-controls="sidebar"><span data-icon="menu"></span></button>
-        <div class="breadcrumb">PORTFOLIO <span>/</span> <strong id="breadcrumb-current">作品总览</strong></div>
-        <div class="topbar-actions"><span class="connection-status" id="connection-status"><i></i>正在连接</span><button id="api-settings" class="button button-quiet button-small"><span data-icon="settings"></span><span class="settings-label">API 设置</span></button></div>
+        <div class="breadcrumb">LIU XI <span>/</span> <strong id="breadcrumb-current">作品总览</strong></div>
+        <div class="topbar-actions"><span class="connection-status" id="connection-status"><i></i>读取运行状态</span><button id="api-settings" class="button button-quiet button-small"><span data-icon="settings"></span><span class="settings-label">连接 API</span></button></div>
       </header>
       <main id="main" tabindex="-1"></main>
-      <footer class="page-footer"><span>刘希 · AI 数据分析作品集</span><span>数字可复算 · 分析可追溯 · 结果可交付</span><a href="#about">数据与方法说明 <span aria-hidden="true">↗</span></a></footer>
+      <footer class="page-footer"><span>刘希 · AI 数据分析作品集</span><span>口径 → 证据 → 决策 → 验证</span><a href="#about">数据与方法 ↗</a></footer>
     </div>
   </div>
   <dialog id="settings-dialog" class="settings-dialog" aria-labelledby="settings-title">
     <form id="settings-form">
-      <div class="dialog-heading"><span class="eyebrow">CONNECTION</span><button type="button" id="close-settings" class="icon-button" aria-label="关闭设置"><span data-icon="close"></span></button></div>
+      <div class="dialog-heading"><span class="eyebrow">ANALYSIS SERVICE</span><button type="button" id="close-settings" class="icon-button" aria-label="关闭设置"><span data-icon="close"></span></button></div>
       <h2 id="settings-title">连接分析 API</h2>
-      <p class="muted">静态站点可查看已保存的分析回放。连接运行中的 Python 后端后，可提交新问题、生成报告。</p>
+      <p class="muted">静态站点展示保存的计算回放。连接 Python 服务后，可以提交新问题并生成分析报告。</p>
       <label class="field-label" for="api-url">后端根地址</label>
       <input id="api-url" class="text-input" type="url" placeholder="https://your-api.example.com" autocomplete="off" spellcheck="false">
-      <p class="field-help">填写根地址，无需添加 /api/v1。本地一体化运行可留空。地址仅保存于当前浏览器。</p>
-      <label class="field-label" for="api-access-token" style="margin-top:20px">部署访问令牌（可选）</label>
-      <input id="api-access-token" class="text-input" type="password" placeholder="仅受保护的实时服务需要" autocomplete="off" spellcheck="false">
-      <p class="field-help">这是部署方设置的访问令牌，不是 OpenAI API Key。仅保存在当前页面内存，刷新页面即清除。</p>
-      <div class="notice notice-info"><span data-icon="lock"></span><p>OpenAI 密钥在后端环境配置。此页面不接收、保存或展示模型密钥。</p></div>
+      <p class="field-help">填写 HTTPS 根地址，无需添加 /api/v1。本机可使用 HTTP。一体化运行可留空。</p>
+      <label class="field-label token-label" for="api-access-token">部署访问令牌（可选）</label>
+      <input id="api-access-token" class="text-input" type="password" placeholder="仅受保护的服务需要" autocomplete="off" spellcheck="false">
+      <p class="field-help">令牌仅保存在当前页面内存，刷新清除。它不是 OpenAI API Key。</p>
+      <div class="notice notice-info"><span data-icon="lock"></span><p>模型密钥配置在服务端，浏览器不接收或保存模型密钥。</p></div>
       <p class="field-error" id="settings-error" role="alert"></p>
-      <div class="dialog-actions"><button type="button" id="reset-settings" class="button button-secondary">使用默认连接</button><button type="submit" class="button button-primary">保存并连接 <span data-icon="arrow-right"></span></button></div>
+      <div class="dialog-actions"><button type="button" id="reset-settings" class="button button-secondary">默认连接</button><button type="submit" class="button button-primary">保存并连接 <span data-icon="arrow-right"></span></button></div>
     </form>
   </dialog>
   <div class="toast" id="toast" role="status" aria-live="polite"></div>

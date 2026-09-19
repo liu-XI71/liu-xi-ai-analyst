@@ -1,126 +1,131 @@
-# 刘希｜AI 数据分析作品集
+# 刘希 · AI 数据分析
 
-**把业务问题转成可核验的数据结论，把重复分析做成可复用的AI工作流。**
+**从增长问题，到有证据的业务决定。**
 
-这是面向业务型AI数据分析师求职的独立新项目：以增长诊断与自动报告为主场景，用Python工具完成取数、统计、图表与证据组织，再把相同方法应用于复购运营。原个人主页与已有项目链接保留。
+围绕新用户承接、留存变化、实验评审和复购运营，将业务口径、事件数据、SQL/Python 分析与受控 AI 工具调用连接成可复现的工作流。项目覆盖指标设计、数据建模、诊断、统计、API、报告与产品界面。
 
-- 新源码仓库：[liu-XI71/liu-xi-ai-analyst](https://github.com/liu-XI71/liu-xi-ai-analyst)
-- 新作品集（GitHub Pages）：[独立项目页](https://liu-xi71.github.io/liu-xi-ai-analyst/)
-- 原作品集：[liu-xi71.github.io](https://liu-xi71.github.io/)
+- [在线作品集](https://liu-xi71.github.io/liu-xi-ai-analyst/)
+- [源码](https://github.com/liu-XI71/liu-xi-ai-analyst)
+- [原有业务案例](https://liu-xi71.github.io/)
 
-GitHub Pages 发布状态见 Actions。Python 动态服务已在本地验收；Render 云部署与真实模型验证仍需完成账户安全配置。本仓库中的 Docker 与 Render 文件是部署配置，不等于云服务已经上线。
+## 核心业务案例
 
-## 作品展示顺序
+| 业务问题 | 分析与交付 | 验证方式 |
+|---|---|---|
+| 新用户留存下降，优先处理什么？ | 精确 D7、24h 有序漏斗、渠道×端分解、版本关联、竞争假设、实验建议 | 原始事件复算、口径与 SQL、分解闭合 |
+| 指标下降是否由数据延迟造成？ | 批次清单、连续水位、成熟条件、受影响指标阻断、回填重算 | 同一原始事件的不同到达快照；恢复不等于业务好转 |
+| 实验正向，是否具备灰度条件？ | 预注册窗口、ITT、SRM、功效规划、效应区间、负反馈非劣围栏 | 8 类实验场景、原始分配/结果日志、质量检查 |
+| 复购预算应该如何安排？ | 截止日前 RFM、成熟复购、预算候选、随机留出计划 | 时点一致性、成本上限、去重与留出复算 |
 
-1. **增长诊断与自动报告Agent**：从业务问题、指标口径、SQL证据到图表、事实与行动建议。
-2. **增长与实验业务案例**：展示原有分析方法、业务判断与证据，个人经历和模拟Agent运行分别说明。
-3. **可复用分析工具**：原CSV分析工作台，以及本项目新增的复购分群、成熟队列复购与预算留出计划。
+公开数据为固定种子生成的匿名合成数据，用于验证分析方法和软件行为。案例中的比例、实验差异与预算均可计算，不代表任何企业实际经营成绩。原有业务经历与此项目分开展示。
 
-## 已实现的工程链路
+## 产品工作流
 
 ```mermaid
 flowchart LR
-  A[业务问题与筛选] --> B[业务Skill和指标合同]
-  B --> C{运行方式}
-  C -->|确定性演示| D[语义规则与参数化工具]
-  C -->|真实模型| E[OpenAI Responses工具调用]
-  E --> F[受控只读SQL与Python业务工具]
-  D --> F
-  F --> G[确定性统计与结果核验]
-  G --> H[图表、证据、HTML与Markdown报告]
+  A[业务问题] --> B[指标合同与澄清]
+  B --> C[数据质量与成熟窗口]
+  C --> D[SQL 与 Python 工具]
+  D --> E[漏斗 分群 实验]
+  E --> F[证据与决策备忘录]
+  F --> G[报告 复查 告警恢复]
+  D --> H[运行记录与反馈]
 ```
 
-| 能力 | 当前实现 |
-|---|---|
-| 企业业务知识 | 应用实际加载`skills/growth-diagnosis`与`skills/repurchase-operations`；包含指标口径、时间边界、分析分支与输出约束 |
-| Python工具接口 | FastAPI目录、业务分析、SQL核验、运行记录、报告和评测接口 |
-| 增长分析 | 合成用户与事件明细上的成熟次7日留存、渠道/设备拆分、变化分解、实验复盘和报告 |
-| 复购分析 | 合成订单上的成熟7/30日复购、历史时点分群、匿名候选、预算上限与固定seed随机留出建议 |
-| SQL与证据 | 参数化业务SQL及受控只读SQL执行；返回实际SQL、参数、行、来源和指标版本 |
-| 真实模型适配 | OpenAI Responses调用上下文、分析和查询工具；报告选择已有事实，不让模型随意编造指标 |
-| 展示与复现 | 独立静态作品页、动态Python工作台、Docker/Compose、GitHub Actions与Render Blueprint |
+- **指标语义**：精确 D1、精确 D7、次1—7日回访、24h激活各自定义；版本化字典是单一来源。
+- **数据基础**：110 日注册范围、匿名用户、事件时间与到达时间、端/版本、源端批次清单、发布记录。
+- **分析方法**：有序漏斗、联合分层的对称变化分解、版本关联与竞争解释；描述性贡献不冒充因果。
+- **实验决策**：从预注册参数计算样本量，检查 SRM、分配/采集/配置/成熟；以区间、业务门槛和非劣围栏共同评审。
+- **AI 工作流**：模型处理问题与工具参数，确定性函数计算业务数字；结构化计划、证据引用、拒绝与澄清均留有记录。
+- **运营闭环**：幂等批次、数据告警与业务告警分别管理、回填与恢复；真实请求技术遥测与自愿反馈单独统计。
 
-所有演示数据均为固定种子合成数据。这里的留存、实验差异、正向交易额或预算计划不属于任何企业实际经营成果。复购随机留出是计划，尚未执行营销触达。
+## 三种运行方式
 
-## 三种模式与验证边界
+| 方式 | 能力 | 标识 |
+|---|---|---|
+| 静态案例回放 | 13 个实际计算场景、完整图表/SQL/报告，可直接放到 GitHub Pages | 不执行自由输入，不调用模型 |
+| Python 动态分析 | 修改日期、渠道、端、指标后实际取数并生成新运行记录 | 有限语义规则与确定性工具，不计为 LLM 测试 |
+| OpenAI 模型分析 | Responses 工具调用：上下文、指标、计划、质量、查询、分析和报告 | 需要安全配置模型凭据；无凭据明确失败，不替代为回放 |
 
-- **静态回放**：GitHub Pages读取预计算JSON，便于招聘方直接查看完整证据；不能任意取数，也没有模型调用。
-- **后端demo**：无需Key，有限语义规则与参数化Python工具真实执行SQL、计算与报告。它用于展示可复现链路，不宣称是LLM。
-- **live**：配置OpenAI Key后，由真实模型通过受控工具进行任务执行。默认模型`gpt-5-mini`，可通过`OPENAI_MODEL`修改；缺Key、权限或额度时明确返回失败，不回退伪装live。
+本版本的模型实测与用户试用研究分别显示其实际状态。技术请求完成不等于业务答案正确；开发请求数不等于独立用户数。模型、成本和提效结论只使用相应实测记录。
 
-业务单元测试与mock模型测试仅验证代码行为。真实模型的结果正确率、稳定性、时延、token与人工节省时间，须由实际运行记录另行证明；未验证项不写成既得成果。当前评测页与`evals/`是可查阅证据，不能把确定性测试通过率当成大模型问数准确率。
+## 本地运行
 
-## 快速开始
-
-需要Python 3.11及以上，推荐3.12。
+Python 3.11+，推荐 3.12。
 
 ```bash
 git clone https://github.com/liu-XI71/liu-xi-ai-analyst.git
 cd liu-xi-ai-analyst
 python -m venv .venv
 source .venv/bin/activate
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt -c constraints-tested.txt
 python -m pytest -q
 python scripts/export_demo.py
 sh scripts/start.sh
 ```
 
-打开`http://127.0.0.1:8765`查看工作台，打开`http://127.0.0.1:8765/docs`查看API。首次启动会生成合成数据库。Windows用户可激活`.venv\Scripts\Activate.ps1`后运行`python -m uvicorn app.main:app --host 127.0.0.1 --port 8765 --workers 1`。
+访问 `http://127.0.0.1:8765`；接口说明位于 `/docs`。Windows 激活 `.venv\Scripts\Activate.ps1` 后执行 `python -m uvicorn app.main:app --host 127.0.0.1 --port 8765`。
 
-需要真实模型时，在本机将`.env.example`复制为`.env.local`，用编辑器配置Key和模型；Key不提交到GitHub，不放入前端。远程live服务使用独立的`LIVE_ACCESS_TOKEN`。完整步骤见[部署与复现说明](docs/deployment.md)。
+仅发布静态作品集时，上传 `web/` 的全部内容即可。路径相对化，支持 GitHub Pages 项目子目录；JSON 案例和 HTML/Markdown 报告包含在目录内。[部署说明](docs/deployment.md)
 
-## 演示路径
-
-先运行增长默认问题，检查留存口径、成熟分母、渠道/设备结果和SQL。随后改变筛选重新计算，再试一个精确D7问题，观察系统对口径歧义的澄清。最后下载报告，核对图表数字与证据。
-
-复购场景可尝试：
-
-> 截至5月31日，按历史购买分群，在200元预算内制定召回候选与随机留出方案。
-
-系统输出截止日前RFM、匿名候选、计划处理/留出分组及预算核算。改变seed会改变分配，截止日后的订单不能改变原时点候选。次7/30日复购采用完整观察队列，正向交易额明确不等于净LTV。[复购数据与口径说明](docs/repurchase-data.md)
-
-## API
-
-| 方法与路径 | 用途 |
-|---|---|
-| `GET /api/health` | 健康检查与模型是否配置 |
-| `GET /api/v1/catalog` | 业务域、指标、表、日期范围、默认请求与示例 |
-| `POST /api/v1/analyze` | `demo`/`live`业务分析 |
-| `POST /api/v1/sql/preview` | 受控只读SQL辅助核验 |
-| `GET /api/v1/runs/{id}` | 读取已保存运行 |
-| `GET /api/v1/runs/{id}/report?format=html` | 下载HTML报告；也支持`md` |
-| `GET /api/v1/evaluations` | 读取已生成评测结果 |
-| `GET /api/v1/skills/{domain}` | 查看应用实际加载的业务上下文 |
+## 复现与验证
 
 ```bash
-curl -X POST http://127.0.0.1:8765/api/v1/analyze \
-  -H 'Content-Type: application/json' \
-  -d '{"question":"生成复购运营报告","domain":"repurchase","task":"report","mode":"demo","start":"2026-03-01","end":"2026-05-31","filters":{"budget":200,"contact_cost":2,"holdout_ratio":0.2}}'
+python -m pytest -q
+python scripts/evaluate.py
+python scripts/evaluate.py --suite audit
+python scripts/evaluate_v2.py
+python scripts/export_demo.py
+python scripts/run_monitor.py --scenario late_data
+python scripts/run_monitor.py --scenario recovered
 ```
 
-响应包含`run_id`、口径合同、KPI、表、图表、事实/假设/建议、SQL证据和工具轨迹。数值由确定性代码计算；运行轨迹是可审计工具记录，不是隐藏思考过程。
+已暴露的评测题属于公开回归，不称为盲测。指标基准独立从用户、活动、订单或事件聚合；SQL 证据可以重放。模型测试替身仅验证协议，结果明确标为未进行真实调用。[评测说明](docs/evaluation.md)
 
-## 项目结构
+## API 与数据合同
 
-```text
-app/
-  domains/          增长与复购确定性业务域
-  live_agent.py     真实模型的有界工具循环
-  sql_tools.py      只读查询边界
-  reports.py        HTML / Markdown报告
-  main.py           FastAPI与运行记录
-skills/             实际加载的业务规则
-web/                独立首页、工作台与静态回放
-evals/              问题集及评测证据
-tests/              业务、API和工具边界测试
-scripts/            启动、评测与离线导出
-docs/               数据口径与部署说明
+| 路径 | 用途 |
+|---|---|
+| `GET /api/health` | 服务状态与模型配置状态 |
+| `GET /api/v1/catalog` | 业务域、数据范围、指标、场景与默认请求 |
+| `GET /api/v1/metrics/{domain}` | 已注册指标合同 |
+| `POST /api/v1/analyze` | 新用户、实验、复购、历史增长域分析 |
+| `POST /api/v1/sql/preview` | 受控只读 SQL 核验 |
+| `GET /api/v1/runs/{id}` | 已保存分析结果 |
+| `GET /api/v1/runs/{id}/report?format=html` | 独立 HTML / Markdown 报告 |
+| `GET /api/v1/monitoring` | 批次、告警与状态迁移 |
+| `POST /api/v1/monitoring/run` | 管理员触发幂等批次 |
+| `GET /api/v1/usage` | 实际技术运行与自愿反馈汇总 |
+| `POST /api/v1/feedback` | 持运行反馈凭证提交或更新评价 |
+| `GET /api/v1/evaluations` | 各套评测结果及其验证边界 |
+
+```json
+{
+  "domain": "onboarding",
+  "question": "比较两个成熟注册周的精确D7，并检查用户路径",
+  "task": "diagnose",
+  "mode": "demo",
+  "start": "2026-08-24",
+  "end": "2026-08-30",
+  "compare_start": "2026-08-17",
+  "compare_end": "2026-08-23",
+  "filters": {"metric": "new_user_retention_d7", "scenario": "business_drop"}
+}
 ```
 
-普通CI不使用OpenAI Key，执行`pytest`和静态导出。Pages工作流只发布新仓库`web/`。Docker与Render配置支持独立托管Python服务；Render免费实例存在冷启动与临时存储边界，详见部署说明。
+响应包含指标合同、质量检查、KPI、结果表、图表、竞争假设、决策、SQL 证据、运行记录和来源版本。事件明细不含真实个人身份。
 
-## 个人实现与参考
+## 实现与设计资料
 
-这个项目把已有的增长与复购分析方法封装为可执行业务合同、Python工具和可核验运行结果。公开框架用于基础设施，业务指标、分群规则、确定性计算、失败分支与证据说明可直接从代码核查。[来源和第三方说明](THIRD_PARTY_NOTICES.md)列出旧作品归属、依赖与设计参考。
+- [四个完整业务案例](docs/business-cases.md) · [独立阅读与打印版](https://liu-xi71.github.io/liu-xi-ai-analyst/resources/business-cases.html)
+- [架构与执行边界](docs/architecture.md)
+- [新用户事件、指标与成熟规则](docs/onboarding-data.md)
+- [实验设计、统计与决策规则](docs/experiment-methods.md)
+- [复购数据与时点分群](docs/repurchase-data.md)
+- [运行监控与产品反馈](docs/operations.md)
+- [真实试用研究协议与记录模板](docs/user-study-protocol.md)
+- [评测方法](docs/evaluation.md)
+- [部署与复现](docs/deployment.md)
+- [业务讲解与复现路线](docs/interview-guide.md)
 
-本仓库新增代码采用[MIT许可证](LICENSE)。实际业务接入需要另行获得数据权限，并根据真实业务重新校验口径、实验设计与访问控制。
+业务 Skill 与实际计算共用合同，包含输入、前置条件、步骤、停止条件和输出格式。通用框架提供基础能力，业务定义和分析规则在本仓库中实现。[第三方来源](THIRD_PARTY_NOTICES.md) · [MIT 许可](LICENSE)

@@ -1,6 +1,6 @@
 # 增长留存诊断
 
-运行编号：— · 模式：demo · 时间：2026-09-19T07:56:56.921390+00:00
+运行编号：4324e8813a77a2f37f9b127cbda5510f · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
@@ -214,9 +214,22 @@ WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_d
 
 ## 执行记录
 
-- static_snapshot：由同一Python业务引擎生成的固定演示快照，未执行当前自由输入问题，未调用模型。
+- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
 - query_metric：两期成熟用户与留存人数
 - query_metric：两期渠道 × 设备成熟留存
 - query_metric：按注册日的成熟队列趋势
 - query_metric：渠道及设备单维留存对比
 - decompose_change：结构 + 表现 = -9.178200 pp；与总体变化的误差 0.000000000 pp。
+
+## 版本与来源
+
+```json
+{
+  "application_version": "0.2.0",
+  "data_kind": "synthetic",
+  "metric_version": "growth.v1.0",
+  "snapshot_sha256": "4324e8813a77a2f37f9b127cbda5510f41821b3114a782fde8028771544c9b0d",
+  "fingerprint_scope": "request, metric_contract, kpis, status",
+  "execution": "Python business tools; no model call"
+}
+```

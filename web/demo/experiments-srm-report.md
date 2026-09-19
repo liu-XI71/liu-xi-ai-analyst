@@ -1,0 +1,283 @@
+# 新用户承接实验评审
+
+运行编号：5ed11c43e6c660b801e2cb55164ade2f · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
+
+**数据说明：合成演示数据，不代表任何企业真实经营结果。**
+
+实验数据不满足评审前提：分配比例 SRM。人数与原始计数仅供核查，暂停效应结论。
+
+## 决策备忘录
+
+```json
+{
+  "code": "invalid_data",
+  "label": "数据需修复",
+  "reason": "分配比例 SRM",
+  "action": "定位分配、身份、配置或采集异常；保留修复记录，按原分配清单回填并重跑。",
+  "gates": {
+    "source_reconciliation": true,
+    "identity": true,
+    "eligibility": true,
+    "configuration": true,
+    "collection": true,
+    "events": true,
+    "srm": false,
+    "maturity": true
+  },
+  "executes_rollout": false
+}
+```
+
+## 实验设计
+
+```json
+{
+  "experiment_id": "srm",
+  "start_date": "2026-08-17",
+  "end_date": "2026-08-30",
+  "snapshot_date": "2026-09-06",
+  "expected_treatment_share": 0.5,
+  "baseline_rate": 0.28,
+  "mde": 0.025,
+  "alpha": 0.05,
+  "power": 0.8,
+  "min_business_lift": 0.01,
+  "negative_baseline": 0.04,
+  "negative_margin": 0.015,
+  "guardrail_alpha": 0.025,
+  "config_version": "onboarding-v1",
+  "expected_assignment_count": 16000,
+  "population": "新注册用户，注册成功后即时随机分配，按分配组 ITT",
+  "design": "单一主指标、单一预注册围栏、固定窗口",
+  "srm_alpha": 0.001,
+  "guardrail": "负反馈率越低越好；H0: treatment−control ≥ margin；须单侧置信上界严格小于 margin",
+  "guardrail_window": "[registered_at, registered_at+24h)",
+  "business_rule": "主要效应区间下界达到预注册最低业务提升；不是只看点估计",
+  "rollout": "只输出人工灰度评审建议，不执行发布"
+}
+```
+
+## 分析步骤
+
+```json
+{
+  "control_required": 5196,
+  "treatment_required": 5196,
+  "primary_control_required": 5196,
+  "primary_treatment_required": 5196,
+  "guardrail_control_required": 2680,
+  "guardrail_treatment_required": 2680,
+  "total_required": 10392,
+  "allocation_treatment_to_control": 1.0,
+  "primary_method": "Cohen h 正态近似：nC=(1+1/r)×(z(1−alpha/2)+z(power))²/h²；nT=ceil(r×nC)",
+  "guardrail_method": "非劣设计正态近似，假设真实差异为 0：nC=p(1−p)(1+1/r)×(z(1−alphaNI)+z(power))²/margin²",
+  "planning_assumptions": "两项各自达到设计功效，不声明联合功效；主要设计检验差异为零，不保证业务区间门槛也有相同功效；样本量取较大需求，不计算事后 observed power。",
+  "evidence_ids": [
+    "experiment-registry"
+  ]
+}
+```
+
+## 指标口径
+
+```json
+{
+  "id": "experiment_new_user_retention_d7",
+  "name": "实验新用户精确 D7 留存率",
+  "version": "experiments.v2.0",
+  "numerator": "注册后第 7 个自然日发生至少一次 qualified_activity 的原始分配用户数",
+  "denominator": "预注册入组窗口内所有合格的新注册随机分配用户；固定窗口全部成熟后评审",
+  "grain": "用户",
+  "unit": "%",
+  "timezone": "Asia/Shanghai；时间戳为该时区本地时间",
+  "timestamp_format": "YYYY-MM-DD HH:MM:SS；有效公历日期，秒精度，空格分隔，无时区后缀",
+  "date_format": "YYYY-MM-DD；有效公历日期",
+  "timestamp_policy": "非规范时间格式整份评审标记 invalid_data；接入层须显式转换时区并规范化，不静默丢弃事件",
+  "window": "[注册日 + 7 日 00:00:00, 注册日 + 8 日 00:00:00)",
+  "analysis_population": "ITT：按原始分配组分析，包括未暴露用户；不按事后活跃筛选",
+  "maturity": "采集水位覆盖完整 D7 自然日，且注册后 24 小时负反馈窗口完整",
+  "not_equivalent_to": "次 7 日内任意回访、D1 或曝光用户中的留存",
+  "data_source": "固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益",
+  "snapshot_date": "2026-09-06",
+  "data_as_of_exclusive": "2026-09-07 00:00:00",
+  "experiment_period": [
+    "2026-08-17",
+    "2026-08-30"
+  ]
+}
+```
+
+## 核验事实
+
+- 入组窗口 2026-08-17 至 2026-08-30，数据完整截至 2026-09-06；共 16000 名分配用户，0 名尚未完成观察。（证据：experiment-registry, experiment-quality）
+
+## 待验证假设
+
+
+## 后续行动
+
+- 数据需修复：定位分配、身份、配置或采集异常；保留修复记录，按原分配清单回填并重跑。（证据：experiment-registry, experiment-quality, experiment-changes, experiment-groups）
+
+## 结果表
+
+### ITT 人群与观测计数
+
+完整结果：2行。
+
+| arm | users | mature_users | exposed_users | retained_users | negative_users |
+| --- | --- | --- | --- | --- | --- |
+| control | 4839 | 4839 | 4355 | 1410 | 210 |
+| treatment | 11161 | 11161 | 10042 | 3801 | 458 |
+### 预注册样本规划
+
+完整结果：2行。
+
+| metric | baseline_pct | threshold_pp | alpha | power | control_required | treatment_required |
+| --- | --- | --- | --- | --- | --- | --- |
+| 精确 D7 提升 | 28.000000000000004 | 2.5 | 0.05 | 0.8 | 5196 | 5196 |
+| 负反馈非劣围栏 | 4.0 | 1.5 | 0.025 | 0.8 | 2680 | 2680 |
+### 配置变更轨迹
+
+完整结果：0行。
+
+| changed_at | field | old_value | new_value | material |
+| --- | --- | --- | --- | --- |
+### 实验评审门槛
+
+完整结果：8行。
+
+| label | rule | observed | passed |
+| --- | --- | --- | --- |
+| 来源人数对账 | 分配日志条数等于源端清单 | 16000 / 16000 | True |
+| 随机单位唯一 | 用户不重复、不串组、分组合法 | 重复 0；串组 0；未知组 0 | True |
+| 入组资格与时间 | 规范本地秒精度时间；注册成功即时分配且处于完整预注册入组窗口 | 0 | True |
+| 配置稳定 | 同一冻结配置，变更时间规范，无入组或观察期内实质变更 | 版本不符 0；变更 0；时间无效 0 | True |
+| 采集覆盖完整 | 所有分配用户均有完整到数清单，水位与注册快照一致 | 缺清单 0；未完整 0 | True |
+| 事件与暴露合同 | 事件有分配来源、版本合法、时间为规范本地秒精度且曝光组不串组 | 孤立事件 0；无效事件 0；无效曝光 0 | True |
+| 分配比例 SRM | 对照:处理=50%:50%；卡方 p≥0.001，期望人数均≥5 | 0.0 | False |
+| 固定观察窗口成熟 | 全部分配用户已完整观察 D7 与 24h 围栏；入组窗口已结束 | 0 | True |
+
+### 图表数据：分配人数与预注册期望
+
+原始单位：人；空值表示未成熟/缺失。
+
+| group | actual_users | expected_users |
+| --- | --- | --- |
+| 对照组 | 4839 | 8000.0 |
+| 处理组 | 11161 | 8000.0 |
+
+## SQL 与证据
+
+### experiment-registry · 实验预注册参数与固定窗口
+
+来源：固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益；口径版本：experiments.v2.0
+
+```sql
+SELECT * FROM experiment_registry WHERE experiment_id=:experiment_id
+```
+参数：{"experiment_id": "srm"}
+### experiment-quality · 分配、身份、配置、采集覆盖与成熟检查
+
+来源：固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益；口径版本：experiments.v2.0
+
+```sql
+WITH a AS (SELECT * FROM experiment_assignments WHERE experiment_id=:experiment_id),
+uid AS (SELECT user_id,COUNT(*) AS records,COUNT(DISTINCT arm) AS arms FROM a GROUP BY user_id)
+SELECT
+ (SELECT COUNT(*) FROM a) AS assignment_records,
+ (SELECT COUNT(*) FROM uid) AS assigned_users,
+ (SELECT COUNT(*) FROM uid WHERE records>1) AS duplicate_users,
+ (SELECT COUNT(*) FROM uid WHERE arms>1) AS cross_arm_users,
+ (SELECT COUNT(*) FROM a WHERE arm NOT IN ('control','treatment')) AS unknown_arms,
+ (SELECT COUNT(*) FROM a WHERE date(registered_at)<:start OR date(registered_at)>:end
+    OR COALESCE((typeof(registered_at)='text' AND length(registered_at)=19 AND registered_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(registered_at,1,4) BETWEEN '0001' AND '9999' AND datetime(registered_at,'+0 seconds')=registered_at),0)=0 OR COALESCE((typeof(assigned_at)='text' AND length(assigned_at)=19 AND assigned_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(assigned_at,1,4) BETWEEN '0001' AND '9999' AND datetime(assigned_at,'+0 seconds')=assigned_at),0)=0
+    OR assigned_at<>registered_at) AS invalid_registration_or_assignment,
+ (SELECT COUNT(*) FROM a WHERE config_version<>:config_version) AS config_mismatches,
+ (SELECT COUNT(*) FROM a LEFT JOIN experiment_coverage c
+    ON c.experiment_id=a.experiment_id AND c.user_id=a.user_id WHERE c.user_id IS NULL) AS missing_coverage,
+ (SELECT COUNT(*) FROM a JOIN experiment_coverage c ON c.experiment_id=a.experiment_id AND c.user_id=a.user_id
+    WHERE c.complete<>1 OR c.observed_until<>:cutoff OR COALESCE((typeof(c.observed_until)='text' AND length(c.observed_until)=19 AND c.observed_until GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(c.observed_until,1,4) BETWEEN '0001' AND '9999' AND datetime(c.observed_until,'+0 seconds')=c.observed_until),0)=0) AS incomplete_coverage,
+ (SELECT COUNT(*) FROM experiment_outcomes o LEFT JOIN a ON a.user_id=o.user_id
+    WHERE o.experiment_id=:experiment_id AND a.user_id IS NULL) AS orphan_outcomes,
+ (SELECT COUNT(*) FROM experiment_outcomes o JOIN a ON a.user_id=o.user_id
+    WHERE o.experiment_id=:experiment_id AND (o.schema_version<>'events-v1'
+      OR o.event_name NOT IN ('qualified_activity','negative_feedback')
+      OR COALESCE((typeof(o.event_at)='text' AND length(o.event_at)=19 AND o.event_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(o.event_at,1,4) BETWEEN '0001' AND '9999' AND datetime(o.event_at,'+0 seconds')=o.event_at),0)=0 OR COALESCE((typeof(o.ingested_at)='text' AND length(o.ingested_at)=19 AND o.ingested_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(o.ingested_at,1,4) BETWEEN '0001' AND '9999' AND datetime(o.ingested_at,'+0 seconds')=o.ingested_at),0)=0
+      OR o.event_at<a.registered_at OR o.ingested_at<o.event_at
+      OR o.event_at>=:cutoff OR o.ingested_at>=:cutoff)) AS invalid_outcomes,
+ (SELECT COUNT(*) FROM experiment_exposures e LEFT JOIN a ON a.user_id=e.user_id
+    WHERE e.experiment_id=:experiment_id AND (a.user_id IS NULL OR e.arm<>a.arm
+      OR COALESCE((typeof(e.exposed_at)='text' AND length(e.exposed_at)=19 AND e.exposed_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(e.exposed_at,1,4) BETWEEN '0001' AND '9999' AND datetime(e.exposed_at,'+0 seconds')=e.exposed_at),0)=0 OR e.exposed_at<a.assigned_at OR e.exposed_at>=:cutoff)) AS invalid_exposures,
+ (SELECT COUNT(*) FROM experiment_changelog WHERE experiment_id=:experiment_id
+    AND (COALESCE((typeof(changed_at)='text' AND length(changed_at)=19 AND changed_at GLOB '[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]' AND substr(changed_at,1,4) BETWEEN '0001' AND '9999' AND datetime(changed_at,'+0 seconds')=changed_at),0)=0)) AS invalid_change_timestamps,
+ (SELECT COUNT(*) FROM experiment_changelog WHERE experiment_id=:experiment_id AND material=1
+    AND changed_at>=:start AND changed_at<:cutoff) AS material_changes,
+ (SELECT COUNT(*) FROM a WHERE datetime(date(registered_at),'+8 days')>:cutoff
+    OR datetime(registered_at,'+24 hours')>:cutoff) AS immature_users
+
+```
+参数：{"experiment_id": "srm", "start": "2026-08-17", "end": "2026-08-30", "cutoff": "2026-09-07 00:00:00", "config_version": "onboarding-v1"}
+### experiment-changes · 实验配置变更记录
+
+来源：固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益；口径版本：experiments.v2.0
+
+```sql
+SELECT changed_at,field,old_value,new_value,material FROM experiment_changelog WHERE experiment_id=:experiment_id ORDER BY changed_at
+```
+参数：{"experiment_id": "srm", "start": "2026-08-17", "end": "2026-08-30", "cutoff": "2026-09-07 00:00:00", "config_version": "onboarding-v1"}
+### experiment-groups · ITT 分配人数、暴露与成熟窗口结果
+
+来源：固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益；口径版本：experiments.v2.0
+
+```sql
+WITH users AS (
+ SELECT a.user_id,a.arm,date(a.registered_at) AS cohort_date,
+  CASE WHEN datetime(date(a.registered_at),'+8 days')<=:cutoff
+    AND datetime(a.registered_at,'+24 hours')<=:cutoff THEN 1 ELSE 0 END AS mature,
+  EXISTS(SELECT 1 FROM experiment_exposures e WHERE e.experiment_id=a.experiment_id AND e.user_id=a.user_id) AS exposed,
+  EXISTS(SELECT 1 FROM experiment_outcomes o WHERE o.experiment_id=a.experiment_id AND o.user_id=a.user_id
+    AND o.event_name='qualified_activity'
+    AND o.event_at>=datetime(date(a.registered_at),'+7 days')
+    AND o.event_at<datetime(date(a.registered_at),'+8 days') AND o.ingested_at<:cutoff) AS retained_d7,
+  EXISTS(SELECT 1 FROM experiment_outcomes o WHERE o.experiment_id=a.experiment_id AND o.user_id=a.user_id
+    AND o.event_name='negative_feedback' AND o.event_at>=a.registered_at
+    AND o.event_at<datetime(a.registered_at,'+24 hours') AND o.ingested_at<:cutoff) AS negative_feedback
+ FROM experiment_assignments a WHERE a.experiment_id=:experiment_id
+)
+SELECT arm,COUNT(*) AS users,SUM(mature) AS mature_users,SUM(exposed) AS exposed_users,
+ SUM(CASE WHEN mature=1 THEN retained_d7 ELSE NULL END) AS retained_users,
+ SUM(CASE WHEN mature=1 THEN negative_feedback ELSE NULL END) AS negative_users
+FROM users GROUP BY arm ORDER BY arm
+```
+参数：{"experiment_id": "srm", "start": "2026-08-17", "end": "2026-08-30", "cutoff": "2026-09-07 00:00:00", "config_version": "onboarding-v1"}
+
+## 边界与限制
+
+- 固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益
+- 随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。
+- SRM 通过不证明不存在所有数据问题；完整性只针对本地来源清单与合同核查。
+- 固定窗口设计禁止因每日出现显著结果而提前结束；若需连续决策，应另预注册顺序检验。
+- 负反馈围栏要求差异区间上界低于非劣界值；未发现显著恶化不等于已证明安全。
+- 长期 Holdout 用于不同的长期或组合效应问题，不是所有有效 A/B 的统一上线前提。
+
+## 执行记录
+
+- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
+- query_experiment：实验预注册参数与固定窗口
+- query_experiment：分配、身份、配置、采集覆盖与成熟检查
+- query_experiment：实验配置变更记录
+- query_experiment：ITT 分配人数、暴露与成熟窗口结果
+- evaluate_experiment：数据需修复；分配比例 SRM
+
+## 版本与来源
+
+```json
+{
+  "application_version": "0.2.0",
+  "data_kind": "synthetic",
+  "metric_version": "experiments.v2.0",
+  "snapshot_sha256": "5ed11c43e6c660b801e2cb55164ade2f497b6333345a17cb252eb8a3bba91889",
+  "fingerprint_scope": "request, metric_contract, kpis, status",
+  "execution": "Python business tools; no model call"
+}
+```

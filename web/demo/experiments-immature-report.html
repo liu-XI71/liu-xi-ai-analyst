@@ -1,0 +1,172 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>新用户承接实验评审</title><style>body{font:16px/1.7 system-ui,sans-serif;color:#152b3c;max-width:1100px;margin:40px auto;padding:0 24px}h1{font-size:32px}h2{margin-top:40px;border-top:1px solid #dce5eb;padding-top:24px}.meta,small{color:#596c7c}small{display:block}.kpis{display:flex;gap:16px;flex-wrap:wrap}article,.decision{background:#f0f5f7;padding:18px;min-width:140px;border-radius:12px}strong{display:block;font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;text-align:left;border-bottom:1px solid #dce5eb}.overflow{overflow:auto}pre{background:#eef3f7;overflow:auto;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}details{padding:12px 0;border-bottom:1px solid #dce5eb}svg{width:100%;max-width:950px}@media print{details{display:block}body{margin:0}tr{break-inside:avoid}}</style><header><p>刘希 · AI 数据分析工作台</p><h1>新用户承接实验评审</h1><p class="meta">1eeb75e1cc908e89a6ca271c006184a8 · demo · 2026-09-19T09:24:37.144573+00:00</p><p>合成演示数据，不代表任何企业实际经营结果。</p></header><p>尚有 16000 名用户未完成预注册观察窗口，不能把未观测结果计为 0 或剔除后发布总体结论。</p><section class="kpis"><article><span>随机分配用户</span><strong>16000 人</strong></article><article><span>尚未成熟用户</span><strong>16000 人</strong></article><article><span>设计所需总样本</span><strong>10392 人</strong></article><article><span>SRM p 值</span><strong>0.39320751955611144 </strong></article></section><h2>决策备忘录</h2><section class="decision"><h3>等待成熟</h3><p>尚有 16000 名用户未完成预注册观察窗口，不能把未观测结果计为 0 或剔除后发布总体结论。</p><p>等待最后入组用户的 D7 完整结束；最早数据完整日为 2026-09-13，补齐后复查。</p><ul></ul></section><h2>事实、假设与行动</h2><ul><li><b>事实</b> 入组窗口 2026-09-03 至 2026-09-06，数据完整截至 2026-09-06；共 16000 名分配用户，16000 名尚未完成观察。<small>experiment-registry, experiment-quality</small></li><li><b>行动</b> 等待成熟：等待最后入组用户的 D7 完整结束；最早数据完整日为 2026-09-13，补齐后复查。<small>experiment-registry, experiment-quality, experiment-changes, experiment-groups</small></li></ul><h2>图表与结果</h2><h3>分配人数与预注册期望</h3><svg viewBox="0 0 760 176" role="img" aria-label="分配人数与预注册期望"><title>分配人数与预注册期望</title><rect x="0" y="4" width="12" height="12" fill="#147d92"/><text x="18" y="15" font-size="12">actual_users</text><rect x="235" y="4" width="12" height="12" fill="#d86c31"/><text x="253" y="15" font-size="12">expected_users</text><line x1="150.0" y1="42" x2="150.0" y2="166" stroke="#aab9c2"/><text x="0" y="57" font-size="11">对照组</text><rect data-series="actual_users" x="150.0" y="42" width="439.03277874348146" height="16" rx="2" fill="#147d92"/><text x="596.0327787434815" y="55" font-size="11">7946</text><rect data-series="expected_users" x="150.0" y="66" width="442.01638937174073" height="16" rx="2" fill="#d86c31"/><text x="599.0163893717407" y="79" font-size="11">8000.0</text><text x="0" y="119" font-size="11">处理组</text><rect data-series="actual_users" x="150.0" y="104" width="445.0" height="16" rx="2" fill="#147d92"/><text x="602.0" y="117" font-size="11">8054</text><rect data-series="expected_users" x="150.0" y="128" width="442.01638937174073" height="16" rx="2" fill="#d86c31"/><text x="599.0163893717407" y="141" font-size="11">8000.0</text></svg><p class="meta">未成熟/缺失不代表0。图表原始单位：人。</p><details><summary>查看完整图表数据（2行）</summary><div class="overflow"><table><thead><tr><th>group</th><th>actual_users</th><th>expected_users</th></tr></thead><tbody><tr><td>对照组</td><td>7946</td><td>8000.0</td></tr><tr><td>处理组</td><td>8054</td><td>8000.0</td></tr></tbody></table></div></details><h3>ITT 人群与观测计数</h3><p class="meta">完整结果：2行。</p><div class="overflow"><table><thead><tr><th>arm</th><th>users</th><th>mature_users</th><th>exposed_users</th><th>retained_users</th><th>negative_users</th></tr></thead><tbody><tr><td>control</td><td>7946</td><td>0</td><td>7129</td><td>未成熟/缺失</td><td>未成熟/缺失</td></tr><tr><td>treatment</td><td>8054</td><td>0</td><td>7239</td><td>未成熟/缺失</td><td>未成熟/缺失</td></tr></tbody></table></div><h3>预注册样本规划</h3><p class="meta">完整结果：2行。</p><div class="overflow"><table><thead><tr><th>metric</th><th>baseline_pct</th><th>threshold_pp</th><th>alpha</th><th>power</th><th>control_required</th><th>treatment_required</th></tr></thead><tbody><tr><td>精确 D7 提升</td><td>28.000000000000004</td><td>2.5</td><td>0.05</td><td>0.8</td><td>5196</td><td>5196</td></tr><tr><td>负反馈非劣围栏</td><td>4.0</td><td>1.5</td><td>0.025</td><td>0.8</td><td>2680</td><td>2680</td></tr></tbody></table></div><h3>配置变更轨迹</h3><p class="meta">完整结果：0行。</p><div class="overflow"><table><thead><tr><th>changed_at</th><th>field</th><th>old_value</th><th>new_value</th><th>material</th></tr></thead><tbody></tbody></table></div><h3>实验评审门槛</h3><p class="meta">完整结果：8行。</p><div class="overflow"><table><thead><tr><th>label</th><th>rule</th><th>observed</th><th>passed</th></tr></thead><tbody><tr><td>来源人数对账</td><td>分配日志条数等于源端清单</td><td>16000 / 16000</td><td>True</td></tr><tr><td>随机单位唯一</td><td>用户不重复、不串组、分组合法</td><td>重复 0；串组 0；未知组 0</td><td>True</td></tr><tr><td>入组资格与时间</td><td>规范本地秒精度时间；注册成功即时分配且处于完整预注册入组窗口</td><td>0</td><td>True</td></tr><tr><td>配置稳定</td><td>同一冻结配置，变更时间规范，无入组或观察期内实质变更</td><td>版本不符 0；变更 0；时间无效 0</td><td>True</td></tr><tr><td>采集覆盖完整</td><td>所有分配用户均有完整到数清单，水位与注册快照一致</td><td>缺清单 0；未完整 0</td><td>True</td></tr><tr><td>事件与暴露合同</td><td>事件有分配来源、版本合法、时间为规范本地秒精度且曝光组不串组</td><td>孤立事件 0；无效事件 0；无效曝光 0</td><td>True</td></tr><tr><td>分配比例 SRM</td><td>对照:处理=50%:50%；卡方 p≥0.001，期望人数均≥5</td><td>0.39320751955611144</td><td>True</td></tr><tr><td>固定观察窗口成熟</td><td>全部分配用户已完整观察 D7 与 24h 围栏；入组窗口已结束</td><td>16000</td><td>False</td></tr></tbody></table></div><h2>指标口径与分析合同</h2><pre>{
+  &quot;id&quot;: &quot;experiment_new_user_retention_d7&quot;,
+  &quot;name&quot;: &quot;实验新用户精确 D7 留存率&quot;,
+  &quot;version&quot;: &quot;experiments.v2.0&quot;,
+  &quot;numerator&quot;: &quot;注册后第 7 个自然日发生至少一次 qualified_activity 的原始分配用户数&quot;,
+  &quot;denominator&quot;: &quot;预注册入组窗口内所有合格的新注册随机分配用户；固定窗口全部成熟后评审&quot;,
+  &quot;grain&quot;: &quot;用户&quot;,
+  &quot;unit&quot;: &quot;%&quot;,
+  &quot;timezone&quot;: &quot;Asia/Shanghai；时间戳为该时区本地时间&quot;,
+  &quot;timestamp_format&quot;: &quot;YYYY-MM-DD HH:MM:SS；有效公历日期，秒精度，空格分隔，无时区后缀&quot;,
+  &quot;date_format&quot;: &quot;YYYY-MM-DD；有效公历日期&quot;,
+  &quot;timestamp_policy&quot;: &quot;非规范时间格式整份评审标记 invalid_data；接入层须显式转换时区并规范化，不静默丢弃事件&quot;,
+  &quot;window&quot;: &quot;[注册日 + 7 日 00:00:00, 注册日 + 8 日 00:00:00)&quot;,
+  &quot;analysis_population&quot;: &quot;ITT：按原始分配组分析，包括未暴露用户；不按事后活跃筛选&quot;,
+  &quot;maturity&quot;: &quot;采集水位覆盖完整 D7 自然日，且注册后 24 小时负反馈窗口完整&quot;,
+  &quot;not_equivalent_to&quot;: &quot;次 7 日内任意回访、D1 或曝光用户中的留存&quot;,
+  &quot;data_source&quot;: &quot;固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益&quot;,
+  &quot;snapshot_date&quot;: &quot;2026-09-06&quot;,
+  &quot;data_as_of_exclusive&quot;: &quot;2026-09-07 00:00:00&quot;,
+  &quot;experiment_period&quot;: [
+    &quot;2026-09-03&quot;,
+    &quot;2026-09-06&quot;
+  ]
+}</pre><details><summary>实验设计</summary><pre>{
+  &quot;experiment_id&quot;: &quot;immature&quot;,
+  &quot;start_date&quot;: &quot;2026-09-03&quot;,
+  &quot;end_date&quot;: &quot;2026-09-06&quot;,
+  &quot;snapshot_date&quot;: &quot;2026-09-06&quot;,
+  &quot;expected_treatment_share&quot;: 0.5,
+  &quot;baseline_rate&quot;: 0.28,
+  &quot;mde&quot;: 0.025,
+  &quot;alpha&quot;: 0.05,
+  &quot;power&quot;: 0.8,
+  &quot;min_business_lift&quot;: 0.01,
+  &quot;negative_baseline&quot;: 0.04,
+  &quot;negative_margin&quot;: 0.015,
+  &quot;guardrail_alpha&quot;: 0.025,
+  &quot;config_version&quot;: &quot;onboarding-v1&quot;,
+  &quot;expected_assignment_count&quot;: 16000,
+  &quot;population&quot;: &quot;新注册用户，注册成功后即时随机分配，按分配组 ITT&quot;,
+  &quot;design&quot;: &quot;单一主指标、单一预注册围栏、固定窗口&quot;,
+  &quot;srm_alpha&quot;: 0.001,
+  &quot;guardrail&quot;: &quot;负反馈率越低越好；H0: treatment−control ≥ margin；须单侧置信上界严格小于 margin&quot;,
+  &quot;guardrail_window&quot;: &quot;[registered_at, registered_at+24h)&quot;,
+  &quot;business_rule&quot;: &quot;主要效应区间下界达到预注册最低业务提升；不是只看点估计&quot;,
+  &quot;rollout&quot;: &quot;只输出人工灰度评审建议，不执行发布&quot;
+}</pre></details><details><summary>分析步骤</summary><pre>{
+  &quot;control_required&quot;: 5196,
+  &quot;treatment_required&quot;: 5196,
+  &quot;primary_control_required&quot;: 5196,
+  &quot;primary_treatment_required&quot;: 5196,
+  &quot;guardrail_control_required&quot;: 2680,
+  &quot;guardrail_treatment_required&quot;: 2680,
+  &quot;total_required&quot;: 10392,
+  &quot;allocation_treatment_to_control&quot;: 1.0,
+  &quot;primary_method&quot;: &quot;Cohen h 正态近似：nC=(1+1/r)×(z(1−alpha/2)+z(power))²/h²；nT=ceil(r×nC)&quot;,
+  &quot;guardrail_method&quot;: &quot;非劣设计正态近似，假设真实差异为 0：nC=p(1−p)(1+1/r)×(z(1−alphaNI)+z(power))²/margin²&quot;,
+  &quot;planning_assumptions&quot;: &quot;两项各自达到设计功效，不声明联合功效；主要设计检验差异为零，不保证业务区间门槛也有相同功效；样本量取较大需求，不计算事后 observed power。&quot;,
+  &quot;evidence_ids&quot;: [
+    &quot;experiment-registry&quot;
+  ]
+}</pre></details><details><summary>版本与来源</summary><pre>{
+  &quot;application_version&quot;: &quot;0.2.0&quot;,
+  &quot;data_kind&quot;: &quot;synthetic&quot;,
+  &quot;metric_version&quot;: &quot;experiments.v2.0&quot;,
+  &quot;snapshot_sha256&quot;: &quot;1eeb75e1cc908e89a6ca271c006184a877029c13c8f97686b63e5c560f6785dc&quot;,
+  &quot;fingerprint_scope&quot;: &quot;request, metric_contract, kpis, status&quot;,
+  &quot;execution&quot;: &quot;Python business tools; no model call&quot;
+}</pre></details><h2>SQL 与证据</h2><details id="experiment-registry"><summary>experiment-registry · 实验预注册参数与固定窗口</summary><pre>SELECT * FROM experiment_registry WHERE experiment_id=:experiment_id</pre><pre>{&quot;experiment_id&quot;: &quot;immature&quot;}</pre><p>固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益 · experiments.v2.0</p><pre>[
+  {
+    &quot;experiment_id&quot;: &quot;immature&quot;,
+    &quot;start_date&quot;: &quot;2026-09-03&quot;,
+    &quot;end_date&quot;: &quot;2026-09-06&quot;,
+    &quot;snapshot_date&quot;: &quot;2026-09-06&quot;,
+    &quot;expected_treatment_share&quot;: 0.5,
+    &quot;baseline_rate&quot;: 0.28,
+    &quot;mde&quot;: 0.025,
+    &quot;alpha&quot;: 0.05,
+    &quot;power&quot;: 0.8,
+    &quot;min_business_lift&quot;: 0.01,
+    &quot;negative_baseline&quot;: 0.04,
+    &quot;negative_margin&quot;: 0.015,
+    &quot;guardrail_alpha&quot;: 0.025,
+    &quot;config_version&quot;: &quot;onboarding-v1&quot;,
+    &quot;expected_assignment_count&quot;: 16000
+  }
+]</pre></details><details id="experiment-quality"><summary>experiment-quality · 分配、身份、配置、采集覆盖与成熟检查</summary><pre>WITH a AS (SELECT * FROM experiment_assignments WHERE experiment_id=:experiment_id),
+uid AS (SELECT user_id,COUNT(*) AS records,COUNT(DISTINCT arm) AS arms FROM a GROUP BY user_id)
+SELECT
+ (SELECT COUNT(*) FROM a) AS assignment_records,
+ (SELECT COUNT(*) FROM uid) AS assigned_users,
+ (SELECT COUNT(*) FROM uid WHERE records&gt;1) AS duplicate_users,
+ (SELECT COUNT(*) FROM uid WHERE arms&gt;1) AS cross_arm_users,
+ (SELECT COUNT(*) FROM a WHERE arm NOT IN (&#x27;control&#x27;,&#x27;treatment&#x27;)) AS unknown_arms,
+ (SELECT COUNT(*) FROM a WHERE date(registered_at)&lt;:start OR date(registered_at)&gt;:end
+    OR COALESCE((typeof(registered_at)=&#x27;text&#x27; AND length(registered_at)=19 AND registered_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(registered_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(registered_at,&#x27;+0 seconds&#x27;)=registered_at),0)=0 OR COALESCE((typeof(assigned_at)=&#x27;text&#x27; AND length(assigned_at)=19 AND assigned_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(assigned_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(assigned_at,&#x27;+0 seconds&#x27;)=assigned_at),0)=0
+    OR assigned_at&lt;&gt;registered_at) AS invalid_registration_or_assignment,
+ (SELECT COUNT(*) FROM a WHERE config_version&lt;&gt;:config_version) AS config_mismatches,
+ (SELECT COUNT(*) FROM a LEFT JOIN experiment_coverage c
+    ON c.experiment_id=a.experiment_id AND c.user_id=a.user_id WHERE c.user_id IS NULL) AS missing_coverage,
+ (SELECT COUNT(*) FROM a JOIN experiment_coverage c ON c.experiment_id=a.experiment_id AND c.user_id=a.user_id
+    WHERE c.complete&lt;&gt;1 OR c.observed_until&lt;&gt;:cutoff OR COALESCE((typeof(c.observed_until)=&#x27;text&#x27; AND length(c.observed_until)=19 AND c.observed_until GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(c.observed_until,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(c.observed_until,&#x27;+0 seconds&#x27;)=c.observed_until),0)=0) AS incomplete_coverage,
+ (SELECT COUNT(*) FROM experiment_outcomes o LEFT JOIN a ON a.user_id=o.user_id
+    WHERE o.experiment_id=:experiment_id AND a.user_id IS NULL) AS orphan_outcomes,
+ (SELECT COUNT(*) FROM experiment_outcomes o JOIN a ON a.user_id=o.user_id
+    WHERE o.experiment_id=:experiment_id AND (o.schema_version&lt;&gt;&#x27;events-v1&#x27;
+      OR o.event_name NOT IN (&#x27;qualified_activity&#x27;,&#x27;negative_feedback&#x27;)
+      OR COALESCE((typeof(o.event_at)=&#x27;text&#x27; AND length(o.event_at)=19 AND o.event_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(o.event_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(o.event_at,&#x27;+0 seconds&#x27;)=o.event_at),0)=0 OR COALESCE((typeof(o.ingested_at)=&#x27;text&#x27; AND length(o.ingested_at)=19 AND o.ingested_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(o.ingested_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(o.ingested_at,&#x27;+0 seconds&#x27;)=o.ingested_at),0)=0
+      OR o.event_at&lt;a.registered_at OR o.ingested_at&lt;o.event_at
+      OR o.event_at&gt;=:cutoff OR o.ingested_at&gt;=:cutoff)) AS invalid_outcomes,
+ (SELECT COUNT(*) FROM experiment_exposures e LEFT JOIN a ON a.user_id=e.user_id
+    WHERE e.experiment_id=:experiment_id AND (a.user_id IS NULL OR e.arm&lt;&gt;a.arm
+      OR COALESCE((typeof(e.exposed_at)=&#x27;text&#x27; AND length(e.exposed_at)=19 AND e.exposed_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(e.exposed_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(e.exposed_at,&#x27;+0 seconds&#x27;)=e.exposed_at),0)=0 OR e.exposed_at&lt;a.assigned_at OR e.exposed_at&gt;=:cutoff)) AS invalid_exposures,
+ (SELECT COUNT(*) FROM experiment_changelog WHERE experiment_id=:experiment_id
+    AND (COALESCE((typeof(changed_at)=&#x27;text&#x27; AND length(changed_at)=19 AND changed_at GLOB &#x27;[0-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9] [0-9][0-9]:[0-9][0-9]:[0-9][0-9]&#x27; AND substr(changed_at,1,4) BETWEEN &#x27;0001&#x27; AND &#x27;9999&#x27; AND datetime(changed_at,&#x27;+0 seconds&#x27;)=changed_at),0)=0)) AS invalid_change_timestamps,
+ (SELECT COUNT(*) FROM experiment_changelog WHERE experiment_id=:experiment_id AND material=1
+    AND changed_at&gt;=:start AND changed_at&lt;:cutoff) AS material_changes,
+ (SELECT COUNT(*) FROM a WHERE datetime(date(registered_at),&#x27;+8 days&#x27;)&gt;:cutoff
+    OR datetime(registered_at,&#x27;+24 hours&#x27;)&gt;:cutoff) AS immature_users
+</pre><pre>{&quot;experiment_id&quot;: &quot;immature&quot;, &quot;start&quot;: &quot;2026-09-03&quot;, &quot;end&quot;: &quot;2026-09-06&quot;, &quot;cutoff&quot;: &quot;2026-09-07 00:00:00&quot;, &quot;config_version&quot;: &quot;onboarding-v1&quot;}</pre><p>固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益 · experiments.v2.0</p><pre>[
+  {
+    &quot;assignment_records&quot;: 16000,
+    &quot;assigned_users&quot;: 16000,
+    &quot;duplicate_users&quot;: 0,
+    &quot;cross_arm_users&quot;: 0,
+    &quot;unknown_arms&quot;: 0,
+    &quot;invalid_registration_or_assignment&quot;: 0,
+    &quot;config_mismatches&quot;: 0,
+    &quot;missing_coverage&quot;: 0,
+    &quot;incomplete_coverage&quot;: 0,
+    &quot;orphan_outcomes&quot;: 0,
+    &quot;invalid_outcomes&quot;: 0,
+    &quot;invalid_exposures&quot;: 0,
+    &quot;invalid_change_timestamps&quot;: 0,
+    &quot;material_changes&quot;: 0,
+    &quot;immature_users&quot;: 16000
+  }
+]</pre></details><details id="experiment-changes"><summary>experiment-changes · 实验配置变更记录</summary><pre>SELECT changed_at,field,old_value,new_value,material FROM experiment_changelog WHERE experiment_id=:experiment_id ORDER BY changed_at</pre><pre>{&quot;experiment_id&quot;: &quot;immature&quot;, &quot;start&quot;: &quot;2026-09-03&quot;, &quot;end&quot;: &quot;2026-09-06&quot;, &quot;cutoff&quot;: &quot;2026-09-07 00:00:00&quot;, &quot;config_version&quot;: &quot;onboarding-v1&quot;}</pre><p>固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益 · experiments.v2.0</p><pre>[]</pre></details><details id="experiment-groups"><summary>experiment-groups · ITT 分配人数、暴露与成熟窗口结果</summary><pre>WITH users AS (
+ SELECT a.user_id,a.arm,date(a.registered_at) AS cohort_date,
+  CASE WHEN datetime(date(a.registered_at),&#x27;+8 days&#x27;)&lt;=:cutoff
+    AND datetime(a.registered_at,&#x27;+24 hours&#x27;)&lt;=:cutoff THEN 1 ELSE 0 END AS mature,
+  EXISTS(SELECT 1 FROM experiment_exposures e WHERE e.experiment_id=a.experiment_id AND e.user_id=a.user_id) AS exposed,
+  EXISTS(SELECT 1 FROM experiment_outcomes o WHERE o.experiment_id=a.experiment_id AND o.user_id=a.user_id
+    AND o.event_name=&#x27;qualified_activity&#x27;
+    AND o.event_at&gt;=datetime(date(a.registered_at),&#x27;+7 days&#x27;)
+    AND o.event_at&lt;datetime(date(a.registered_at),&#x27;+8 days&#x27;) AND o.ingested_at&lt;:cutoff) AS retained_d7,
+  EXISTS(SELECT 1 FROM experiment_outcomes o WHERE o.experiment_id=a.experiment_id AND o.user_id=a.user_id
+    AND o.event_name=&#x27;negative_feedback&#x27; AND o.event_at&gt;=a.registered_at
+    AND o.event_at&lt;datetime(a.registered_at,&#x27;+24 hours&#x27;) AND o.ingested_at&lt;:cutoff) AS negative_feedback
+ FROM experiment_assignments a WHERE a.experiment_id=:experiment_id
+)
+SELECT arm,COUNT(*) AS users,SUM(mature) AS mature_users,SUM(exposed) AS exposed_users,
+ SUM(CASE WHEN mature=1 THEN retained_d7 ELSE NULL END) AS retained_users,
+ SUM(CASE WHEN mature=1 THEN negative_feedback ELSE NULL END) AS negative_users
+FROM users GROUP BY arm ORDER BY arm</pre><pre>{&quot;experiment_id&quot;: &quot;immature&quot;, &quot;start&quot;: &quot;2026-09-03&quot;, &quot;end&quot;: &quot;2026-09-06&quot;, &quot;cutoff&quot;: &quot;2026-09-07 00:00:00&quot;, &quot;config_version&quot;: &quot;onboarding-v1&quot;}</pre><p>固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益 · experiments.v2.0</p><pre>[
+  {
+    &quot;arm&quot;: &quot;control&quot;,
+    &quot;users&quot;: 7946,
+    &quot;mature_users&quot;: 0,
+    &quot;exposed_users&quot;: 7129,
+    &quot;retained_users&quot;: null,
+    &quot;negative_users&quot;: null
+  },
+  {
+    &quot;arm&quot;: &quot;treatment&quot;,
+    &quot;users&quot;: 8054,
+    &quot;mature_users&quot;: 0,
+    &quot;exposed_users&quot;: 7239,
+    &quot;retained_users&quot;: null,
+    &quot;negative_users&quot;: null
+  }
+]</pre></details><h2>适用边界</h2><ul><li>固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益</li><li>随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。</li><li>SRM 通过不证明不存在所有数据问题；完整性只针对本地来源清单与合同核查。</li><li>固定窗口设计禁止因每日出现显著结果而提前结束；若需连续决策，应另预注册顺序检验。</li><li>负反馈围栏要求差异区间上界低于非劣界值；未发现显著恶化不等于已证明安全。</li><li>长期 Holdout 用于不同的长期或组合效应问题，不是所有有效 A/B 的统一上线前提。</li></ul></html>

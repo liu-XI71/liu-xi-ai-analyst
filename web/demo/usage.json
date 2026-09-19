@@ -1,0 +1,43 @@
+{
+  "status": "no_observations",
+  "title": "Agent 使用与反馈",
+  "source": "公开版本不预填用户试用结果；部署后从实际任务与自愿反馈汇总",
+  "total_runs": 0,
+  "unique_participants": null,
+  "verified_task_success_rate": null,
+  "study_status": "not_conducted",
+  "by_status": [],
+  "tools": {
+    "calls": 0,
+    "failures": 0,
+    "known_input_tokens": 0,
+    "known_output_tokens": 0,
+    "partial_usage_runs": 0,
+    "unknown_usage_runs": 0,
+    "input_tokens": 0,
+    "output_tokens": 0
+  },
+  "feedback": [],
+  "failures": [],
+  "latency_ms": {
+    "p50": null,
+    "p95": null
+  },
+  "human_review": {
+    "observations": 0,
+    "mean_minutes": null
+  },
+  "definitions": {
+    "completed": "技术流程完成，不自动判为业务任务正确",
+    "failed": "已进入执行但未完成的脱敏技术记录；不保存原始问题或Provider错误正文",
+    "tool_counts": "按执行轨迹条目统计业务工具及终止失败事件，不等同Provider API请求次数",
+    "feedback": "用户自愿评价，同一运行只保留最新一条",
+    "cost": "Token 为调用记录；未配置定价时不推算美元费用",
+    "token_usage": "存在未知或部分用量时，总token为null；known_*只表示已观测部分，不等于完整消耗或零费用"
+  },
+  "limitations": [
+    "不以开发请求数推算真实用户数、采纳率、留存或节省时间。",
+    "遥测不保存原始问题、姓名、邮箱、IP 或模型密钥。"
+  ],
+  "static_snapshot": true
+}

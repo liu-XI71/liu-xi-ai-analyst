@@ -1,0 +1,2416 @@
+<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>新用户留存诊断</title><style>body{font:16px/1.7 system-ui,sans-serif;color:#152b3c;max-width:1100px;margin:40px auto;padding:0 24px}h1{font-size:32px}h2{margin-top:40px;border-top:1px solid #dce5eb;padding-top:24px}.meta,small{color:#596c7c}small{display:block}.kpis{display:flex;gap:16px;flex-wrap:wrap}article,.decision{background:#f0f5f7;padding:18px;min-width:140px;border-radius:12px}strong{display:block;font-size:24px}table{border-collapse:collapse;width:100%;font-size:14px}td,th{padding:9px;text-align:left;border-bottom:1px solid #dce5eb}.overflow{overflow:auto}pre{background:#eef3f7;overflow:auto;padding:14px;white-space:pre-wrap;overflow-wrap:anywhere}details{padding:12px 0;border-bottom:1px solid #dce5eb}svg{width:100%;max-width:950px}@media print{details{display:block}body{margin:0}tr{break-inside:avoid}}</style><header><p>刘希 · AI 数据分析工作台</p><h1>新用户留存诊断</h1><p class="meta">8bee9a91b87130945b9f3cd30c7f8b34 · demo · 2026-09-19T09:24:37.144573+00:00</p><p>合成演示数据，不代表任何企业实际经营结果。</p></header><p>相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。</p><section class="kpis"></section><h2>决策备忘录</h2><section class="decision"><h3>先修复数据，暂停经营判断</h3><p>2026-09-07 00:00:00</p><ul><li>核对相关源端批次清单与导入日志。</li><li>保持原 cohort 和指标口径，回填后重新执行同一查询。</li></ul></section><h2>事实、假设与行动</h2><ul><li><b>事实</b> 相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。<small>onboarding-cohort-scope, onboarding-cohort-devices, onboarding-batch-watermark, onboarding-event-validation, onboarding-event-validation-new_user_retention_d1</small></li><li><b>行动</b> 没有通过门禁的留存值不显示为 0，也不支持调整获客预算或产品放量。<small>onboarding-cohort-scope, onboarding-cohort-devices, onboarding-batch-watermark, onboarding-event-validation, onboarding-event-validation-new_user_retention_d1</small></li></ul><h2>图表与结果</h2><h3>数据可用性门禁</h3><p class="meta">完整结果：5行。</p><div class="overflow"><table><thead><tr><th>name</th><th>status</th><th>observed</th><th>expected</th><th>detail</th></tr></thead><tbody><tr><td>完整观察窗口</td><td>passed</td><td>2026-09-07 08:00:00</td><td>2026-09-07 00:00:00</td><td>快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。</td></tr><tr><td>连续数据水位</td><td>blocked</td><td>2026-09-04 00:00:00</td><td>2026-09-07 00:00:00</td><td>水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。</td></tr><tr><td>源端清单计数</td><td>blocked</td><td>3</td><td>0</td><td>按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。</td></tr><tr><td>事件版本兼容</td><td>passed</td><td>0</td><td>0</td><td>只接受版本化指标合同支持的埋点 schema。</td></tr><tr><td>事件关系与幂等性</td><td>passed</td><td>0</td><td>0</td><td>检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。</td></tr></tbody></table></div><h3>不同指标分别判断成熟与可用性</h3><p class="meta">完整结果：4行。</p><div class="overflow"><table><thead><tr><th>metric</th><th>required_until</th><th>mature</th><th>watermark_complete</th><th>schema_valid</th><th>event_integrity_valid</th><th>available</th></tr></thead><tbody><tr><td>精确 D1 留存率</td><td>2026-09-01 00:00:00</td><td>True</td><td>True</td><td>True</td><td>True</td><td>True</td></tr><tr><td>精确 D7 留存率</td><td>2026-09-07 00:00:00</td><td>True</td><td>False</td><td>True</td><td>True</td><td>False</td></tr><tr><td>次 1—7 日内回访率</td><td>2026-09-07 00:00:00</td><td>True</td><td>False</td><td>True</td><td>True</td><td>False</td></tr><tr><td>24 小时有序激活率</td><td>2026-08-31 23:55:31</td><td>True</td><td>True</td><td>True</td><td>True</td><td>True</td></tr></tbody></table></div><h3>需要回填的分区</h3><p class="meta">完整结果：3行。</p><div class="overflow"><table><thead><tr><th>event_date</th><th>device</th><th>expected_events</th><th>observed_events</th><th>latest_arrival</th></tr></thead><tbody><tr><td>2026-09-04</td><td>android</td><td>579</td><td>0</td><td>未成熟/缺失</td></tr><tr><td>2026-09-05</td><td>android</td><td>601</td><td>0</td><td>未成熟/缺失</td></tr><tr><td>2026-09-06</td><td>android</td><td>517</td><td>0</td><td>未成熟/缺失</td></tr></tbody></table></div><h2>指标口径与分析合同</h2><pre>{
+  &quot;id&quot;: &quot;new_user_retention_d7&quot;,
+  &quot;name&quot;: &quot;精确 D7 留存率&quot;,
+  &quot;unit&quot;: &quot;%&quot;,
+  &quot;kind&quot;: &quot;rate&quot;,
+  &quot;numerator&quot;: &quot;注册后第 7 个自然日发生 app_active 的 cohort 去重用户数&quot;,
+  &quot;denominator&quot;: &quot;D7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数&quot;,
+  &quot;grain&quot;: &quot;用户&quot;,
+  &quot;window&quot;: &quot;注册日 + 7 自然日&quot;,
+  &quot;maturity&quot;: {
+    &quot;type&quot;: &quot;calendar&quot;,
+    &quot;days&quot;: 7
+  },
+  &quot;calculation&quot;: {
+    &quot;success_column&quot;: &quot;d7&quot;
+  },
+  &quot;not_equivalent_to&quot;: &quot;次 1—7 日内任意回访率&quot;,
+  &quot;version&quot;: &quot;onboarding.v2.0.0&quot;,
+  &quot;timezone&quot;: &quot;Asia/Shanghai&quot;,
+  &quot;data_source&quot;: &quot;固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益&quot;,
+  &quot;dimensions&quot;: [
+    &quot;channel&quot;,
+    &quot;device&quot;,
+    &quot;app_version&quot;
+  ],
+  &quot;current_period&quot;: [
+    &quot;2026-08-24&quot;,
+    &quot;2026-08-30&quot;
+  ],
+  &quot;previous_period&quot;: [
+    &quot;2026-08-17&quot;,
+    &quot;2026-08-23&quot;
+  ],
+  &quot;data_as_of&quot;: &quot;2026-09-07 08:00:00&quot;,
+  &quot;watermark&quot;: &quot;2026-09-04 00:00:00&quot;
+}</pre><details><summary>数据质量</summary><pre>{
+  &quot;status&quot;: &quot;blocked&quot;,
+  &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;,
+  &quot;watermark&quot;: &quot;2026-09-04 00:00:00&quot;,
+  &quot;watermarks_by_device&quot;: {
+    &quot;android&quot;: &quot;2026-09-04 00:00:00&quot;,
+    &quot;ios&quot;: &quot;2026-09-07 00:00:00&quot;,
+    &quot;web&quot;: &quot;2026-09-07 00:00:00&quot;
+  },
+  &quot;required_until&quot;: &quot;2026-09-07 00:00:00&quot;,
+  &quot;checks&quot;: [
+    {
+      &quot;id&quot;: &quot;observation_mature&quot;,
+      &quot;name&quot;: &quot;完整观察窗口&quot;,
+      &quot;status&quot;: &quot;passed&quot;,
+      &quot;observed&quot;: &quot;2026-09-07 08:00:00&quot;,
+      &quot;expected&quot;: &quot;2026-09-07 00:00:00&quot;,
+      &quot;detail&quot;: &quot;快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。&quot;,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-cohort-scope&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;continuous_watermark&quot;,
+      &quot;name&quot;: &quot;连续数据水位&quot;,
+      &quot;status&quot;: &quot;blocked&quot;,
+      &quot;observed&quot;: &quot;2026-09-04 00:00:00&quot;,
+      &quot;expected&quot;: &quot;2026-09-07 00:00:00&quot;,
+      &quot;detail&quot;: &quot;水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。&quot;,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-batch-watermark&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;source_manifest&quot;,
+      &quot;name&quot;: &quot;源端清单计数&quot;,
+      &quot;status&quot;: &quot;blocked&quot;,
+      &quot;observed&quot;: 3,
+      &quot;expected&quot;: 0,
+      &quot;detail&quot;: &quot;按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。&quot;,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-batch-watermark&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;schema_version&quot;,
+      &quot;name&quot;: &quot;事件版本兼容&quot;,
+      &quot;status&quot;: &quot;passed&quot;,
+      &quot;observed&quot;: 0,
+      &quot;expected&quot;: 0,
+      &quot;detail&quot;: &quot;只接受版本化指标合同支持的埋点 schema。&quot;,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation&quot;
+      ]
+    },
+    {
+      &quot;id&quot;: &quot;event_integrity&quot;,
+      &quot;name&quot;: &quot;事件关系与幂等性&quot;,
+      &quot;status&quot;: &quot;passed&quot;,
+      &quot;observed&quot;: 0,
+      &quot;expected&quot;: 0,
+      &quot;detail&quot;: &quot;检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。&quot;,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation&quot;
+      ]
+    }
+  ],
+  &quot;affected_batches&quot;: [
+    {
+      &quot;event_date&quot;: &quot;2026-09-04&quot;,
+      &quot;device&quot;: &quot;android&quot;,
+      &quot;expected_events&quot;: 579,
+      &quot;observed_events&quot;: 0,
+      &quot;latest_arrival&quot;: null
+    },
+    {
+      &quot;event_date&quot;: &quot;2026-09-05&quot;,
+      &quot;device&quot;: &quot;android&quot;,
+      &quot;expected_events&quot;: 601,
+      &quot;observed_events&quot;: 0,
+      &quot;latest_arrival&quot;: null
+    },
+    {
+      &quot;event_date&quot;: &quot;2026-09-06&quot;,
+      &quot;device&quot;: &quot;android&quot;,
+      &quot;expected_events&quot;: 517,
+      &quot;observed_events&quot;: 0,
+      &quot;latest_arrival&quot;: null
+    }
+  ],
+  &quot;affected_metrics&quot;: [
+    &quot;new_user_retention_d7&quot;,
+    &quot;return_within_days_1_7&quot;
+  ],
+  &quot;metric_availability&quot;: [
+    {
+      &quot;metric_id&quot;: &quot;new_user_retention_d1&quot;,
+      &quot;metric&quot;: &quot;精确 D1 留存率&quot;,
+      &quot;required_until&quot;: &quot;2026-09-01 00:00:00&quot;,
+      &quot;mature&quot;: true,
+      &quot;watermark_complete&quot;: true,
+      &quot;schema_valid&quot;: true,
+      &quot;event_integrity_valid&quot;: true,
+      &quot;unsupported_schema_events&quot;: 0,
+      &quot;invalid_event_relationships&quot;: 0,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation-new_user_retention_d1&quot;,
+        &quot;onboarding-batch-watermark&quot;
+      ],
+      &quot;available&quot;: true
+    },
+    {
+      &quot;metric_id&quot;: &quot;new_user_retention_d7&quot;,
+      &quot;metric&quot;: &quot;精确 D7 留存率&quot;,
+      &quot;required_until&quot;: &quot;2026-09-07 00:00:00&quot;,
+      &quot;mature&quot;: true,
+      &quot;watermark_complete&quot;: false,
+      &quot;schema_valid&quot;: true,
+      &quot;event_integrity_valid&quot;: true,
+      &quot;unsupported_schema_events&quot;: 0,
+      &quot;invalid_event_relationships&quot;: 0,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation&quot;,
+        &quot;onboarding-batch-watermark&quot;
+      ],
+      &quot;available&quot;: false
+    },
+    {
+      &quot;metric_id&quot;: &quot;return_within_days_1_7&quot;,
+      &quot;metric&quot;: &quot;次 1—7 日内回访率&quot;,
+      &quot;required_until&quot;: &quot;2026-09-07 00:00:00&quot;,
+      &quot;mature&quot;: true,
+      &quot;watermark_complete&quot;: false,
+      &quot;schema_valid&quot;: true,
+      &quot;event_integrity_valid&quot;: true,
+      &quot;unsupported_schema_events&quot;: 0,
+      &quot;invalid_event_relationships&quot;: 0,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation&quot;,
+        &quot;onboarding-batch-watermark&quot;
+      ],
+      &quot;available&quot;: false
+    },
+    {
+      &quot;metric_id&quot;: &quot;activated_24h&quot;,
+      &quot;metric&quot;: &quot;24 小时有序激活率&quot;,
+      &quot;required_until&quot;: &quot;2026-08-31 23:55:31&quot;,
+      &quot;mature&quot;: true,
+      &quot;watermark_complete&quot;: true,
+      &quot;schema_valid&quot;: true,
+      &quot;event_integrity_valid&quot;: true,
+      &quot;unsupported_schema_events&quot;: 0,
+      &quot;invalid_event_relationships&quot;: 0,
+      &quot;evidence_ids&quot;: [
+        &quot;onboarding-event-validation-new_user_retention_d1&quot;,
+        &quot;onboarding-batch-watermark&quot;
+      ],
+      &quot;available&quot;: true
+    }
+  ],
+  &quot;message&quot;: &quot;相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。&quot;,
+  &quot;cohorts&quot;: [
+    {
+      &quot;period&quot;: &quot;current&quot;,
+      &quot;users&quot;: 898,
+      &quot;first_signup_date&quot;: &quot;2026-08-24&quot;,
+      &quot;last_signup_date&quot;: &quot;2026-08-30&quot;,
+      &quot;latest_signup_at&quot;: &quot;2026-08-30 23:55:31&quot;
+    },
+    {
+      &quot;period&quot;: &quot;previous&quot;,
+      &quot;users&quot;: 856,
+      &quot;first_signup_date&quot;: &quot;2026-08-17&quot;,
+      &quot;last_signup_date&quot;: &quot;2026-08-23&quot;,
+      &quot;latest_signup_at&quot;: &quot;2026-08-23 23:43:21&quot;
+    }
+  ],
+  &quot;provenance&quot;: &quot;源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。&quot;
+}</pre></details><details><summary>分析步骤</summary><pre>[
+  {
+    &quot;step&quot;: 1,
+    &quot;tool&quot;: &quot;get_metric_contract&quot;,
+    &quot;purpose&quot;: &quot;冻结指标、cohort、时区和完整观察窗口&quot;,
+    &quot;status&quot;: &quot;completed&quot;
+  },
+  {
+    &quot;step&quot;: 2,
+    &quot;tool&quot;: &quot;check_data_quality&quot;,
+    &quot;purpose&quot;: &quot;验证实际到达批次、连续水位和事件版本&quot;,
+    &quot;status&quot;: &quot;blocked&quot;
+  },
+  {
+    &quot;step&quot;: 3,
+    &quot;tool&quot;: &quot;query_cohort_metrics&quot;,
+    &quot;purpose&quot;: &quot;用同一 cohort 计算精确留存和有序漏斗&quot;,
+    &quot;status&quot;: &quot;pending&quot;
+  },
+  {
+    &quot;step&quot;: 4,
+    &quot;tool&quot;: &quot;decompose_change&quot;,
+    &quot;purpose&quot;: &quot;区分结构变化、分层表现与版本关联&quot;,
+    &quot;status&quot;: &quot;pending&quot;
+  },
+  {
+    &quot;step&quot;: 5,
+    &quot;tool&quot;: &quot;build_evidence_report&quot;,
+    &quot;purpose&quot;: &quot;组织证据、竞争解释、行动和复查条件&quot;,
+    &quot;status&quot;: &quot;pending&quot;
+  }
+]</pre></details><details><summary>版本与来源</summary><pre>{
+  &quot;application_version&quot;: &quot;0.2.0&quot;,
+  &quot;data_kind&quot;: &quot;synthetic&quot;,
+  &quot;metric_version&quot;: &quot;onboarding.v2.0.0&quot;,
+  &quot;snapshot_sha256&quot;: &quot;8bee9a91b87130945b9f3cd30c7f8b34eea41d26aa368134b891f0660b22ce10&quot;,
+  &quot;fingerprint_scope&quot;: &quot;request, metric_contract, kpis, status&quot;,
+  &quot;execution&quot;: &quot;Python business tools; no model call&quot;
+}</pre></details><h2>SQL 与证据</h2><details id="onboarding-cohort-scope"><summary>onboarding-cohort-scope · 注册 cohort 范围、人数与最晚注册时间</summary><pre>WITH periods AS (
+      SELECT &#x27;current&#x27; AS period, :start AS start_date, :end AS end_date
+      UNION ALL SELECT &#x27;previous&#x27;, :compare_start, :compare_end
+    ), users AS (
+      SELECT p.period, u.* FROM onboarding_users u JOIN periods p
+        ON u.signup_date BETWEEN p.start_date AND p.end_date
+      WHERE u.signup_at &lt; :as_of
+    ) SELECT period, COUNT(*) AS users, MIN(signup_date) AS first_signup_date, MAX(signup_date) AS last_signup_date, MAX(signup_at) AS latest_signup_at FROM users GROUP BY period ORDER BY period</pre><pre>{&quot;start&quot;: &quot;2026-08-24&quot;, &quot;end&quot;: &quot;2026-08-30&quot;, &quot;compare_start&quot;: &quot;2026-08-17&quot;, &quot;compare_end&quot;: &quot;2026-08-23&quot;, &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;, &quot;activation_seconds&quot;: 60}</pre><p>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益 · onboarding.v2.0.0</p><pre>[
+  {
+    &quot;period&quot;: &quot;current&quot;,
+    &quot;users&quot;: 898,
+    &quot;first_signup_date&quot;: &quot;2026-08-24&quot;,
+    &quot;last_signup_date&quot;: &quot;2026-08-30&quot;,
+    &quot;latest_signup_at&quot;: &quot;2026-08-30 23:55:31&quot;
+  },
+  {
+    &quot;period&quot;: &quot;previous&quot;,
+    &quot;users&quot;: 856,
+    &quot;first_signup_date&quot;: &quot;2026-08-17&quot;,
+    &quot;last_signup_date&quot;: &quot;2026-08-23&quot;,
+    &quot;latest_signup_at&quot;: &quot;2026-08-23 23:43:21&quot;
+  }
+]</pre></details><details id="onboarding-cohort-devices"><summary>onboarding-cohort-devices · 当前筛选实际涉及的设备分区</summary><pre>WITH periods AS (
+      SELECT &#x27;current&#x27; AS period, :start AS start_date, :end AS end_date
+      UNION ALL SELECT &#x27;previous&#x27;, :compare_start, :compare_end
+    ), users AS (
+      SELECT p.period, u.* FROM onboarding_users u JOIN periods p
+        ON u.signup_date BETWEEN p.start_date AND p.end_date
+      WHERE u.signup_at &lt; :as_of
+    ) SELECT DISTINCT device FROM users ORDER BY device</pre><pre>{&quot;start&quot;: &quot;2026-08-24&quot;, &quot;end&quot;: &quot;2026-08-30&quot;, &quot;compare_start&quot;: &quot;2026-08-17&quot;, &quot;compare_end&quot;: &quot;2026-08-23&quot;, &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;, &quot;activation_seconds&quot;: 60}</pre><p>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益 · onboarding.v2.0.0</p><pre>[
+  {
+    &quot;device&quot;: &quot;android&quot;
+  },
+  {
+    &quot;device&quot;: &quot;ios&quot;
+  },
+  {
+    &quot;device&quot;: &quot;web&quot;
+  }
+]</pre></details><details id="onboarding-batch-watermark"><summary>onboarding-batch-watermark · 源端批次清单与快照可见事件，计算连续设备水位</summary><pre>SELECT b.event_date,b.device,b.expected_events,COUNT(e.event_id) AS observed_events,
+      MAX(e.ingested_at) AS latest_arrival
+      FROM onboarding_ingest_batches b LEFT JOIN onboarding_events e
+        ON e.batch_id=b.batch_id AND e.ingested_at&lt;=:as_of
+      WHERE b.event_date BETWEEN :batch_start AND :batch_end
+        AND b.manifest_available_at&lt;=:as_of AND b.device IN (:quality_device_0,:quality_device_1,:quality_device_2)
+      GROUP BY b.batch_id ORDER BY b.event_date,b.device</pre><pre>{&quot;start&quot;: &quot;2026-08-24&quot;, &quot;end&quot;: &quot;2026-08-30&quot;, &quot;compare_start&quot;: &quot;2026-08-17&quot;, &quot;compare_end&quot;: &quot;2026-08-23&quot;, &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;, &quot;activation_seconds&quot;: 60, &quot;batch_start&quot;: &quot;2026-06-01&quot;, &quot;batch_end&quot;: &quot;2026-09-06&quot;, &quot;quality_device_0&quot;: &quot;android&quot;, &quot;quality_device_1&quot;: &quot;ios&quot;, &quot;quality_device_2&quot;: &quot;web&quot;}</pre><p>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益 · onboarding.v2.0.0</p><pre>[
+  {
+    &quot;event_date&quot;: &quot;2026-06-01&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 237,
+    &quot;observed_events&quot;: 237,
+    &quot;latest_arrival&quot;: &quot;2026-06-01 23:53:33&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-01&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 277,
+    &quot;observed_events&quot;: 277,
+    &quot;latest_arrival&quot;: &quot;2026-06-01 23:28:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-01&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 99,
+    &quot;observed_events&quot;: 99,
+    &quot;latest_arrival&quot;: &quot;2026-06-01 22:45:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-02&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 319,
+    &quot;observed_events&quot;: 319,
+    &quot;latest_arrival&quot;: &quot;2026-06-03 00:05:57&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-02&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 284,
+    &quot;observed_events&quot;: 284,
+    &quot;latest_arrival&quot;: &quot;2026-06-03 00:05:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-02&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 162,
+    &quot;observed_events&quot;: 162,
+    &quot;latest_arrival&quot;: &quot;2026-06-02 23:58:57&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-03&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 355,
+    &quot;observed_events&quot;: 355,
+    &quot;latest_arrival&quot;: &quot;2026-06-04 00:02:12&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-03&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 295,
+    &quot;observed_events&quot;: 295,
+    &quot;latest_arrival&quot;: &quot;2026-06-04 00:04:32&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-03&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 117,
+    &quot;observed_events&quot;: 117,
+    &quot;latest_arrival&quot;: &quot;2026-06-03 21:39:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-04&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 353,
+    &quot;observed_events&quot;: 353,
+    &quot;latest_arrival&quot;: &quot;2026-06-05 00:03:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-04&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 262,
+    &quot;observed_events&quot;: 262,
+    &quot;latest_arrival&quot;: &quot;2026-06-05 00:00:28&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-04&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 116,
+    &quot;observed_events&quot;: 116,
+    &quot;latest_arrival&quot;: &quot;2026-06-04 23:54:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-05&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 318,
+    &quot;observed_events&quot;: 318,
+    &quot;latest_arrival&quot;: &quot;2026-06-05 23:37:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-05&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 430,
+    &quot;observed_events&quot;: 430,
+    &quot;latest_arrival&quot;: &quot;2026-06-06 00:00:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-05&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 121,
+    &quot;observed_events&quot;: 121,
+    &quot;latest_arrival&quot;: &quot;2026-06-06 00:06:34&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-06&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 361,
+    &quot;observed_events&quot;: 361,
+    &quot;latest_arrival&quot;: &quot;2026-06-06 23:44:08&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-06&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 342,
+    &quot;observed_events&quot;: 342,
+    &quot;latest_arrival&quot;: &quot;2026-06-07 00:05:31&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-06&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 131,
+    &quot;observed_events&quot;: 131,
+    &quot;latest_arrival&quot;: &quot;2026-06-06 23:31:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-07&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 358,
+    &quot;observed_events&quot;: 358,
+    &quot;latest_arrival&quot;: &quot;2026-06-08 00:06:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-07&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 404,
+    &quot;observed_events&quot;: 404,
+    &quot;latest_arrival&quot;: &quot;2026-06-08 00:03:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-07&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 139,
+    &quot;observed_events&quot;: 139,
+    &quot;latest_arrival&quot;: &quot;2026-06-07 23:03:29&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-08&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 386,
+    &quot;observed_events&quot;: 386,
+    &quot;latest_arrival&quot;: &quot;2026-06-09 00:02:09&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-08&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 350,
+    &quot;observed_events&quot;: 350,
+    &quot;latest_arrival&quot;: &quot;2026-06-09 00:02:53&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-08&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 144,
+    &quot;observed_events&quot;: 144,
+    &quot;latest_arrival&quot;: &quot;2026-06-09 00:05:53&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-09&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 428,
+    &quot;observed_events&quot;: 428,
+    &quot;latest_arrival&quot;: &quot;2026-06-10 00:05:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-09&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 337,
+    &quot;observed_events&quot;: 337,
+    &quot;latest_arrival&quot;: &quot;2026-06-10 00:06:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-09&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 171,
+    &quot;observed_events&quot;: 171,
+    &quot;latest_arrival&quot;: &quot;2026-06-09 23:51:40&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-10&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 485,
+    &quot;observed_events&quot;: 485,
+    &quot;latest_arrival&quot;: &quot;2026-06-11 00:02:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-10&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 358,
+    &quot;observed_events&quot;: 358,
+    &quot;latest_arrival&quot;: &quot;2026-06-10 23:37:53&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-10&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 123,
+    &quot;observed_events&quot;: 123,
+    &quot;latest_arrival&quot;: &quot;2026-06-10 23:01:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-11&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 501,
+    &quot;observed_events&quot;: 501,
+    &quot;latest_arrival&quot;: &quot;2026-06-12 00:00:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-11&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 400,
+    &quot;observed_events&quot;: 400,
+    &quot;latest_arrival&quot;: &quot;2026-06-11 23:53:49&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-11&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 115,
+    &quot;observed_events&quot;: 115,
+    &quot;latest_arrival&quot;: &quot;2026-06-11 23:52:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-12&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 452,
+    &quot;observed_events&quot;: 452,
+    &quot;latest_arrival&quot;: &quot;2026-06-13 00:02:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-12&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 310,
+    &quot;observed_events&quot;: 310,
+    &quot;latest_arrival&quot;: &quot;2026-06-12 23:53:46&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-12&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 147,
+    &quot;observed_events&quot;: 147,
+    &quot;latest_arrival&quot;: &quot;2026-06-12 22:48:32&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-13&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 446,
+    &quot;observed_events&quot;: 446,
+    &quot;latest_arrival&quot;: &quot;2026-06-13 23:56:16&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-13&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 378,
+    &quot;observed_events&quot;: 378,
+    &quot;latest_arrival&quot;: &quot;2026-06-13 23:53:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-13&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 166,
+    &quot;observed_events&quot;: 166,
+    &quot;latest_arrival&quot;: &quot;2026-06-14 00:04:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-14&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 407,
+    &quot;observed_events&quot;: 407,
+    &quot;latest_arrival&quot;: &quot;2026-06-15 00:07:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-14&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 402,
+    &quot;observed_events&quot;: 402,
+    &quot;latest_arrival&quot;: &quot;2026-06-15 00:03:48&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-14&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 121,
+    &quot;observed_events&quot;: 121,
+    &quot;latest_arrival&quot;: &quot;2026-06-14 23:59:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-15&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 380,
+    &quot;observed_events&quot;: 380,
+    &quot;latest_arrival&quot;: &quot;2026-06-16 00:06:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-15&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 393,
+    &quot;observed_events&quot;: 393,
+    &quot;latest_arrival&quot;: &quot;2026-06-15 23:32:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-15&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 131,
+    &quot;observed_events&quot;: 131,
+    &quot;latest_arrival&quot;: &quot;2026-06-16 00:03:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-16&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 439,
+    &quot;observed_events&quot;: 439,
+    &quot;latest_arrival&quot;: &quot;2026-06-16 23:46:10&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-16&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 370,
+    &quot;observed_events&quot;: 370,
+    &quot;latest_arrival&quot;: &quot;2026-06-17 00:06:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-16&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 156,
+    &quot;observed_events&quot;: 156,
+    &quot;latest_arrival&quot;: &quot;2026-06-16 23:53:18&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-17&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 493,
+    &quot;observed_events&quot;: 493,
+    &quot;latest_arrival&quot;: &quot;2026-06-17 23:57:33&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-17&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 388,
+    &quot;observed_events&quot;: 388,
+    &quot;latest_arrival&quot;: &quot;2026-06-18 00:01:31&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-17&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 159,
+    &quot;observed_events&quot;: 159,
+    &quot;latest_arrival&quot;: &quot;2026-06-18 00:07:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-18&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 499,
+    &quot;observed_events&quot;: 499,
+    &quot;latest_arrival&quot;: &quot;2026-06-18 23:50:26&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-18&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 402,
+    &quot;observed_events&quot;: 402,
+    &quot;latest_arrival&quot;: &quot;2026-06-19 00:08:07&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-18&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 243,
+    &quot;observed_events&quot;: 243,
+    &quot;latest_arrival&quot;: &quot;2026-06-18 23:40:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-19&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 431,
+    &quot;observed_events&quot;: 431,
+    &quot;latest_arrival&quot;: &quot;2026-06-20 00:07:08&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-19&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 384,
+    &quot;observed_events&quot;: 384,
+    &quot;latest_arrival&quot;: &quot;2026-06-19 23:50:04&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-19&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 163,
+    &quot;observed_events&quot;: 163,
+    &quot;latest_arrival&quot;: &quot;2026-06-20 00:04:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-20&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 512,
+    &quot;observed_events&quot;: 512,
+    &quot;latest_arrival&quot;: &quot;2026-06-20 23:58:46&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-20&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 453,
+    &quot;observed_events&quot;: 453,
+    &quot;latest_arrival&quot;: &quot;2026-06-21 00:04:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-20&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 130,
+    &quot;observed_events&quot;: 130,
+    &quot;latest_arrival&quot;: &quot;2026-06-21 00:01:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-21&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 439,
+    &quot;observed_events&quot;: 439,
+    &quot;latest_arrival&quot;: &quot;2026-06-21 23:55:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-21&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 435,
+    &quot;observed_events&quot;: 435,
+    &quot;latest_arrival&quot;: &quot;2026-06-22 00:05:42&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-21&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 192,
+    &quot;observed_events&quot;: 192,
+    &quot;latest_arrival&quot;: &quot;2026-06-22 00:03:19&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-22&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 532,
+    &quot;observed_events&quot;: 532,
+    &quot;latest_arrival&quot;: &quot;2026-06-23 00:00:40&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-22&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 425,
+    &quot;observed_events&quot;: 425,
+    &quot;latest_arrival&quot;: &quot;2026-06-23 00:02:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-22&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 161,
+    &quot;observed_events&quot;: 161,
+    &quot;latest_arrival&quot;: &quot;2026-06-22 23:55:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-23&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 501,
+    &quot;observed_events&quot;: 501,
+    &quot;latest_arrival&quot;: &quot;2026-06-24 00:08:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-23&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 353,
+    &quot;observed_events&quot;: 353,
+    &quot;latest_arrival&quot;: &quot;2026-06-23 23:38:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-23&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 186,
+    &quot;observed_events&quot;: 186,
+    &quot;latest_arrival&quot;: &quot;2026-06-23 23:39:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-24&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 534,
+    &quot;observed_events&quot;: 534,
+    &quot;latest_arrival&quot;: &quot;2026-06-25 00:02:45&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-24&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 324,
+    &quot;observed_events&quot;: 324,
+    &quot;latest_arrival&quot;: &quot;2026-06-25 00:08:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-24&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 156,
+    &quot;observed_events&quot;: 156,
+    &quot;latest_arrival&quot;: &quot;2026-06-24 23:47:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-25&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 455,
+    &quot;observed_events&quot;: 455,
+    &quot;latest_arrival&quot;: &quot;2026-06-26 00:02:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-25&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 376,
+    &quot;observed_events&quot;: 376,
+    &quot;latest_arrival&quot;: &quot;2026-06-25 23:59:32&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-25&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 183,
+    &quot;observed_events&quot;: 183,
+    &quot;latest_arrival&quot;: &quot;2026-06-25 23:57:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-26&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 503,
+    &quot;observed_events&quot;: 503,
+    &quot;latest_arrival&quot;: &quot;2026-06-27 00:04:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-26&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 363,
+    &quot;observed_events&quot;: 363,
+    &quot;latest_arrival&quot;: &quot;2026-06-27 00:02:26&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-26&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 220,
+    &quot;observed_events&quot;: 220,
+    &quot;latest_arrival&quot;: &quot;2026-06-26 23:01:53&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-27&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 446,
+    &quot;observed_events&quot;: 446,
+    &quot;latest_arrival&quot;: &quot;2026-06-27 23:59:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-27&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 428,
+    &quot;observed_events&quot;: 428,
+    &quot;latest_arrival&quot;: &quot;2026-06-27 23:53:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-27&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 195,
+    &quot;observed_events&quot;: 195,
+    &quot;latest_arrival&quot;: &quot;2026-06-27 23:03:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-28&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 499,
+    &quot;observed_events&quot;: 499,
+    &quot;latest_arrival&quot;: &quot;2026-06-29 00:03:52&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-28&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 395,
+    &quot;observed_events&quot;: 395,
+    &quot;latest_arrival&quot;: &quot;2026-06-29 00:04:05&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-28&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 209,
+    &quot;observed_events&quot;: 209,
+    &quot;latest_arrival&quot;: &quot;2026-06-28 23:53:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-29&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 471,
+    &quot;observed_events&quot;: 471,
+    &quot;latest_arrival&quot;: &quot;2026-06-30 00:06:09&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-29&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 404,
+    &quot;observed_events&quot;: 404,
+    &quot;latest_arrival&quot;: &quot;2026-06-29 23:55:40&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-29&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 156,
+    &quot;observed_events&quot;: 156,
+    &quot;latest_arrival&quot;: &quot;2026-06-29 23:42:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-30&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 543,
+    &quot;observed_events&quot;: 543,
+    &quot;latest_arrival&quot;: &quot;2026-06-30 23:57:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-30&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 489,
+    &quot;observed_events&quot;: 489,
+    &quot;latest_arrival&quot;: &quot;2026-07-01 00:03:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-06-30&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 147,
+    &quot;observed_events&quot;: 147,
+    &quot;latest_arrival&quot;: &quot;2026-06-30 23:40:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-01&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 569,
+    &quot;observed_events&quot;: 569,
+    &quot;latest_arrival&quot;: &quot;2026-07-01 23:49:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-01&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 478,
+    &quot;observed_events&quot;: 478,
+    &quot;latest_arrival&quot;: &quot;2026-07-02 00:04:32&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-01&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 191,
+    &quot;observed_events&quot;: 191,
+    &quot;latest_arrival&quot;: &quot;2026-07-02 00:00:19&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-02&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 486,
+    &quot;observed_events&quot;: 486,
+    &quot;latest_arrival&quot;: &quot;2026-07-03 00:02:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-02&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 373,
+    &quot;observed_events&quot;: 373,
+    &quot;latest_arrival&quot;: &quot;2026-07-02 23:58:34&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-02&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 179,
+    &quot;observed_events&quot;: 179,
+    &quot;latest_arrival&quot;: &quot;2026-07-03 00:02:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-03&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 476,
+    &quot;observed_events&quot;: 476,
+    &quot;latest_arrival&quot;: &quot;2026-07-03 23:57:31&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-03&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 474,
+    &quot;observed_events&quot;: 474,
+    &quot;latest_arrival&quot;: &quot;2026-07-04 00:08:29&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-03&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 202,
+    &quot;observed_events&quot;: 202,
+    &quot;latest_arrival&quot;: &quot;2026-07-03 23:59:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-04&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 539,
+    &quot;observed_events&quot;: 539,
+    &quot;latest_arrival&quot;: &quot;2026-07-05 00:01:08&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-04&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 373,
+    &quot;observed_events&quot;: 373,
+    &quot;latest_arrival&quot;: &quot;2026-07-05 00:03:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-04&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 171,
+    &quot;observed_events&quot;: 171,
+    &quot;latest_arrival&quot;: &quot;2026-07-04 23:53:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-05&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 438,
+    &quot;observed_events&quot;: 438,
+    &quot;latest_arrival&quot;: &quot;2026-07-05 23:51:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-05&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 449,
+    &quot;observed_events&quot;: 449,
+    &quot;latest_arrival&quot;: &quot;2026-07-06 00:02:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-05&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 152,
+    &quot;observed_events&quot;: 152,
+    &quot;latest_arrival&quot;: &quot;2026-07-05 23:10:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-06&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 481,
+    &quot;observed_events&quot;: 481,
+    &quot;latest_arrival&quot;: &quot;2026-07-07 00:06:10&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-06&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 385,
+    &quot;observed_events&quot;: 385,
+    &quot;latest_arrival&quot;: &quot;2026-07-07 00:05:41&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-06&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 144,
+    &quot;observed_events&quot;: 144,
+    &quot;latest_arrival&quot;: &quot;2026-07-07 00:04:09&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-07&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 547,
+    &quot;observed_events&quot;: 547,
+    &quot;latest_arrival&quot;: &quot;2026-07-08 00:03:00&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-07&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 456,
+    &quot;observed_events&quot;: 456,
+    &quot;latest_arrival&quot;: &quot;2026-07-07 23:57:59&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-07&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 165,
+    &quot;observed_events&quot;: 165,
+    &quot;latest_arrival&quot;: &quot;2026-07-08 00:07:48&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-08&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 524,
+    &quot;observed_events&quot;: 524,
+    &quot;latest_arrival&quot;: &quot;2026-07-09 00:01:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-08&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 427,
+    &quot;observed_events&quot;: 427,
+    &quot;latest_arrival&quot;: &quot;2026-07-08 23:45:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-08&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 162,
+    &quot;observed_events&quot;: 162,
+    &quot;latest_arrival&quot;: &quot;2026-07-08 23:47:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-09&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 475,
+    &quot;observed_events&quot;: 475,
+    &quot;latest_arrival&quot;: &quot;2026-07-10 00:00:19&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-09&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 373,
+    &quot;observed_events&quot;: 373,
+    &quot;latest_arrival&quot;: &quot;2026-07-10 00:06:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-09&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 159,
+    &quot;observed_events&quot;: 159,
+    &quot;latest_arrival&quot;: &quot;2026-07-09 23:46:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-10&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 438,
+    &quot;observed_events&quot;: 438,
+    &quot;latest_arrival&quot;: &quot;2026-07-11 00:03:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-10&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 510,
+    &quot;observed_events&quot;: 510,
+    &quot;latest_arrival&quot;: &quot;2026-07-10 23:57:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-10&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 169,
+    &quot;observed_events&quot;: 169,
+    &quot;latest_arrival&quot;: &quot;2026-07-10 23:56:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-11&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 484,
+    &quot;observed_events&quot;: 484,
+    &quot;latest_arrival&quot;: &quot;2026-07-11 23:57:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-11&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 474,
+    &quot;observed_events&quot;: 474,
+    &quot;latest_arrival&quot;: &quot;2026-07-12 00:09:29&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-11&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 158,
+    &quot;observed_events&quot;: 158,
+    &quot;latest_arrival&quot;: &quot;2026-07-11 23:37:58&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-12&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 618,
+    &quot;observed_events&quot;: 618,
+    &quot;latest_arrival&quot;: &quot;2026-07-12 23:57:52&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-12&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 440,
+    &quot;observed_events&quot;: 440,
+    &quot;latest_arrival&quot;: &quot;2026-07-13 00:05:17&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-12&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 149,
+    &quot;observed_events&quot;: 149,
+    &quot;latest_arrival&quot;: &quot;2026-07-12 23:56:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-13&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 508,
+    &quot;observed_events&quot;: 508,
+    &quot;latest_arrival&quot;: &quot;2026-07-14 00:02:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-13&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 548,
+    &quot;observed_events&quot;: 548,
+    &quot;latest_arrival&quot;: &quot;2026-07-14 00:05:16&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-13&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 164,
+    &quot;observed_events&quot;: 164,
+    &quot;latest_arrival&quot;: &quot;2026-07-13 23:46:17&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-14&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 514,
+    &quot;observed_events&quot;: 514,
+    &quot;latest_arrival&quot;: &quot;2026-07-15 00:05:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-14&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 484,
+    &quot;observed_events&quot;: 484,
+    &quot;latest_arrival&quot;: &quot;2026-07-15 00:08:12&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-14&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 224,
+    &quot;observed_events&quot;: 224,
+    &quot;latest_arrival&quot;: &quot;2026-07-15 00:03:48&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-15&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 498,
+    &quot;observed_events&quot;: 498,
+    &quot;latest_arrival&quot;: &quot;2026-07-15 23:58:30&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-15&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 433,
+    &quot;observed_events&quot;: 433,
+    &quot;latest_arrival&quot;: &quot;2026-07-15 23:46:55&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-15&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 200,
+    &quot;observed_events&quot;: 200,
+    &quot;latest_arrival&quot;: &quot;2026-07-16 00:05:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-16&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 512,
+    &quot;observed_events&quot;: 512,
+    &quot;latest_arrival&quot;: &quot;2026-07-17 00:02:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-16&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 415,
+    &quot;observed_events&quot;: 415,
+    &quot;latest_arrival&quot;: &quot;2026-07-17 00:00:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-16&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 149,
+    &quot;observed_events&quot;: 149,
+    &quot;latest_arrival&quot;: &quot;2026-07-16 23:17:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-17&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 431,
+    &quot;observed_events&quot;: 431,
+    &quot;latest_arrival&quot;: &quot;2026-07-18 00:07:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-17&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 478,
+    &quot;observed_events&quot;: 478,
+    &quot;latest_arrival&quot;: &quot;2026-07-18 00:09:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-17&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 141,
+    &quot;observed_events&quot;: 141,
+    &quot;latest_arrival&quot;: &quot;2026-07-17 23:35:33&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-18&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 519,
+    &quot;observed_events&quot;: 519,
+    &quot;latest_arrival&quot;: &quot;2026-07-19 00:09:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-18&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 372,
+    &quot;observed_events&quot;: 372,
+    &quot;latest_arrival&quot;: &quot;2026-07-18 23:57:24&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-18&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 156,
+    &quot;observed_events&quot;: 156,
+    &quot;latest_arrival&quot;: &quot;2026-07-18 23:28:24&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-19&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 458,
+    &quot;observed_events&quot;: 458,
+    &quot;latest_arrival&quot;: &quot;2026-07-19 23:53:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-19&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 467,
+    &quot;observed_events&quot;: 467,
+    &quot;latest_arrival&quot;: &quot;2026-07-20 00:06:40&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-19&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 145,
+    &quot;observed_events&quot;: 145,
+    &quot;latest_arrival&quot;: &quot;2026-07-19 23:17:49&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-20&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 472,
+    &quot;observed_events&quot;: 472,
+    &quot;latest_arrival&quot;: &quot;2026-07-21 00:06:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-20&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 445,
+    &quot;observed_events&quot;: 445,
+    &quot;latest_arrival&quot;: &quot;2026-07-20 23:53:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-20&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 144,
+    &quot;observed_events&quot;: 144,
+    &quot;latest_arrival&quot;: &quot;2026-07-20 23:38:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-21&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 492,
+    &quot;observed_events&quot;: 492,
+    &quot;latest_arrival&quot;: &quot;2026-07-22 00:00:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-21&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 417,
+    &quot;observed_events&quot;: 417,
+    &quot;latest_arrival&quot;: &quot;2026-07-21 23:58:05&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-21&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 102,
+    &quot;observed_events&quot;: 102,
+    &quot;latest_arrival&quot;: &quot;2026-07-22 00:03:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-22&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 535,
+    &quot;observed_events&quot;: 535,
+    &quot;latest_arrival&quot;: &quot;2026-07-23 00:04:47&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-22&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 458,
+    &quot;observed_events&quot;: 458,
+    &quot;latest_arrival&quot;: &quot;2026-07-23 00:08:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-22&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 128,
+    &quot;observed_events&quot;: 128,
+    &quot;latest_arrival&quot;: &quot;2026-07-23 00:04:30&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-23&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 523,
+    &quot;observed_events&quot;: 523,
+    &quot;latest_arrival&quot;: &quot;2026-07-23 23:56:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-23&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 426,
+    &quot;observed_events&quot;: 426,
+    &quot;latest_arrival&quot;: &quot;2026-07-23 23:59:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-23&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 203,
+    &quot;observed_events&quot;: 203,
+    &quot;latest_arrival&quot;: &quot;2026-07-24 00:05:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-24&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 496,
+    &quot;observed_events&quot;: 496,
+    &quot;latest_arrival&quot;: &quot;2026-07-25 00:05:10&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-24&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 458,
+    &quot;observed_events&quot;: 458,
+    &quot;latest_arrival&quot;: &quot;2026-07-25 00:02:09&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-24&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 119,
+    &quot;observed_events&quot;: 119,
+    &quot;latest_arrival&quot;: &quot;2026-07-24 23:40:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-25&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 498,
+    &quot;observed_events&quot;: 498,
+    &quot;latest_arrival&quot;: &quot;2026-07-26 00:03:49&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-25&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 429,
+    &quot;observed_events&quot;: 429,
+    &quot;latest_arrival&quot;: &quot;2026-07-26 00:06:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-25&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 126,
+    &quot;observed_events&quot;: 126,
+    &quot;latest_arrival&quot;: &quot;2026-07-25 23:39:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-26&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 517,
+    &quot;observed_events&quot;: 517,
+    &quot;latest_arrival&quot;: &quot;2026-07-26 23:57:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-26&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 429,
+    &quot;observed_events&quot;: 429,
+    &quot;latest_arrival&quot;: &quot;2026-07-27 00:05:46&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-26&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 154,
+    &quot;observed_events&quot;: 154,
+    &quot;latest_arrival&quot;: &quot;2026-07-26 23:40:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-27&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 569,
+    &quot;observed_events&quot;: 569,
+    &quot;latest_arrival&quot;: &quot;2026-07-28 00:05:58&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-27&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 419,
+    &quot;observed_events&quot;: 419,
+    &quot;latest_arrival&quot;: &quot;2026-07-28 00:00:55&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-27&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 184,
+    &quot;observed_events&quot;: 184,
+    &quot;latest_arrival&quot;: &quot;2026-07-27 23:32:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-28&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 536,
+    &quot;observed_events&quot;: 536,
+    &quot;latest_arrival&quot;: &quot;2026-07-28 23:56:28&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-28&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 427,
+    &quot;observed_events&quot;: 427,
+    &quot;latest_arrival&quot;: &quot;2026-07-28 23:54:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-28&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 193,
+    &quot;observed_events&quot;: 193,
+    &quot;latest_arrival&quot;: &quot;2026-07-28 23:47:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-29&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 491,
+    &quot;observed_events&quot;: 491,
+    &quot;latest_arrival&quot;: &quot;2026-07-30 00:02:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-29&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 460,
+    &quot;observed_events&quot;: 460,
+    &quot;latest_arrival&quot;: &quot;2026-07-30 00:06:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-29&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 158,
+    &quot;observed_events&quot;: 158,
+    &quot;latest_arrival&quot;: &quot;2026-07-29 23:59:31&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-30&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 508,
+    &quot;observed_events&quot;: 508,
+    &quot;latest_arrival&quot;: &quot;2026-07-31 00:01:52&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-30&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 484,
+    &quot;observed_events&quot;: 484,
+    &quot;latest_arrival&quot;: &quot;2026-07-31 00:02:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-30&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 239,
+    &quot;observed_events&quot;: 239,
+    &quot;latest_arrival&quot;: &quot;2026-07-31 00:03:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-31&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 495,
+    &quot;observed_events&quot;: 495,
+    &quot;latest_arrival&quot;: &quot;2026-08-01 00:07:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-31&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 499,
+    &quot;observed_events&quot;: 499,
+    &quot;latest_arrival&quot;: &quot;2026-08-01 00:06:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-07-31&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 156,
+    &quot;observed_events&quot;: 156,
+    &quot;latest_arrival&quot;: &quot;2026-08-01 00:08:41&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-01&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 506,
+    &quot;observed_events&quot;: 506,
+    &quot;latest_arrival&quot;: &quot;2026-08-02 00:04:48&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-01&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 526,
+    &quot;observed_events&quot;: 526,
+    &quot;latest_arrival&quot;: &quot;2026-08-01 23:56:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-01&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 180,
+    &quot;observed_events&quot;: 180,
+    &quot;latest_arrival&quot;: &quot;2026-08-01 23:59:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-02&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 531,
+    &quot;observed_events&quot;: 531,
+    &quot;latest_arrival&quot;: &quot;2026-08-03 00:06:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-02&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 446,
+    &quot;observed_events&quot;: 446,
+    &quot;latest_arrival&quot;: &quot;2026-08-03 00:04:57&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-02&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 191,
+    &quot;observed_events&quot;: 191,
+    &quot;latest_arrival&quot;: &quot;2026-08-02 23:56:33&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-03&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 516,
+    &quot;observed_events&quot;: 516,
+    &quot;latest_arrival&quot;: &quot;2026-08-04 00:02:26&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-03&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 504,
+    &quot;observed_events&quot;: 504,
+    &quot;latest_arrival&quot;: &quot;2026-08-04 00:07:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-03&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 126,
+    &quot;observed_events&quot;: 126,
+    &quot;latest_arrival&quot;: &quot;2026-08-04 00:07:50&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-04&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 475,
+    &quot;observed_events&quot;: 475,
+    &quot;latest_arrival&quot;: &quot;2026-08-04 23:54:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-04&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 466,
+    &quot;observed_events&quot;: 466,
+    &quot;latest_arrival&quot;: &quot;2026-08-05 00:03:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-04&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 169,
+    &quot;observed_events&quot;: 169,
+    &quot;latest_arrival&quot;: &quot;2026-08-05 00:05:16&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-05&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 520,
+    &quot;observed_events&quot;: 520,
+    &quot;latest_arrival&quot;: &quot;2026-08-06 00:07:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-05&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 443,
+    &quot;observed_events&quot;: 443,
+    &quot;latest_arrival&quot;: &quot;2026-08-06 00:03:06&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-05&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 162,
+    &quot;observed_events&quot;: 162,
+    &quot;latest_arrival&quot;: &quot;2026-08-05 23:22:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-06&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 404,
+    &quot;observed_events&quot;: 404,
+    &quot;latest_arrival&quot;: &quot;2026-08-07 00:03:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-06&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 417,
+    &quot;observed_events&quot;: 417,
+    &quot;latest_arrival&quot;: &quot;2026-08-06 23:55:10&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-06&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 207,
+    &quot;observed_events&quot;: 207,
+    &quot;latest_arrival&quot;: &quot;2026-08-07 00:03:07&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-07&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 514,
+    &quot;observed_events&quot;: 514,
+    &quot;latest_arrival&quot;: &quot;2026-08-08 00:05:18&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-07&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 444,
+    &quot;observed_events&quot;: 444,
+    &quot;latest_arrival&quot;: &quot;2026-08-07 23:50:18&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-07&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 141,
+    &quot;observed_events&quot;: 141,
+    &quot;latest_arrival&quot;: &quot;2026-08-07 23:48:07&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-08&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 562,
+    &quot;observed_events&quot;: 562,
+    &quot;latest_arrival&quot;: &quot;2026-08-09 00:03:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-08&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 427,
+    &quot;observed_events&quot;: 427,
+    &quot;latest_arrival&quot;: &quot;2026-08-08 23:56:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-08&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 179,
+    &quot;observed_events&quot;: 179,
+    &quot;latest_arrival&quot;: &quot;2026-08-09 00:04:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-09&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 467,
+    &quot;observed_events&quot;: 467,
+    &quot;latest_arrival&quot;: &quot;2026-08-10 00:01:19&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-09&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 488,
+    &quot;observed_events&quot;: 488,
+    &quot;latest_arrival&quot;: &quot;2026-08-10 00:09:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-09&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 183,
+    &quot;observed_events&quot;: 183,
+    &quot;latest_arrival&quot;: &quot;2026-08-09 23:54:58&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-10&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 448,
+    &quot;observed_events&quot;: 448,
+    &quot;latest_arrival&quot;: &quot;2026-08-11 00:08:27&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-10&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 455,
+    &quot;observed_events&quot;: 455,
+    &quot;latest_arrival&quot;: &quot;2026-08-11 00:06:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-10&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 175,
+    &quot;observed_events&quot;: 175,
+    &quot;latest_arrival&quot;: &quot;2026-08-10 23:11:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-11&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 469,
+    &quot;observed_events&quot;: 469,
+    &quot;latest_arrival&quot;: &quot;2026-08-12 00:07:20&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-11&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 472,
+    &quot;observed_events&quot;: 472,
+    &quot;latest_arrival&quot;: &quot;2026-08-11 23:59:48&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-11&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 157,
+    &quot;observed_events&quot;: 157,
+    &quot;latest_arrival&quot;: &quot;2026-08-11 23:58:16&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-12&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 440,
+    &quot;observed_events&quot;: 440,
+    &quot;latest_arrival&quot;: &quot;2026-08-13 00:02:52&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-12&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 431,
+    &quot;observed_events&quot;: 431,
+    &quot;latest_arrival&quot;: &quot;2026-08-12 23:56:14&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-12&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 151,
+    &quot;observed_events&quot;: 151,
+    &quot;latest_arrival&quot;: &quot;2026-08-13 00:04:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-13&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 506,
+    &quot;observed_events&quot;: 506,
+    &quot;latest_arrival&quot;: &quot;2026-08-14 00:01:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-13&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 538,
+    &quot;observed_events&quot;: 538,
+    &quot;latest_arrival&quot;: &quot;2026-08-13 23:59:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-13&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 155,
+    &quot;observed_events&quot;: 155,
+    &quot;latest_arrival&quot;: &quot;2026-08-13 23:56:41&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-14&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 467,
+    &quot;observed_events&quot;: 467,
+    &quot;latest_arrival&quot;: &quot;2026-08-14 23:50:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-14&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 459,
+    &quot;observed_events&quot;: 459,
+    &quot;latest_arrival&quot;: &quot;2026-08-15 00:08:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-14&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 160,
+    &quot;observed_events&quot;: 160,
+    &quot;latest_arrival&quot;: &quot;2026-08-15 00:05:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-15&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 535,
+    &quot;observed_events&quot;: 535,
+    &quot;latest_arrival&quot;: &quot;2026-08-16 00:04:44&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-15&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 484,
+    &quot;observed_events&quot;: 484,
+    &quot;latest_arrival&quot;: &quot;2026-08-16 00:06:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-15&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 146,
+    &quot;observed_events&quot;: 146,
+    &quot;latest_arrival&quot;: &quot;2026-08-15 23:48:07&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-16&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 506,
+    &quot;observed_events&quot;: 506,
+    &quot;latest_arrival&quot;: &quot;2026-08-17 00:03:55&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-16&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 486,
+    &quot;observed_events&quot;: 486,
+    &quot;latest_arrival&quot;: &quot;2026-08-16 23:59:59&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-16&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 176,
+    &quot;observed_events&quot;: 176,
+    &quot;latest_arrival&quot;: &quot;2026-08-17 00:05:50&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-17&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 490,
+    &quot;observed_events&quot;: 490,
+    &quot;latest_arrival&quot;: &quot;2026-08-17 23:58:30&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-17&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 477,
+    &quot;observed_events&quot;: 477,
+    &quot;latest_arrival&quot;: &quot;2026-08-17 23:59:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-17&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 146,
+    &quot;observed_events&quot;: 146,
+    &quot;latest_arrival&quot;: &quot;2026-08-18 00:02:08&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-18&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 535,
+    &quot;observed_events&quot;: 535,
+    &quot;latest_arrival&quot;: &quot;2026-08-19 00:04:25&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-18&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 445,
+    &quot;observed_events&quot;: 445,
+    &quot;latest_arrival&quot;: &quot;2026-08-18 23:59:17&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-18&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 167,
+    &quot;observed_events&quot;: 167,
+    &quot;latest_arrival&quot;: &quot;2026-08-18 23:49:47&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-19&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 534,
+    &quot;observed_events&quot;: 534,
+    &quot;latest_arrival&quot;: &quot;2026-08-20 00:05:03&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-19&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 445,
+    &quot;observed_events&quot;: 445,
+    &quot;latest_arrival&quot;: &quot;2026-08-20 00:06:21&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-19&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 130,
+    &quot;observed_events&quot;: 130,
+    &quot;latest_arrival&quot;: &quot;2026-08-19 23:57:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-20&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 491,
+    &quot;observed_events&quot;: 491,
+    &quot;latest_arrival&quot;: &quot;2026-08-21 00:04:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-20&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 416,
+    &quot;observed_events&quot;: 416,
+    &quot;latest_arrival&quot;: &quot;2026-08-21 00:05:54&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-20&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 160,
+    &quot;observed_events&quot;: 160,
+    &quot;latest_arrival&quot;: &quot;2026-08-20 23:37:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-21&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 598,
+    &quot;observed_events&quot;: 598,
+    &quot;latest_arrival&quot;: &quot;2026-08-21 23:56:49&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-21&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 474,
+    &quot;observed_events&quot;: 474,
+    &quot;latest_arrival&quot;: &quot;2026-08-21 23:56:36&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-21&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 146,
+    &quot;observed_events&quot;: 146,
+    &quot;latest_arrival&quot;: &quot;2026-08-21 23:18:46&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-22&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 474,
+    &quot;observed_events&quot;: 474,
+    &quot;latest_arrival&quot;: &quot;2026-08-23 00:06:59&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-22&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 401,
+    &quot;observed_events&quot;: 401,
+    &quot;latest_arrival&quot;: &quot;2026-08-22 23:59:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-22&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 177,
+    &quot;observed_events&quot;: 177,
+    &quot;latest_arrival&quot;: &quot;2026-08-23 00:02:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-23&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 503,
+    &quot;observed_events&quot;: 503,
+    &quot;latest_arrival&quot;: &quot;2026-08-24 00:09:24&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-23&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 500,
+    &quot;observed_events&quot;: 500,
+    &quot;latest_arrival&quot;: &quot;2026-08-24 00:02:02&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-23&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 159,
+    &quot;observed_events&quot;: 159,
+    &quot;latest_arrival&quot;: &quot;2026-08-23 23:26:22&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-24&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 598,
+    &quot;observed_events&quot;: 598,
+    &quot;latest_arrival&quot;: &quot;2026-08-25 00:04:56&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-24&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 376,
+    &quot;observed_events&quot;: 376,
+    &quot;latest_arrival&quot;: &quot;2026-08-25 00:01:15&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-24&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 129,
+    &quot;observed_events&quot;: 129,
+    &quot;latest_arrival&quot;: &quot;2026-08-24 23:36:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-25&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 588,
+    &quot;observed_events&quot;: 588,
+    &quot;latest_arrival&quot;: &quot;2026-08-25 23:59:42&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-25&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 384,
+    &quot;observed_events&quot;: 384,
+    &quot;latest_arrival&quot;: &quot;2026-08-26 00:04:59&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-25&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 148,
+    &quot;observed_events&quot;: 148,
+    &quot;latest_arrival&quot;: &quot;2026-08-25 23:57:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-26&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 597,
+    &quot;observed_events&quot;: 597,
+    &quot;latest_arrival&quot;: &quot;2026-08-27 00:05:08&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-26&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 383,
+    &quot;observed_events&quot;: 383,
+    &quot;latest_arrival&quot;: &quot;2026-08-26 23:48:12&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-26&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 134,
+    &quot;observed_events&quot;: 134,
+    &quot;latest_arrival&quot;: &quot;2026-08-26 23:50:38&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-27&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 613,
+    &quot;observed_events&quot;: 613,
+    &quot;latest_arrival&quot;: &quot;2026-08-27 23:57:36&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-27&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 408,
+    &quot;observed_events&quot;: 408,
+    &quot;latest_arrival&quot;: &quot;2026-08-28 00:01:37&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-27&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 146,
+    &quot;observed_events&quot;: 146,
+    &quot;latest_arrival&quot;: &quot;2026-08-27 23:59:42&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-28&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 544,
+    &quot;observed_events&quot;: 544,
+    &quot;latest_arrival&quot;: &quot;2026-08-29 00:07:52&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-28&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 323,
+    &quot;observed_events&quot;: 323,
+    &quot;latest_arrival&quot;: &quot;2026-08-29 00:05:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-28&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 124,
+    &quot;observed_events&quot;: 124,
+    &quot;latest_arrival&quot;: &quot;2026-08-28 23:59:43&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-29&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 522,
+    &quot;observed_events&quot;: 522,
+    &quot;latest_arrival&quot;: &quot;2026-08-30 00:07:34&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-29&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 355,
+    &quot;observed_events&quot;: 355,
+    &quot;latest_arrival&quot;: &quot;2026-08-29 23:59:26&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-29&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 145,
+    &quot;observed_events&quot;: 145,
+    &quot;latest_arrival&quot;: &quot;2026-08-30 00:04:12&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-30&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 606,
+    &quot;observed_events&quot;: 606,
+    &quot;latest_arrival&quot;: &quot;2026-08-31 00:03:07&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-30&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 400,
+    &quot;observed_events&quot;: 400,
+    &quot;latest_arrival&quot;: &quot;2026-08-31 00:02:42&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-30&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 169,
+    &quot;observed_events&quot;: 169,
+    &quot;latest_arrival&quot;: &quot;2026-08-31 00:07:36&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-31&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 530,
+    &quot;observed_events&quot;: 530,
+    &quot;latest_arrival&quot;: &quot;2026-09-01 00:04:34&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-31&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 387,
+    &quot;observed_events&quot;: 387,
+    &quot;latest_arrival&quot;: &quot;2026-08-31 23:55:13&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-08-31&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 196,
+    &quot;observed_events&quot;: 196,
+    &quot;latest_arrival&quot;: &quot;2026-08-31 23:27:53&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-01&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 518,
+    &quot;observed_events&quot;: 518,
+    &quot;latest_arrival&quot;: &quot;2026-09-02 00:06:01&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-01&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 343,
+    &quot;observed_events&quot;: 343,
+    &quot;latest_arrival&quot;: &quot;2026-09-01 23:58:40&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-01&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 161,
+    &quot;observed_events&quot;: 161,
+    &quot;latest_arrival&quot;: &quot;2026-09-01 23:43:11&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-02&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 570,
+    &quot;observed_events&quot;: 570,
+    &quot;latest_arrival&quot;: &quot;2026-09-03 00:06:36&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-02&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 419,
+    &quot;observed_events&quot;: 419,
+    &quot;latest_arrival&quot;: &quot;2026-09-02 23:57:17&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-02&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 148,
+    &quot;observed_events&quot;: 148,
+    &quot;latest_arrival&quot;: &quot;2026-09-02 23:44:42&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-03&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 527,
+    &quot;observed_events&quot;: 527,
+    &quot;latest_arrival&quot;: &quot;2026-09-04 00:04:35&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-03&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 315,
+    &quot;observed_events&quot;: 315,
+    &quot;latest_arrival&quot;: &quot;2026-09-03 23:57:18&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-03&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 155,
+    &quot;observed_events&quot;: 155,
+    &quot;latest_arrival&quot;: &quot;2026-09-03 23:42:39&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-04&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 579,
+    &quot;observed_events&quot;: 0,
+    &quot;latest_arrival&quot;: null
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-04&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 309,
+    &quot;observed_events&quot;: 309,
+    &quot;latest_arrival&quot;: &quot;2026-09-05 00:03:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-04&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 165,
+    &quot;observed_events&quot;: 165,
+    &quot;latest_arrival&quot;: &quot;2026-09-04 22:27:23&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-05&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 601,
+    &quot;observed_events&quot;: 0,
+    &quot;latest_arrival&quot;: null
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-05&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 403,
+    &quot;observed_events&quot;: 403,
+    &quot;latest_arrival&quot;: &quot;2026-09-06 00:07:12&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-05&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 125,
+    &quot;observed_events&quot;: 125,
+    &quot;latest_arrival&quot;: &quot;2026-09-05 23:38:51&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-06&quot;,
+    &quot;device&quot;: &quot;android&quot;,
+    &quot;expected_events&quot;: 517,
+    &quot;observed_events&quot;: 0,
+    &quot;latest_arrival&quot;: null
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-06&quot;,
+    &quot;device&quot;: &quot;ios&quot;,
+    &quot;expected_events&quot;: 361,
+    &quot;observed_events&quot;: 361,
+    &quot;latest_arrival&quot;: &quot;2026-09-07 00:01:26&quot;
+  },
+  {
+    &quot;event_date&quot;: &quot;2026-09-06&quot;,
+    &quot;device&quot;: &quot;web&quot;,
+    &quot;expected_events&quot;: 112,
+    &quot;observed_events&quot;: 112,
+    &quot;latest_arrival&quot;: &quot;2026-09-06 23:50:04&quot;
+  }
+]</pre></details><details id="onboarding-event-validation"><summary>onboarding-event-validation · 窗口内事件版本、时间/日期、用户归属与批次一致性</summary><pre>SELECT COUNT(*) AS visible_events,
+          COALESCE(SUM(CASE WHEN e.schema_version NOT IN (:schema_0) THEN 1 ELSE 0 END),0) AS unsupported_schema_events,
+          COALESCE(SUM(CASE WHEN u.user_id IS NULL OR b.batch_id IS NULL
+            OR datetime(e.event_time) IS NULL OR datetime(e.ingested_at) IS NULL
+            OR datetime(e.event_time,&#x27;+0 days&#x27;)&lt;&gt;e.event_time
+            OR datetime(e.ingested_at,&#x27;+0 days&#x27;)&lt;&gt;e.ingested_at
+            OR datetime(u.signup_at,&#x27;+0 days&#x27;) IS NULL
+            OR datetime(u.signup_at,&#x27;+0 days&#x27;)&lt;&gt;u.signup_at
+            OR u.signup_date&lt;&gt;date(u.signup_at)
+            OR e.event_time&lt;u.signup_at OR e.event_time&gt;e.ingested_at
+            OR e.event_date&lt;&gt;date(e.event_time)
+            OR e.device&lt;&gt;u.device OR e.channel&lt;&gt;u.channel OR e.app_version&lt;&gt;u.app_version
+            OR e.batch_id&lt;&gt;(e.event_date || &#x27;:&#x27; || e.device)
+            OR e.event_date&lt;&gt;b.event_date OR e.device&lt;&gt;b.device
+            THEN 1 ELSE 0 END),0) AS invalid_event_relationships,
+          COUNT(*)-COUNT(DISTINCT e.event_id) AS duplicate_event_ids
+          FROM onboarding_events e LEFT JOIN onboarding_users u ON e.user_id=u.user_id
+          LEFT JOIN onboarding_ingest_batches b ON e.batch_id=b.batch_id
+          WHERE (e.event_date BETWEEN :relevant_start AND :relevant_end
+            OR date(e.event_time) BETWEEN :relevant_start AND :relevant_end
+            OR b.event_date BETWEEN :relevant_start AND :relevant_end)
+            AND (u.device IN (:quality_device_0,:quality_device_1,:quality_device_2) OR e.device IN (:quality_device_0,:quality_device_1,:quality_device_2)
+              OR b.device IN (:quality_device_0,:quality_device_1,:quality_device_2))
+            AND e.ingested_at&lt;=:as_of</pre><pre>{&quot;start&quot;: &quot;2026-08-24&quot;, &quot;end&quot;: &quot;2026-08-30&quot;, &quot;compare_start&quot;: &quot;2026-08-17&quot;, &quot;compare_end&quot;: &quot;2026-08-23&quot;, &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;, &quot;activation_seconds&quot;: 60, &quot;batch_start&quot;: &quot;2026-06-01&quot;, &quot;batch_end&quot;: &quot;2026-09-06&quot;, &quot;quality_device_0&quot;: &quot;android&quot;, &quot;quality_device_1&quot;: &quot;ios&quot;, &quot;quality_device_2&quot;: &quot;web&quot;, &quot;relevant_start&quot;: &quot;2026-08-17&quot;, &quot;relevant_end&quot;: &quot;2026-09-06&quot;, &quot;schema_0&quot;: &quot;1.0&quot;}</pre><p>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益 · onboarding.v2.0.0</p><pre>[
+  {
+    &quot;visible_events&quot;: 21304,
+    &quot;unsupported_schema_events&quot;: 0,
+    &quot;invalid_event_relationships&quot;: 0,
+    &quot;duplicate_event_ids&quot;: 0
+  }
+]</pre></details><details id="onboarding-event-validation-new_user_retention_d1"><summary>onboarding-event-validation-new_user_retention_d1 · 窗口内事件版本、时间/日期、用户归属与批次一致性</summary><pre>SELECT COUNT(*) AS visible_events,
+          COALESCE(SUM(CASE WHEN e.schema_version NOT IN (:schema_0) THEN 1 ELSE 0 END),0) AS unsupported_schema_events,
+          COALESCE(SUM(CASE WHEN u.user_id IS NULL OR b.batch_id IS NULL
+            OR datetime(e.event_time) IS NULL OR datetime(e.ingested_at) IS NULL
+            OR datetime(e.event_time,&#x27;+0 days&#x27;)&lt;&gt;e.event_time
+            OR datetime(e.ingested_at,&#x27;+0 days&#x27;)&lt;&gt;e.ingested_at
+            OR datetime(u.signup_at,&#x27;+0 days&#x27;) IS NULL
+            OR datetime(u.signup_at,&#x27;+0 days&#x27;)&lt;&gt;u.signup_at
+            OR u.signup_date&lt;&gt;date(u.signup_at)
+            OR e.event_time&lt;u.signup_at OR e.event_time&gt;e.ingested_at
+            OR e.event_date&lt;&gt;date(e.event_time)
+            OR e.device&lt;&gt;u.device OR e.channel&lt;&gt;u.channel OR e.app_version&lt;&gt;u.app_version
+            OR e.batch_id&lt;&gt;(e.event_date || &#x27;:&#x27; || e.device)
+            OR e.event_date&lt;&gt;b.event_date OR e.device&lt;&gt;b.device
+            THEN 1 ELSE 0 END),0) AS invalid_event_relationships,
+          COUNT(*)-COUNT(DISTINCT e.event_id) AS duplicate_event_ids
+          FROM onboarding_events e LEFT JOIN onboarding_users u ON e.user_id=u.user_id
+          LEFT JOIN onboarding_ingest_batches b ON e.batch_id=b.batch_id
+          WHERE (e.event_date BETWEEN :relevant_start AND :relevant_end
+            OR date(e.event_time) BETWEEN :relevant_start AND :relevant_end
+            OR b.event_date BETWEEN :relevant_start AND :relevant_end)
+            AND (u.device IN (:quality_device_0,:quality_device_1,:quality_device_2) OR e.device IN (:quality_device_0,:quality_device_1,:quality_device_2)
+              OR b.device IN (:quality_device_0,:quality_device_1,:quality_device_2))
+            AND e.ingested_at&lt;=:as_of</pre><pre>{&quot;start&quot;: &quot;2026-08-24&quot;, &quot;end&quot;: &quot;2026-08-30&quot;, &quot;compare_start&quot;: &quot;2026-08-17&quot;, &quot;compare_end&quot;: &quot;2026-08-23&quot;, &quot;as_of&quot;: &quot;2026-09-07 08:00:00&quot;, &quot;activation_seconds&quot;: 60, &quot;batch_start&quot;: &quot;2026-06-01&quot;, &quot;batch_end&quot;: &quot;2026-09-06&quot;, &quot;quality_device_0&quot;: &quot;android&quot;, &quot;quality_device_1&quot;: &quot;ios&quot;, &quot;quality_device_2&quot;: &quot;web&quot;, &quot;relevant_start&quot;: &quot;2026-08-17&quot;, &quot;relevant_end&quot;: &quot;2026-08-31&quot;, &quot;schema_0&quot;: &quot;1.0&quot;}</pre><p>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益 · onboarding.v2.0.0</p><pre>[
+  {
+    &quot;visible_events&quot;: 16673,
+    &quot;unsupported_schema_events&quot;: 0,
+    &quot;invalid_event_relationships&quot;: 0,
+    &quot;duplicate_event_ids&quot;: 0
+  }
+]</pre></details><h2>适用边界</h2><ul><li>固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益</li><li>渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。</li><li>使用稳定匿名 UID；未实现企业跨设备身份合并。</li></ul></html>

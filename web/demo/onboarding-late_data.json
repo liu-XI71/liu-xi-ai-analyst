@@ -1,0 +1,2746 @@
+{
+  "status": "data_quality_blocked",
+  "title": "新用户留存诊断",
+  "summary": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+  "metric_contract": {
+    "id": "new_user_retention_d7",
+    "name": "精确 D7 留存率",
+    "unit": "%",
+    "kind": "rate",
+    "numerator": "注册后第 7 个自然日发生 app_active 的 cohort 去重用户数",
+    "denominator": "D7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数",
+    "grain": "用户",
+    "window": "注册日 + 7 自然日",
+    "maturity": {
+      "type": "calendar",
+      "days": 7
+    },
+    "calculation": {
+      "success_column": "d7"
+    },
+    "not_equivalent_to": "次 1—7 日内任意回访率",
+    "version": "onboarding.v2.0.0",
+    "timezone": "Asia/Shanghai",
+    "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+    "dimensions": [
+      "channel",
+      "device",
+      "app_version"
+    ],
+    "current_period": [
+      "2026-08-24",
+      "2026-08-30"
+    ],
+    "previous_period": [
+      "2026-08-17",
+      "2026-08-23"
+    ],
+    "data_as_of": "2026-09-07 08:00:00",
+    "watermark": "2026-09-04 00:00:00"
+  },
+  "kpis": [],
+  "tables": [
+    {
+      "id": "quality-checks",
+      "title": "数据可用性门禁",
+      "columns": [
+        "name",
+        "status",
+        "observed",
+        "expected",
+        "detail"
+      ],
+      "rows": [
+        {
+          "id": "observation_mature",
+          "name": "完整观察窗口",
+          "status": "passed",
+          "observed": "2026-09-07 08:00:00",
+          "expected": "2026-09-07 00:00:00",
+          "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+          "evidence_ids": [
+            "onboarding-cohort-scope"
+          ]
+        },
+        {
+          "id": "continuous_watermark",
+          "name": "连续数据水位",
+          "status": "blocked",
+          "observed": "2026-09-04 00:00:00",
+          "expected": "2026-09-07 00:00:00",
+          "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+          "evidence_ids": [
+            "onboarding-batch-watermark"
+          ]
+        },
+        {
+          "id": "source_manifest",
+          "name": "源端清单计数",
+          "status": "blocked",
+          "observed": 3,
+          "expected": 0,
+          "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+          "evidence_ids": [
+            "onboarding-batch-watermark"
+          ]
+        },
+        {
+          "id": "schema_version",
+          "name": "事件版本兼容",
+          "status": "passed",
+          "observed": 0,
+          "expected": 0,
+          "detail": "只接受版本化指标合同支持的埋点 schema。",
+          "evidence_ids": [
+            "onboarding-event-validation"
+          ]
+        },
+        {
+          "id": "event_integrity",
+          "name": "事件关系与幂等性",
+          "status": "passed",
+          "observed": 0,
+          "expected": 0,
+          "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+          "evidence_ids": [
+            "onboarding-event-validation"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "metric-maturity",
+      "title": "不同指标分别判断成熟与可用性",
+      "columns": [
+        "metric",
+        "required_until",
+        "mature",
+        "watermark_complete",
+        "schema_valid",
+        "event_integrity_valid",
+        "available"
+      ],
+      "rows": [
+        {
+          "metric_id": "new_user_retention_d1",
+          "metric": "精确 D1 留存率",
+          "required_until": "2026-09-01 00:00:00",
+          "mature": true,
+          "watermark_complete": true,
+          "schema_valid": true,
+          "event_integrity_valid": true,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "evidence_ids": [
+            "onboarding-event-validation-new_user_retention_d1",
+            "onboarding-batch-watermark"
+          ],
+          "available": true
+        },
+        {
+          "metric_id": "new_user_retention_d7",
+          "metric": "精确 D7 留存率",
+          "required_until": "2026-09-07 00:00:00",
+          "mature": true,
+          "watermark_complete": false,
+          "schema_valid": true,
+          "event_integrity_valid": true,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "evidence_ids": [
+            "onboarding-event-validation",
+            "onboarding-batch-watermark"
+          ],
+          "available": false
+        },
+        {
+          "metric_id": "return_within_days_1_7",
+          "metric": "次 1—7 日内回访率",
+          "required_until": "2026-09-07 00:00:00",
+          "mature": true,
+          "watermark_complete": false,
+          "schema_valid": true,
+          "event_integrity_valid": true,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "evidence_ids": [
+            "onboarding-event-validation",
+            "onboarding-batch-watermark"
+          ],
+          "available": false
+        },
+        {
+          "metric_id": "activated_24h",
+          "metric": "24 小时有序激活率",
+          "required_until": "2026-08-31 23:55:31",
+          "mature": true,
+          "watermark_complete": true,
+          "schema_valid": true,
+          "event_integrity_valid": true,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "evidence_ids": [
+            "onboarding-event-validation-new_user_retention_d1",
+            "onboarding-batch-watermark"
+          ],
+          "available": true
+        }
+      ]
+    },
+    {
+      "id": "incomplete-batches",
+      "title": "需要回填的分区",
+      "columns": [
+        "event_date",
+        "device",
+        "expected_events",
+        "observed_events",
+        "latest_arrival"
+      ],
+      "rows": [
+        {
+          "event_date": "2026-09-04",
+          "device": "android",
+          "expected_events": 579,
+          "observed_events": 0,
+          "latest_arrival": null
+        },
+        {
+          "event_date": "2026-09-05",
+          "device": "android",
+          "expected_events": 601,
+          "observed_events": 0,
+          "latest_arrival": null
+        },
+        {
+          "event_date": "2026-09-06",
+          "device": "android",
+          "expected_events": 517,
+          "observed_events": 0,
+          "latest_arrival": null
+        }
+      ]
+    }
+  ],
+  "charts": [],
+  "findings": [
+    {
+      "kind": "fact",
+      "text": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+      "evidence_ids": [
+        "onboarding-cohort-scope",
+        "onboarding-cohort-devices",
+        "onboarding-batch-watermark",
+        "onboarding-event-validation",
+        "onboarding-event-validation-new_user_retention_d1"
+      ]
+    },
+    {
+      "kind": "action",
+      "text": "没有通过门禁的留存值不显示为 0，也不支持调整获客预算或产品放量。",
+      "evidence_ids": [
+        "onboarding-cohort-scope",
+        "onboarding-cohort-devices",
+        "onboarding-batch-watermark",
+        "onboarding-event-validation",
+        "onboarding-event-validation-new_user_retention_d1"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "onboarding-cohort-scope",
+      "label": "注册 cohort 范围、人数与最晚注册时间",
+      "sql": "WITH periods AS (\n      SELECT 'current' AS period, :start AS start_date, :end AS end_date\n      UNION ALL SELECT 'previous', :compare_start, :compare_end\n    ), users AS (\n      SELECT p.period, u.* FROM onboarding_users u JOIN periods p\n        ON u.signup_date BETWEEN p.start_date AND p.end_date\n      WHERE u.signup_at < :as_of\n    ) SELECT period, COUNT(*) AS users, MIN(signup_date) AS first_signup_date, MAX(signup_date) AS last_signup_date, MAX(signup_at) AS latest_signup_at FROM users GROUP BY period ORDER BY period",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "as_of": "2026-09-07 08:00:00",
+        "activation_seconds": 60
+      },
+      "rows": [
+        {
+          "period": "current",
+          "users": 898,
+          "first_signup_date": "2026-08-24",
+          "last_signup_date": "2026-08-30",
+          "latest_signup_at": "2026-08-30 23:55:31"
+        },
+        {
+          "period": "previous",
+          "users": 856,
+          "first_signup_date": "2026-08-17",
+          "last_signup_date": "2026-08-23",
+          "latest_signup_at": "2026-08-23 23:43:21"
+        }
+      ],
+      "source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+      "metric_version": "onboarding.v2.0.0",
+      "data_as_of": "2026-09-07 08:00:00"
+    },
+    {
+      "id": "onboarding-cohort-devices",
+      "label": "当前筛选实际涉及的设备分区",
+      "sql": "WITH periods AS (\n      SELECT 'current' AS period, :start AS start_date, :end AS end_date\n      UNION ALL SELECT 'previous', :compare_start, :compare_end\n    ), users AS (\n      SELECT p.period, u.* FROM onboarding_users u JOIN periods p\n        ON u.signup_date BETWEEN p.start_date AND p.end_date\n      WHERE u.signup_at < :as_of\n    ) SELECT DISTINCT device FROM users ORDER BY device",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "as_of": "2026-09-07 08:00:00",
+        "activation_seconds": 60
+      },
+      "rows": [
+        {
+          "device": "android"
+        },
+        {
+          "device": "ios"
+        },
+        {
+          "device": "web"
+        }
+      ],
+      "source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+      "metric_version": "onboarding.v2.0.0",
+      "data_as_of": "2026-09-07 08:00:00"
+    },
+    {
+      "id": "onboarding-batch-watermark",
+      "label": "源端批次清单与快照可见事件，计算连续设备水位",
+      "sql": "SELECT b.event_date,b.device,b.expected_events,COUNT(e.event_id) AS observed_events,\n      MAX(e.ingested_at) AS latest_arrival\n      FROM onboarding_ingest_batches b LEFT JOIN onboarding_events e\n        ON e.batch_id=b.batch_id AND e.ingested_at<=:as_of\n      WHERE b.event_date BETWEEN :batch_start AND :batch_end\n        AND b.manifest_available_at<=:as_of AND b.device IN (:quality_device_0,:quality_device_1,:quality_device_2)\n      GROUP BY b.batch_id ORDER BY b.event_date,b.device",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "as_of": "2026-09-07 08:00:00",
+        "activation_seconds": 60,
+        "batch_start": "2026-06-01",
+        "batch_end": "2026-09-06",
+        "quality_device_0": "android",
+        "quality_device_1": "ios",
+        "quality_device_2": "web"
+      },
+      "rows": [
+        {
+          "event_date": "2026-06-01",
+          "device": "android",
+          "expected_events": 237,
+          "observed_events": 237,
+          "latest_arrival": "2026-06-01 23:53:33"
+        },
+        {
+          "event_date": "2026-06-01",
+          "device": "ios",
+          "expected_events": 277,
+          "observed_events": 277,
+          "latest_arrival": "2026-06-01 23:28:15"
+        },
+        {
+          "event_date": "2026-06-01",
+          "device": "web",
+          "expected_events": 99,
+          "observed_events": 99,
+          "latest_arrival": "2026-06-01 22:45:38"
+        },
+        {
+          "event_date": "2026-06-02",
+          "device": "android",
+          "expected_events": 319,
+          "observed_events": 319,
+          "latest_arrival": "2026-06-03 00:05:57"
+        },
+        {
+          "event_date": "2026-06-02",
+          "device": "ios",
+          "expected_events": 284,
+          "observed_events": 284,
+          "latest_arrival": "2026-06-03 00:05:13"
+        },
+        {
+          "event_date": "2026-06-02",
+          "device": "web",
+          "expected_events": 162,
+          "observed_events": 162,
+          "latest_arrival": "2026-06-02 23:58:57"
+        },
+        {
+          "event_date": "2026-06-03",
+          "device": "android",
+          "expected_events": 355,
+          "observed_events": 355,
+          "latest_arrival": "2026-06-04 00:02:12"
+        },
+        {
+          "event_date": "2026-06-03",
+          "device": "ios",
+          "expected_events": 295,
+          "observed_events": 295,
+          "latest_arrival": "2026-06-04 00:04:32"
+        },
+        {
+          "event_date": "2026-06-03",
+          "device": "web",
+          "expected_events": 117,
+          "observed_events": 117,
+          "latest_arrival": "2026-06-03 21:39:35"
+        },
+        {
+          "event_date": "2026-06-04",
+          "device": "android",
+          "expected_events": 353,
+          "observed_events": 353,
+          "latest_arrival": "2026-06-05 00:03:54"
+        },
+        {
+          "event_date": "2026-06-04",
+          "device": "ios",
+          "expected_events": 262,
+          "observed_events": 262,
+          "latest_arrival": "2026-06-05 00:00:28"
+        },
+        {
+          "event_date": "2026-06-04",
+          "device": "web",
+          "expected_events": 116,
+          "observed_events": 116,
+          "latest_arrival": "2026-06-04 23:54:20"
+        },
+        {
+          "event_date": "2026-06-05",
+          "device": "android",
+          "expected_events": 318,
+          "observed_events": 318,
+          "latest_arrival": "2026-06-05 23:37:25"
+        },
+        {
+          "event_date": "2026-06-05",
+          "device": "ios",
+          "expected_events": 430,
+          "observed_events": 430,
+          "latest_arrival": "2026-06-06 00:00:21"
+        },
+        {
+          "event_date": "2026-06-05",
+          "device": "web",
+          "expected_events": 121,
+          "observed_events": 121,
+          "latest_arrival": "2026-06-06 00:06:34"
+        },
+        {
+          "event_date": "2026-06-06",
+          "device": "android",
+          "expected_events": 361,
+          "observed_events": 361,
+          "latest_arrival": "2026-06-06 23:44:08"
+        },
+        {
+          "event_date": "2026-06-06",
+          "device": "ios",
+          "expected_events": 342,
+          "observed_events": 342,
+          "latest_arrival": "2026-06-07 00:05:31"
+        },
+        {
+          "event_date": "2026-06-06",
+          "device": "web",
+          "expected_events": 131,
+          "observed_events": 131,
+          "latest_arrival": "2026-06-06 23:31:14"
+        },
+        {
+          "event_date": "2026-06-07",
+          "device": "android",
+          "expected_events": 358,
+          "observed_events": 358,
+          "latest_arrival": "2026-06-08 00:06:03"
+        },
+        {
+          "event_date": "2026-06-07",
+          "device": "ios",
+          "expected_events": 404,
+          "observed_events": 404,
+          "latest_arrival": "2026-06-08 00:03:15"
+        },
+        {
+          "event_date": "2026-06-07",
+          "device": "web",
+          "expected_events": 139,
+          "observed_events": 139,
+          "latest_arrival": "2026-06-07 23:03:29"
+        },
+        {
+          "event_date": "2026-06-08",
+          "device": "android",
+          "expected_events": 386,
+          "observed_events": 386,
+          "latest_arrival": "2026-06-09 00:02:09"
+        },
+        {
+          "event_date": "2026-06-08",
+          "device": "ios",
+          "expected_events": 350,
+          "observed_events": 350,
+          "latest_arrival": "2026-06-09 00:02:53"
+        },
+        {
+          "event_date": "2026-06-08",
+          "device": "web",
+          "expected_events": 144,
+          "observed_events": 144,
+          "latest_arrival": "2026-06-09 00:05:53"
+        },
+        {
+          "event_date": "2026-06-09",
+          "device": "android",
+          "expected_events": 428,
+          "observed_events": 428,
+          "latest_arrival": "2026-06-10 00:05:14"
+        },
+        {
+          "event_date": "2026-06-09",
+          "device": "ios",
+          "expected_events": 337,
+          "observed_events": 337,
+          "latest_arrival": "2026-06-10 00:06:01"
+        },
+        {
+          "event_date": "2026-06-09",
+          "device": "web",
+          "expected_events": 171,
+          "observed_events": 171,
+          "latest_arrival": "2026-06-09 23:51:40"
+        },
+        {
+          "event_date": "2026-06-10",
+          "device": "android",
+          "expected_events": 485,
+          "observed_events": 485,
+          "latest_arrival": "2026-06-11 00:02:20"
+        },
+        {
+          "event_date": "2026-06-10",
+          "device": "ios",
+          "expected_events": 358,
+          "observed_events": 358,
+          "latest_arrival": "2026-06-10 23:37:53"
+        },
+        {
+          "event_date": "2026-06-10",
+          "device": "web",
+          "expected_events": 123,
+          "observed_events": 123,
+          "latest_arrival": "2026-06-10 23:01:14"
+        },
+        {
+          "event_date": "2026-06-11",
+          "device": "android",
+          "expected_events": 501,
+          "observed_events": 501,
+          "latest_arrival": "2026-06-12 00:00:37"
+        },
+        {
+          "event_date": "2026-06-11",
+          "device": "ios",
+          "expected_events": 400,
+          "observed_events": 400,
+          "latest_arrival": "2026-06-11 23:53:49"
+        },
+        {
+          "event_date": "2026-06-11",
+          "device": "web",
+          "expected_events": 115,
+          "observed_events": 115,
+          "latest_arrival": "2026-06-11 23:52:43"
+        },
+        {
+          "event_date": "2026-06-12",
+          "device": "android",
+          "expected_events": 452,
+          "observed_events": 452,
+          "latest_arrival": "2026-06-13 00:02:25"
+        },
+        {
+          "event_date": "2026-06-12",
+          "device": "ios",
+          "expected_events": 310,
+          "observed_events": 310,
+          "latest_arrival": "2026-06-12 23:53:46"
+        },
+        {
+          "event_date": "2026-06-12",
+          "device": "web",
+          "expected_events": 147,
+          "observed_events": 147,
+          "latest_arrival": "2026-06-12 22:48:32"
+        },
+        {
+          "event_date": "2026-06-13",
+          "device": "android",
+          "expected_events": 446,
+          "observed_events": 446,
+          "latest_arrival": "2026-06-13 23:56:16"
+        },
+        {
+          "event_date": "2026-06-13",
+          "device": "ios",
+          "expected_events": 378,
+          "observed_events": 378,
+          "latest_arrival": "2026-06-13 23:53:02"
+        },
+        {
+          "event_date": "2026-06-13",
+          "device": "web",
+          "expected_events": 166,
+          "observed_events": 166,
+          "latest_arrival": "2026-06-14 00:04:22"
+        },
+        {
+          "event_date": "2026-06-14",
+          "device": "android",
+          "expected_events": 407,
+          "observed_events": 407,
+          "latest_arrival": "2026-06-15 00:07:02"
+        },
+        {
+          "event_date": "2026-06-14",
+          "device": "ios",
+          "expected_events": 402,
+          "observed_events": 402,
+          "latest_arrival": "2026-06-15 00:03:48"
+        },
+        {
+          "event_date": "2026-06-14",
+          "device": "web",
+          "expected_events": 121,
+          "observed_events": 121,
+          "latest_arrival": "2026-06-14 23:59:25"
+        },
+        {
+          "event_date": "2026-06-15",
+          "device": "android",
+          "expected_events": 380,
+          "observed_events": 380,
+          "latest_arrival": "2026-06-16 00:06:20"
+        },
+        {
+          "event_date": "2026-06-15",
+          "device": "ios",
+          "expected_events": 393,
+          "observed_events": 393,
+          "latest_arrival": "2026-06-15 23:32:03"
+        },
+        {
+          "event_date": "2026-06-15",
+          "device": "web",
+          "expected_events": 131,
+          "observed_events": 131,
+          "latest_arrival": "2026-06-16 00:03:02"
+        },
+        {
+          "event_date": "2026-06-16",
+          "device": "android",
+          "expected_events": 439,
+          "observed_events": 439,
+          "latest_arrival": "2026-06-16 23:46:10"
+        },
+        {
+          "event_date": "2026-06-16",
+          "device": "ios",
+          "expected_events": 370,
+          "observed_events": 370,
+          "latest_arrival": "2026-06-17 00:06:27"
+        },
+        {
+          "event_date": "2026-06-16",
+          "device": "web",
+          "expected_events": 156,
+          "observed_events": 156,
+          "latest_arrival": "2026-06-16 23:53:18"
+        },
+        {
+          "event_date": "2026-06-17",
+          "device": "android",
+          "expected_events": 493,
+          "observed_events": 493,
+          "latest_arrival": "2026-06-17 23:57:33"
+        },
+        {
+          "event_date": "2026-06-17",
+          "device": "ios",
+          "expected_events": 388,
+          "observed_events": 388,
+          "latest_arrival": "2026-06-18 00:01:31"
+        },
+        {
+          "event_date": "2026-06-17",
+          "device": "web",
+          "expected_events": 159,
+          "observed_events": 159,
+          "latest_arrival": "2026-06-18 00:07:01"
+        },
+        {
+          "event_date": "2026-06-18",
+          "device": "android",
+          "expected_events": 499,
+          "observed_events": 499,
+          "latest_arrival": "2026-06-18 23:50:26"
+        },
+        {
+          "event_date": "2026-06-18",
+          "device": "ios",
+          "expected_events": 402,
+          "observed_events": 402,
+          "latest_arrival": "2026-06-19 00:08:07"
+        },
+        {
+          "event_date": "2026-06-18",
+          "device": "web",
+          "expected_events": 243,
+          "observed_events": 243,
+          "latest_arrival": "2026-06-18 23:40:38"
+        },
+        {
+          "event_date": "2026-06-19",
+          "device": "android",
+          "expected_events": 431,
+          "observed_events": 431,
+          "latest_arrival": "2026-06-20 00:07:08"
+        },
+        {
+          "event_date": "2026-06-19",
+          "device": "ios",
+          "expected_events": 384,
+          "observed_events": 384,
+          "latest_arrival": "2026-06-19 23:50:04"
+        },
+        {
+          "event_date": "2026-06-19",
+          "device": "web",
+          "expected_events": 163,
+          "observed_events": 163,
+          "latest_arrival": "2026-06-20 00:04:23"
+        },
+        {
+          "event_date": "2026-06-20",
+          "device": "android",
+          "expected_events": 512,
+          "observed_events": 512,
+          "latest_arrival": "2026-06-20 23:58:46"
+        },
+        {
+          "event_date": "2026-06-20",
+          "device": "ios",
+          "expected_events": 453,
+          "observed_events": 453,
+          "latest_arrival": "2026-06-21 00:04:22"
+        },
+        {
+          "event_date": "2026-06-20",
+          "device": "web",
+          "expected_events": 130,
+          "observed_events": 130,
+          "latest_arrival": "2026-06-21 00:01:21"
+        },
+        {
+          "event_date": "2026-06-21",
+          "device": "android",
+          "expected_events": 439,
+          "observed_events": 439,
+          "latest_arrival": "2026-06-21 23:55:44"
+        },
+        {
+          "event_date": "2026-06-21",
+          "device": "ios",
+          "expected_events": 435,
+          "observed_events": 435,
+          "latest_arrival": "2026-06-22 00:05:42"
+        },
+        {
+          "event_date": "2026-06-21",
+          "device": "web",
+          "expected_events": 192,
+          "observed_events": 192,
+          "latest_arrival": "2026-06-22 00:03:19"
+        },
+        {
+          "event_date": "2026-06-22",
+          "device": "android",
+          "expected_events": 532,
+          "observed_events": 532,
+          "latest_arrival": "2026-06-23 00:00:40"
+        },
+        {
+          "event_date": "2026-06-22",
+          "device": "ios",
+          "expected_events": 425,
+          "observed_events": 425,
+          "latest_arrival": "2026-06-23 00:02:51"
+        },
+        {
+          "event_date": "2026-06-22",
+          "device": "web",
+          "expected_events": 161,
+          "observed_events": 161,
+          "latest_arrival": "2026-06-22 23:55:11"
+        },
+        {
+          "event_date": "2026-06-23",
+          "device": "android",
+          "expected_events": 501,
+          "observed_events": 501,
+          "latest_arrival": "2026-06-24 00:08:35"
+        },
+        {
+          "event_date": "2026-06-23",
+          "device": "ios",
+          "expected_events": 353,
+          "observed_events": 353,
+          "latest_arrival": "2026-06-23 23:38:27"
+        },
+        {
+          "event_date": "2026-06-23",
+          "device": "web",
+          "expected_events": 186,
+          "observed_events": 186,
+          "latest_arrival": "2026-06-23 23:39:54"
+        },
+        {
+          "event_date": "2026-06-24",
+          "device": "android",
+          "expected_events": 534,
+          "observed_events": 534,
+          "latest_arrival": "2026-06-25 00:02:45"
+        },
+        {
+          "event_date": "2026-06-24",
+          "device": "ios",
+          "expected_events": 324,
+          "observed_events": 324,
+          "latest_arrival": "2026-06-25 00:08:54"
+        },
+        {
+          "event_date": "2026-06-24",
+          "device": "web",
+          "expected_events": 156,
+          "observed_events": 156,
+          "latest_arrival": "2026-06-24 23:47:06"
+        },
+        {
+          "event_date": "2026-06-25",
+          "device": "android",
+          "expected_events": 455,
+          "observed_events": 455,
+          "latest_arrival": "2026-06-26 00:02:44"
+        },
+        {
+          "event_date": "2026-06-25",
+          "device": "ios",
+          "expected_events": 376,
+          "observed_events": 376,
+          "latest_arrival": "2026-06-25 23:59:32"
+        },
+        {
+          "event_date": "2026-06-25",
+          "device": "web",
+          "expected_events": 183,
+          "observed_events": 183,
+          "latest_arrival": "2026-06-25 23:57:27"
+        },
+        {
+          "event_date": "2026-06-26",
+          "device": "android",
+          "expected_events": 503,
+          "observed_events": 503,
+          "latest_arrival": "2026-06-27 00:04:43"
+        },
+        {
+          "event_date": "2026-06-26",
+          "device": "ios",
+          "expected_events": 363,
+          "observed_events": 363,
+          "latest_arrival": "2026-06-27 00:02:26"
+        },
+        {
+          "event_date": "2026-06-26",
+          "device": "web",
+          "expected_events": 220,
+          "observed_events": 220,
+          "latest_arrival": "2026-06-26 23:01:53"
+        },
+        {
+          "event_date": "2026-06-27",
+          "device": "android",
+          "expected_events": 446,
+          "observed_events": 446,
+          "latest_arrival": "2026-06-27 23:59:35"
+        },
+        {
+          "event_date": "2026-06-27",
+          "device": "ios",
+          "expected_events": 428,
+          "observed_events": 428,
+          "latest_arrival": "2026-06-27 23:53:43"
+        },
+        {
+          "event_date": "2026-06-27",
+          "device": "web",
+          "expected_events": 195,
+          "observed_events": 195,
+          "latest_arrival": "2026-06-27 23:03:51"
+        },
+        {
+          "event_date": "2026-06-28",
+          "device": "android",
+          "expected_events": 499,
+          "observed_events": 499,
+          "latest_arrival": "2026-06-29 00:03:52"
+        },
+        {
+          "event_date": "2026-06-28",
+          "device": "ios",
+          "expected_events": 395,
+          "observed_events": 395,
+          "latest_arrival": "2026-06-29 00:04:05"
+        },
+        {
+          "event_date": "2026-06-28",
+          "device": "web",
+          "expected_events": 209,
+          "observed_events": 209,
+          "latest_arrival": "2026-06-28 23:53:14"
+        },
+        {
+          "event_date": "2026-06-29",
+          "device": "android",
+          "expected_events": 471,
+          "observed_events": 471,
+          "latest_arrival": "2026-06-30 00:06:09"
+        },
+        {
+          "event_date": "2026-06-29",
+          "device": "ios",
+          "expected_events": 404,
+          "observed_events": 404,
+          "latest_arrival": "2026-06-29 23:55:40"
+        },
+        {
+          "event_date": "2026-06-29",
+          "device": "web",
+          "expected_events": 156,
+          "observed_events": 156,
+          "latest_arrival": "2026-06-29 23:42:20"
+        },
+        {
+          "event_date": "2026-06-30",
+          "device": "android",
+          "expected_events": 543,
+          "observed_events": 543,
+          "latest_arrival": "2026-06-30 23:57:25"
+        },
+        {
+          "event_date": "2026-06-30",
+          "device": "ios",
+          "expected_events": 489,
+          "observed_events": 489,
+          "latest_arrival": "2026-07-01 00:03:51"
+        },
+        {
+          "event_date": "2026-06-30",
+          "device": "web",
+          "expected_events": 147,
+          "observed_events": 147,
+          "latest_arrival": "2026-06-30 23:40:15"
+        },
+        {
+          "event_date": "2026-07-01",
+          "device": "android",
+          "expected_events": 569,
+          "observed_events": 569,
+          "latest_arrival": "2026-07-01 23:49:11"
+        },
+        {
+          "event_date": "2026-07-01",
+          "device": "ios",
+          "expected_events": 478,
+          "observed_events": 478,
+          "latest_arrival": "2026-07-02 00:04:32"
+        },
+        {
+          "event_date": "2026-07-01",
+          "device": "web",
+          "expected_events": 191,
+          "observed_events": 191,
+          "latest_arrival": "2026-07-02 00:00:19"
+        },
+        {
+          "event_date": "2026-07-02",
+          "device": "android",
+          "expected_events": 486,
+          "observed_events": 486,
+          "latest_arrival": "2026-07-03 00:02:06"
+        },
+        {
+          "event_date": "2026-07-02",
+          "device": "ios",
+          "expected_events": 373,
+          "observed_events": 373,
+          "latest_arrival": "2026-07-02 23:58:34"
+        },
+        {
+          "event_date": "2026-07-02",
+          "device": "web",
+          "expected_events": 179,
+          "observed_events": 179,
+          "latest_arrival": "2026-07-03 00:02:27"
+        },
+        {
+          "event_date": "2026-07-03",
+          "device": "android",
+          "expected_events": 476,
+          "observed_events": 476,
+          "latest_arrival": "2026-07-03 23:57:31"
+        },
+        {
+          "event_date": "2026-07-03",
+          "device": "ios",
+          "expected_events": 474,
+          "observed_events": 474,
+          "latest_arrival": "2026-07-04 00:08:29"
+        },
+        {
+          "event_date": "2026-07-03",
+          "device": "web",
+          "expected_events": 202,
+          "observed_events": 202,
+          "latest_arrival": "2026-07-03 23:59:21"
+        },
+        {
+          "event_date": "2026-07-04",
+          "device": "android",
+          "expected_events": 539,
+          "observed_events": 539,
+          "latest_arrival": "2026-07-05 00:01:08"
+        },
+        {
+          "event_date": "2026-07-04",
+          "device": "ios",
+          "expected_events": 373,
+          "observed_events": 373,
+          "latest_arrival": "2026-07-05 00:03:56"
+        },
+        {
+          "event_date": "2026-07-04",
+          "device": "web",
+          "expected_events": 171,
+          "observed_events": 171,
+          "latest_arrival": "2026-07-04 23:53:11"
+        },
+        {
+          "event_date": "2026-07-05",
+          "device": "android",
+          "expected_events": 438,
+          "observed_events": 438,
+          "latest_arrival": "2026-07-05 23:51:13"
+        },
+        {
+          "event_date": "2026-07-05",
+          "device": "ios",
+          "expected_events": 449,
+          "observed_events": 449,
+          "latest_arrival": "2026-07-06 00:02:56"
+        },
+        {
+          "event_date": "2026-07-05",
+          "device": "web",
+          "expected_events": 152,
+          "observed_events": 152,
+          "latest_arrival": "2026-07-05 23:10:14"
+        },
+        {
+          "event_date": "2026-07-06",
+          "device": "android",
+          "expected_events": 481,
+          "observed_events": 481,
+          "latest_arrival": "2026-07-07 00:06:10"
+        },
+        {
+          "event_date": "2026-07-06",
+          "device": "ios",
+          "expected_events": 385,
+          "observed_events": 385,
+          "latest_arrival": "2026-07-07 00:05:41"
+        },
+        {
+          "event_date": "2026-07-06",
+          "device": "web",
+          "expected_events": 144,
+          "observed_events": 144,
+          "latest_arrival": "2026-07-07 00:04:09"
+        },
+        {
+          "event_date": "2026-07-07",
+          "device": "android",
+          "expected_events": 547,
+          "observed_events": 547,
+          "latest_arrival": "2026-07-08 00:03:00"
+        },
+        {
+          "event_date": "2026-07-07",
+          "device": "ios",
+          "expected_events": 456,
+          "observed_events": 456,
+          "latest_arrival": "2026-07-07 23:57:59"
+        },
+        {
+          "event_date": "2026-07-07",
+          "device": "web",
+          "expected_events": 165,
+          "observed_events": 165,
+          "latest_arrival": "2026-07-08 00:07:48"
+        },
+        {
+          "event_date": "2026-07-08",
+          "device": "android",
+          "expected_events": 524,
+          "observed_events": 524,
+          "latest_arrival": "2026-07-09 00:01:39"
+        },
+        {
+          "event_date": "2026-07-08",
+          "device": "ios",
+          "expected_events": 427,
+          "observed_events": 427,
+          "latest_arrival": "2026-07-08 23:45:37"
+        },
+        {
+          "event_date": "2026-07-08",
+          "device": "web",
+          "expected_events": 162,
+          "observed_events": 162,
+          "latest_arrival": "2026-07-08 23:47:51"
+        },
+        {
+          "event_date": "2026-07-09",
+          "device": "android",
+          "expected_events": 475,
+          "observed_events": 475,
+          "latest_arrival": "2026-07-10 00:00:19"
+        },
+        {
+          "event_date": "2026-07-09",
+          "device": "ios",
+          "expected_events": 373,
+          "observed_events": 373,
+          "latest_arrival": "2026-07-10 00:06:44"
+        },
+        {
+          "event_date": "2026-07-09",
+          "device": "web",
+          "expected_events": 159,
+          "observed_events": 159,
+          "latest_arrival": "2026-07-09 23:46:23"
+        },
+        {
+          "event_date": "2026-07-10",
+          "device": "android",
+          "expected_events": 438,
+          "observed_events": 438,
+          "latest_arrival": "2026-07-11 00:03:54"
+        },
+        {
+          "event_date": "2026-07-10",
+          "device": "ios",
+          "expected_events": 510,
+          "observed_events": 510,
+          "latest_arrival": "2026-07-10 23:57:54"
+        },
+        {
+          "event_date": "2026-07-10",
+          "device": "web",
+          "expected_events": 169,
+          "observed_events": 169,
+          "latest_arrival": "2026-07-10 23:56:35"
+        },
+        {
+          "event_date": "2026-07-11",
+          "device": "android",
+          "expected_events": 484,
+          "observed_events": 484,
+          "latest_arrival": "2026-07-11 23:57:43"
+        },
+        {
+          "event_date": "2026-07-11",
+          "device": "ios",
+          "expected_events": 474,
+          "observed_events": 474,
+          "latest_arrival": "2026-07-12 00:09:29"
+        },
+        {
+          "event_date": "2026-07-11",
+          "device": "web",
+          "expected_events": 158,
+          "observed_events": 158,
+          "latest_arrival": "2026-07-11 23:37:58"
+        },
+        {
+          "event_date": "2026-07-12",
+          "device": "android",
+          "expected_events": 618,
+          "observed_events": 618,
+          "latest_arrival": "2026-07-12 23:57:52"
+        },
+        {
+          "event_date": "2026-07-12",
+          "device": "ios",
+          "expected_events": 440,
+          "observed_events": 440,
+          "latest_arrival": "2026-07-13 00:05:17"
+        },
+        {
+          "event_date": "2026-07-12",
+          "device": "web",
+          "expected_events": 149,
+          "observed_events": 149,
+          "latest_arrival": "2026-07-12 23:56:37"
+        },
+        {
+          "event_date": "2026-07-13",
+          "device": "android",
+          "expected_events": 508,
+          "observed_events": 508,
+          "latest_arrival": "2026-07-14 00:02:44"
+        },
+        {
+          "event_date": "2026-07-13",
+          "device": "ios",
+          "expected_events": 548,
+          "observed_events": 548,
+          "latest_arrival": "2026-07-14 00:05:16"
+        },
+        {
+          "event_date": "2026-07-13",
+          "device": "web",
+          "expected_events": 164,
+          "observed_events": 164,
+          "latest_arrival": "2026-07-13 23:46:17"
+        },
+        {
+          "event_date": "2026-07-14",
+          "device": "android",
+          "expected_events": 514,
+          "observed_events": 514,
+          "latest_arrival": "2026-07-15 00:05:39"
+        },
+        {
+          "event_date": "2026-07-14",
+          "device": "ios",
+          "expected_events": 484,
+          "observed_events": 484,
+          "latest_arrival": "2026-07-15 00:08:12"
+        },
+        {
+          "event_date": "2026-07-14",
+          "device": "web",
+          "expected_events": 224,
+          "observed_events": 224,
+          "latest_arrival": "2026-07-15 00:03:48"
+        },
+        {
+          "event_date": "2026-07-15",
+          "device": "android",
+          "expected_events": 498,
+          "observed_events": 498,
+          "latest_arrival": "2026-07-15 23:58:30"
+        },
+        {
+          "event_date": "2026-07-15",
+          "device": "ios",
+          "expected_events": 433,
+          "observed_events": 433,
+          "latest_arrival": "2026-07-15 23:46:55"
+        },
+        {
+          "event_date": "2026-07-15",
+          "device": "web",
+          "expected_events": 200,
+          "observed_events": 200,
+          "latest_arrival": "2026-07-16 00:05:03"
+        },
+        {
+          "event_date": "2026-07-16",
+          "device": "android",
+          "expected_events": 512,
+          "observed_events": 512,
+          "latest_arrival": "2026-07-17 00:02:38"
+        },
+        {
+          "event_date": "2026-07-16",
+          "device": "ios",
+          "expected_events": 415,
+          "observed_events": 415,
+          "latest_arrival": "2026-07-17 00:00:23"
+        },
+        {
+          "event_date": "2026-07-16",
+          "device": "web",
+          "expected_events": 149,
+          "observed_events": 149,
+          "latest_arrival": "2026-07-16 23:17:37"
+        },
+        {
+          "event_date": "2026-07-17",
+          "device": "android",
+          "expected_events": 431,
+          "observed_events": 431,
+          "latest_arrival": "2026-07-18 00:07:15"
+        },
+        {
+          "event_date": "2026-07-17",
+          "device": "ios",
+          "expected_events": 478,
+          "observed_events": 478,
+          "latest_arrival": "2026-07-18 00:09:20"
+        },
+        {
+          "event_date": "2026-07-17",
+          "device": "web",
+          "expected_events": 141,
+          "observed_events": 141,
+          "latest_arrival": "2026-07-17 23:35:33"
+        },
+        {
+          "event_date": "2026-07-18",
+          "device": "android",
+          "expected_events": 519,
+          "observed_events": 519,
+          "latest_arrival": "2026-07-19 00:09:27"
+        },
+        {
+          "event_date": "2026-07-18",
+          "device": "ios",
+          "expected_events": 372,
+          "observed_events": 372,
+          "latest_arrival": "2026-07-18 23:57:24"
+        },
+        {
+          "event_date": "2026-07-18",
+          "device": "web",
+          "expected_events": 156,
+          "observed_events": 156,
+          "latest_arrival": "2026-07-18 23:28:24"
+        },
+        {
+          "event_date": "2026-07-19",
+          "device": "android",
+          "expected_events": 458,
+          "observed_events": 458,
+          "latest_arrival": "2026-07-19 23:53:44"
+        },
+        {
+          "event_date": "2026-07-19",
+          "device": "ios",
+          "expected_events": 467,
+          "observed_events": 467,
+          "latest_arrival": "2026-07-20 00:06:40"
+        },
+        {
+          "event_date": "2026-07-19",
+          "device": "web",
+          "expected_events": 145,
+          "observed_events": 145,
+          "latest_arrival": "2026-07-19 23:17:49"
+        },
+        {
+          "event_date": "2026-07-20",
+          "device": "android",
+          "expected_events": 472,
+          "observed_events": 472,
+          "latest_arrival": "2026-07-21 00:06:44"
+        },
+        {
+          "event_date": "2026-07-20",
+          "device": "ios",
+          "expected_events": 445,
+          "observed_events": 445,
+          "latest_arrival": "2026-07-20 23:53:39"
+        },
+        {
+          "event_date": "2026-07-20",
+          "device": "web",
+          "expected_events": 144,
+          "observed_events": 144,
+          "latest_arrival": "2026-07-20 23:38:11"
+        },
+        {
+          "event_date": "2026-07-21",
+          "device": "android",
+          "expected_events": 492,
+          "observed_events": 492,
+          "latest_arrival": "2026-07-22 00:00:01"
+        },
+        {
+          "event_date": "2026-07-21",
+          "device": "ios",
+          "expected_events": 417,
+          "observed_events": 417,
+          "latest_arrival": "2026-07-21 23:58:05"
+        },
+        {
+          "event_date": "2026-07-21",
+          "device": "web",
+          "expected_events": 102,
+          "observed_events": 102,
+          "latest_arrival": "2026-07-22 00:03:06"
+        },
+        {
+          "event_date": "2026-07-22",
+          "device": "android",
+          "expected_events": 535,
+          "observed_events": 535,
+          "latest_arrival": "2026-07-23 00:04:47"
+        },
+        {
+          "event_date": "2026-07-22",
+          "device": "ios",
+          "expected_events": 458,
+          "observed_events": 458,
+          "latest_arrival": "2026-07-23 00:08:35"
+        },
+        {
+          "event_date": "2026-07-22",
+          "device": "web",
+          "expected_events": 128,
+          "observed_events": 128,
+          "latest_arrival": "2026-07-23 00:04:30"
+        },
+        {
+          "event_date": "2026-07-23",
+          "device": "android",
+          "expected_events": 523,
+          "observed_events": 523,
+          "latest_arrival": "2026-07-23 23:56:23"
+        },
+        {
+          "event_date": "2026-07-23",
+          "device": "ios",
+          "expected_events": 426,
+          "observed_events": 426,
+          "latest_arrival": "2026-07-23 23:59:06"
+        },
+        {
+          "event_date": "2026-07-23",
+          "device": "web",
+          "expected_events": 203,
+          "observed_events": 203,
+          "latest_arrival": "2026-07-24 00:05:20"
+        },
+        {
+          "event_date": "2026-07-24",
+          "device": "android",
+          "expected_events": 496,
+          "observed_events": 496,
+          "latest_arrival": "2026-07-25 00:05:10"
+        },
+        {
+          "event_date": "2026-07-24",
+          "device": "ios",
+          "expected_events": 458,
+          "observed_events": 458,
+          "latest_arrival": "2026-07-25 00:02:09"
+        },
+        {
+          "event_date": "2026-07-24",
+          "device": "web",
+          "expected_events": 119,
+          "observed_events": 119,
+          "latest_arrival": "2026-07-24 23:40:02"
+        },
+        {
+          "event_date": "2026-07-25",
+          "device": "android",
+          "expected_events": 498,
+          "observed_events": 498,
+          "latest_arrival": "2026-07-26 00:03:49"
+        },
+        {
+          "event_date": "2026-07-25",
+          "device": "ios",
+          "expected_events": 429,
+          "observed_events": 429,
+          "latest_arrival": "2026-07-26 00:06:03"
+        },
+        {
+          "event_date": "2026-07-25",
+          "device": "web",
+          "expected_events": 126,
+          "observed_events": 126,
+          "latest_arrival": "2026-07-25 23:39:23"
+        },
+        {
+          "event_date": "2026-07-26",
+          "device": "android",
+          "expected_events": 517,
+          "observed_events": 517,
+          "latest_arrival": "2026-07-26 23:57:27"
+        },
+        {
+          "event_date": "2026-07-26",
+          "device": "ios",
+          "expected_events": 429,
+          "observed_events": 429,
+          "latest_arrival": "2026-07-27 00:05:46"
+        },
+        {
+          "event_date": "2026-07-26",
+          "device": "web",
+          "expected_events": 154,
+          "observed_events": 154,
+          "latest_arrival": "2026-07-26 23:40:14"
+        },
+        {
+          "event_date": "2026-07-27",
+          "device": "android",
+          "expected_events": 569,
+          "observed_events": 569,
+          "latest_arrival": "2026-07-28 00:05:58"
+        },
+        {
+          "event_date": "2026-07-27",
+          "device": "ios",
+          "expected_events": 419,
+          "observed_events": 419,
+          "latest_arrival": "2026-07-28 00:00:55"
+        },
+        {
+          "event_date": "2026-07-27",
+          "device": "web",
+          "expected_events": 184,
+          "observed_events": 184,
+          "latest_arrival": "2026-07-27 23:32:22"
+        },
+        {
+          "event_date": "2026-07-28",
+          "device": "android",
+          "expected_events": 536,
+          "observed_events": 536,
+          "latest_arrival": "2026-07-28 23:56:28"
+        },
+        {
+          "event_date": "2026-07-28",
+          "device": "ios",
+          "expected_events": 427,
+          "observed_events": 427,
+          "latest_arrival": "2026-07-28 23:54:14"
+        },
+        {
+          "event_date": "2026-07-28",
+          "device": "web",
+          "expected_events": 193,
+          "observed_events": 193,
+          "latest_arrival": "2026-07-28 23:47:06"
+        },
+        {
+          "event_date": "2026-07-29",
+          "device": "android",
+          "expected_events": 491,
+          "observed_events": 491,
+          "latest_arrival": "2026-07-30 00:02:22"
+        },
+        {
+          "event_date": "2026-07-29",
+          "device": "ios",
+          "expected_events": 460,
+          "observed_events": 460,
+          "latest_arrival": "2026-07-30 00:06:02"
+        },
+        {
+          "event_date": "2026-07-29",
+          "device": "web",
+          "expected_events": 158,
+          "observed_events": 158,
+          "latest_arrival": "2026-07-29 23:59:31"
+        },
+        {
+          "event_date": "2026-07-30",
+          "device": "android",
+          "expected_events": 508,
+          "observed_events": 508,
+          "latest_arrival": "2026-07-31 00:01:52"
+        },
+        {
+          "event_date": "2026-07-30",
+          "device": "ios",
+          "expected_events": 484,
+          "observed_events": 484,
+          "latest_arrival": "2026-07-31 00:02:54"
+        },
+        {
+          "event_date": "2026-07-30",
+          "device": "web",
+          "expected_events": 239,
+          "observed_events": 239,
+          "latest_arrival": "2026-07-31 00:03:39"
+        },
+        {
+          "event_date": "2026-07-31",
+          "device": "android",
+          "expected_events": 495,
+          "observed_events": 495,
+          "latest_arrival": "2026-08-01 00:07:27"
+        },
+        {
+          "event_date": "2026-07-31",
+          "device": "ios",
+          "expected_events": 499,
+          "observed_events": 499,
+          "latest_arrival": "2026-08-01 00:06:21"
+        },
+        {
+          "event_date": "2026-07-31",
+          "device": "web",
+          "expected_events": 156,
+          "observed_events": 156,
+          "latest_arrival": "2026-08-01 00:08:41"
+        },
+        {
+          "event_date": "2026-08-01",
+          "device": "android",
+          "expected_events": 506,
+          "observed_events": 506,
+          "latest_arrival": "2026-08-02 00:04:48"
+        },
+        {
+          "event_date": "2026-08-01",
+          "device": "ios",
+          "expected_events": 526,
+          "observed_events": 526,
+          "latest_arrival": "2026-08-01 23:56:13"
+        },
+        {
+          "event_date": "2026-08-01",
+          "device": "web",
+          "expected_events": 180,
+          "observed_events": 180,
+          "latest_arrival": "2026-08-01 23:59:13"
+        },
+        {
+          "event_date": "2026-08-02",
+          "device": "android",
+          "expected_events": 531,
+          "observed_events": 531,
+          "latest_arrival": "2026-08-03 00:06:56"
+        },
+        {
+          "event_date": "2026-08-02",
+          "device": "ios",
+          "expected_events": 446,
+          "observed_events": 446,
+          "latest_arrival": "2026-08-03 00:04:57"
+        },
+        {
+          "event_date": "2026-08-02",
+          "device": "web",
+          "expected_events": 191,
+          "observed_events": 191,
+          "latest_arrival": "2026-08-02 23:56:33"
+        },
+        {
+          "event_date": "2026-08-03",
+          "device": "android",
+          "expected_events": 516,
+          "observed_events": 516,
+          "latest_arrival": "2026-08-04 00:02:26"
+        },
+        {
+          "event_date": "2026-08-03",
+          "device": "ios",
+          "expected_events": 504,
+          "observed_events": 504,
+          "latest_arrival": "2026-08-04 00:07:37"
+        },
+        {
+          "event_date": "2026-08-03",
+          "device": "web",
+          "expected_events": 126,
+          "observed_events": 126,
+          "latest_arrival": "2026-08-04 00:07:50"
+        },
+        {
+          "event_date": "2026-08-04",
+          "device": "android",
+          "expected_events": 475,
+          "observed_events": 475,
+          "latest_arrival": "2026-08-04 23:54:54"
+        },
+        {
+          "event_date": "2026-08-04",
+          "device": "ios",
+          "expected_events": 466,
+          "observed_events": 466,
+          "latest_arrival": "2026-08-05 00:03:22"
+        },
+        {
+          "event_date": "2026-08-04",
+          "device": "web",
+          "expected_events": 169,
+          "observed_events": 169,
+          "latest_arrival": "2026-08-05 00:05:16"
+        },
+        {
+          "event_date": "2026-08-05",
+          "device": "android",
+          "expected_events": 520,
+          "observed_events": 520,
+          "latest_arrival": "2026-08-06 00:07:37"
+        },
+        {
+          "event_date": "2026-08-05",
+          "device": "ios",
+          "expected_events": 443,
+          "observed_events": 443,
+          "latest_arrival": "2026-08-06 00:03:06"
+        },
+        {
+          "event_date": "2026-08-05",
+          "device": "web",
+          "expected_events": 162,
+          "observed_events": 162,
+          "latest_arrival": "2026-08-05 23:22:56"
+        },
+        {
+          "event_date": "2026-08-06",
+          "device": "android",
+          "expected_events": 404,
+          "observed_events": 404,
+          "latest_arrival": "2026-08-07 00:03:38"
+        },
+        {
+          "event_date": "2026-08-06",
+          "device": "ios",
+          "expected_events": 417,
+          "observed_events": 417,
+          "latest_arrival": "2026-08-06 23:55:10"
+        },
+        {
+          "event_date": "2026-08-06",
+          "device": "web",
+          "expected_events": 207,
+          "observed_events": 207,
+          "latest_arrival": "2026-08-07 00:03:07"
+        },
+        {
+          "event_date": "2026-08-07",
+          "device": "android",
+          "expected_events": 514,
+          "observed_events": 514,
+          "latest_arrival": "2026-08-08 00:05:18"
+        },
+        {
+          "event_date": "2026-08-07",
+          "device": "ios",
+          "expected_events": 444,
+          "observed_events": 444,
+          "latest_arrival": "2026-08-07 23:50:18"
+        },
+        {
+          "event_date": "2026-08-07",
+          "device": "web",
+          "expected_events": 141,
+          "observed_events": 141,
+          "latest_arrival": "2026-08-07 23:48:07"
+        },
+        {
+          "event_date": "2026-08-08",
+          "device": "android",
+          "expected_events": 562,
+          "observed_events": 562,
+          "latest_arrival": "2026-08-09 00:03:25"
+        },
+        {
+          "event_date": "2026-08-08",
+          "device": "ios",
+          "expected_events": 427,
+          "observed_events": 427,
+          "latest_arrival": "2026-08-08 23:56:23"
+        },
+        {
+          "event_date": "2026-08-08",
+          "device": "web",
+          "expected_events": 179,
+          "observed_events": 179,
+          "latest_arrival": "2026-08-09 00:04:21"
+        },
+        {
+          "event_date": "2026-08-09",
+          "device": "android",
+          "expected_events": 467,
+          "observed_events": 467,
+          "latest_arrival": "2026-08-10 00:01:19"
+        },
+        {
+          "event_date": "2026-08-09",
+          "device": "ios",
+          "expected_events": 488,
+          "observed_events": 488,
+          "latest_arrival": "2026-08-10 00:09:11"
+        },
+        {
+          "event_date": "2026-08-09",
+          "device": "web",
+          "expected_events": 183,
+          "observed_events": 183,
+          "latest_arrival": "2026-08-09 23:54:58"
+        },
+        {
+          "event_date": "2026-08-10",
+          "device": "android",
+          "expected_events": 448,
+          "observed_events": 448,
+          "latest_arrival": "2026-08-11 00:08:27"
+        },
+        {
+          "event_date": "2026-08-10",
+          "device": "ios",
+          "expected_events": 455,
+          "observed_events": 455,
+          "latest_arrival": "2026-08-11 00:06:39"
+        },
+        {
+          "event_date": "2026-08-10",
+          "device": "web",
+          "expected_events": 175,
+          "observed_events": 175,
+          "latest_arrival": "2026-08-10 23:11:51"
+        },
+        {
+          "event_date": "2026-08-11",
+          "device": "android",
+          "expected_events": 469,
+          "observed_events": 469,
+          "latest_arrival": "2026-08-12 00:07:20"
+        },
+        {
+          "event_date": "2026-08-11",
+          "device": "ios",
+          "expected_events": 472,
+          "observed_events": 472,
+          "latest_arrival": "2026-08-11 23:59:48"
+        },
+        {
+          "event_date": "2026-08-11",
+          "device": "web",
+          "expected_events": 157,
+          "observed_events": 157,
+          "latest_arrival": "2026-08-11 23:58:16"
+        },
+        {
+          "event_date": "2026-08-12",
+          "device": "android",
+          "expected_events": 440,
+          "observed_events": 440,
+          "latest_arrival": "2026-08-13 00:02:52"
+        },
+        {
+          "event_date": "2026-08-12",
+          "device": "ios",
+          "expected_events": 431,
+          "observed_events": 431,
+          "latest_arrival": "2026-08-12 23:56:14"
+        },
+        {
+          "event_date": "2026-08-12",
+          "device": "web",
+          "expected_events": 151,
+          "observed_events": 151,
+          "latest_arrival": "2026-08-13 00:04:03"
+        },
+        {
+          "event_date": "2026-08-13",
+          "device": "android",
+          "expected_events": 506,
+          "observed_events": 506,
+          "latest_arrival": "2026-08-14 00:01:13"
+        },
+        {
+          "event_date": "2026-08-13",
+          "device": "ios",
+          "expected_events": 538,
+          "observed_events": 538,
+          "latest_arrival": "2026-08-13 23:59:25"
+        },
+        {
+          "event_date": "2026-08-13",
+          "device": "web",
+          "expected_events": 155,
+          "observed_events": 155,
+          "latest_arrival": "2026-08-13 23:56:41"
+        },
+        {
+          "event_date": "2026-08-14",
+          "device": "android",
+          "expected_events": 467,
+          "observed_events": 467,
+          "latest_arrival": "2026-08-14 23:50:25"
+        },
+        {
+          "event_date": "2026-08-14",
+          "device": "ios",
+          "expected_events": 459,
+          "observed_events": 459,
+          "latest_arrival": "2026-08-15 00:08:22"
+        },
+        {
+          "event_date": "2026-08-14",
+          "device": "web",
+          "expected_events": 160,
+          "observed_events": 160,
+          "latest_arrival": "2026-08-15 00:05:38"
+        },
+        {
+          "event_date": "2026-08-15",
+          "device": "android",
+          "expected_events": 535,
+          "observed_events": 535,
+          "latest_arrival": "2026-08-16 00:04:44"
+        },
+        {
+          "event_date": "2026-08-15",
+          "device": "ios",
+          "expected_events": 484,
+          "observed_events": 484,
+          "latest_arrival": "2026-08-16 00:06:54"
+        },
+        {
+          "event_date": "2026-08-15",
+          "device": "web",
+          "expected_events": 146,
+          "observed_events": 146,
+          "latest_arrival": "2026-08-15 23:48:07"
+        },
+        {
+          "event_date": "2026-08-16",
+          "device": "android",
+          "expected_events": 506,
+          "observed_events": 506,
+          "latest_arrival": "2026-08-17 00:03:55"
+        },
+        {
+          "event_date": "2026-08-16",
+          "device": "ios",
+          "expected_events": 486,
+          "observed_events": 486,
+          "latest_arrival": "2026-08-16 23:59:59"
+        },
+        {
+          "event_date": "2026-08-16",
+          "device": "web",
+          "expected_events": 176,
+          "observed_events": 176,
+          "latest_arrival": "2026-08-17 00:05:50"
+        },
+        {
+          "event_date": "2026-08-17",
+          "device": "android",
+          "expected_events": 490,
+          "observed_events": 490,
+          "latest_arrival": "2026-08-17 23:58:30"
+        },
+        {
+          "event_date": "2026-08-17",
+          "device": "ios",
+          "expected_events": 477,
+          "observed_events": 477,
+          "latest_arrival": "2026-08-17 23:59:01"
+        },
+        {
+          "event_date": "2026-08-17",
+          "device": "web",
+          "expected_events": 146,
+          "observed_events": 146,
+          "latest_arrival": "2026-08-18 00:02:08"
+        },
+        {
+          "event_date": "2026-08-18",
+          "device": "android",
+          "expected_events": 535,
+          "observed_events": 535,
+          "latest_arrival": "2026-08-19 00:04:25"
+        },
+        {
+          "event_date": "2026-08-18",
+          "device": "ios",
+          "expected_events": 445,
+          "observed_events": 445,
+          "latest_arrival": "2026-08-18 23:59:17"
+        },
+        {
+          "event_date": "2026-08-18",
+          "device": "web",
+          "expected_events": 167,
+          "observed_events": 167,
+          "latest_arrival": "2026-08-18 23:49:47"
+        },
+        {
+          "event_date": "2026-08-19",
+          "device": "android",
+          "expected_events": 534,
+          "observed_events": 534,
+          "latest_arrival": "2026-08-20 00:05:03"
+        },
+        {
+          "event_date": "2026-08-19",
+          "device": "ios",
+          "expected_events": 445,
+          "observed_events": 445,
+          "latest_arrival": "2026-08-20 00:06:21"
+        },
+        {
+          "event_date": "2026-08-19",
+          "device": "web",
+          "expected_events": 130,
+          "observed_events": 130,
+          "latest_arrival": "2026-08-19 23:57:56"
+        },
+        {
+          "event_date": "2026-08-20",
+          "device": "android",
+          "expected_events": 491,
+          "observed_events": 491,
+          "latest_arrival": "2026-08-21 00:04:01"
+        },
+        {
+          "event_date": "2026-08-20",
+          "device": "ios",
+          "expected_events": 416,
+          "observed_events": 416,
+          "latest_arrival": "2026-08-21 00:05:54"
+        },
+        {
+          "event_date": "2026-08-20",
+          "device": "web",
+          "expected_events": 160,
+          "observed_events": 160,
+          "latest_arrival": "2026-08-20 23:37:39"
+        },
+        {
+          "event_date": "2026-08-21",
+          "device": "android",
+          "expected_events": 598,
+          "observed_events": 598,
+          "latest_arrival": "2026-08-21 23:56:49"
+        },
+        {
+          "event_date": "2026-08-21",
+          "device": "ios",
+          "expected_events": 474,
+          "observed_events": 474,
+          "latest_arrival": "2026-08-21 23:56:36"
+        },
+        {
+          "event_date": "2026-08-21",
+          "device": "web",
+          "expected_events": 146,
+          "observed_events": 146,
+          "latest_arrival": "2026-08-21 23:18:46"
+        },
+        {
+          "event_date": "2026-08-22",
+          "device": "android",
+          "expected_events": 474,
+          "observed_events": 474,
+          "latest_arrival": "2026-08-23 00:06:59"
+        },
+        {
+          "event_date": "2026-08-22",
+          "device": "ios",
+          "expected_events": 401,
+          "observed_events": 401,
+          "latest_arrival": "2026-08-22 23:59:39"
+        },
+        {
+          "event_date": "2026-08-22",
+          "device": "web",
+          "expected_events": 177,
+          "observed_events": 177,
+          "latest_arrival": "2026-08-23 00:02:15"
+        },
+        {
+          "event_date": "2026-08-23",
+          "device": "android",
+          "expected_events": 503,
+          "observed_events": 503,
+          "latest_arrival": "2026-08-24 00:09:24"
+        },
+        {
+          "event_date": "2026-08-23",
+          "device": "ios",
+          "expected_events": 500,
+          "observed_events": 500,
+          "latest_arrival": "2026-08-24 00:02:02"
+        },
+        {
+          "event_date": "2026-08-23",
+          "device": "web",
+          "expected_events": 159,
+          "observed_events": 159,
+          "latest_arrival": "2026-08-23 23:26:22"
+        },
+        {
+          "event_date": "2026-08-24",
+          "device": "android",
+          "expected_events": 598,
+          "observed_events": 598,
+          "latest_arrival": "2026-08-25 00:04:56"
+        },
+        {
+          "event_date": "2026-08-24",
+          "device": "ios",
+          "expected_events": 376,
+          "observed_events": 376,
+          "latest_arrival": "2026-08-25 00:01:15"
+        },
+        {
+          "event_date": "2026-08-24",
+          "device": "web",
+          "expected_events": 129,
+          "observed_events": 129,
+          "latest_arrival": "2026-08-24 23:36:43"
+        },
+        {
+          "event_date": "2026-08-25",
+          "device": "android",
+          "expected_events": 588,
+          "observed_events": 588,
+          "latest_arrival": "2026-08-25 23:59:42"
+        },
+        {
+          "event_date": "2026-08-25",
+          "device": "ios",
+          "expected_events": 384,
+          "observed_events": 384,
+          "latest_arrival": "2026-08-26 00:04:59"
+        },
+        {
+          "event_date": "2026-08-25",
+          "device": "web",
+          "expected_events": 148,
+          "observed_events": 148,
+          "latest_arrival": "2026-08-25 23:57:37"
+        },
+        {
+          "event_date": "2026-08-26",
+          "device": "android",
+          "expected_events": 597,
+          "observed_events": 597,
+          "latest_arrival": "2026-08-27 00:05:08"
+        },
+        {
+          "event_date": "2026-08-26",
+          "device": "ios",
+          "expected_events": 383,
+          "observed_events": 383,
+          "latest_arrival": "2026-08-26 23:48:12"
+        },
+        {
+          "event_date": "2026-08-26",
+          "device": "web",
+          "expected_events": 134,
+          "observed_events": 134,
+          "latest_arrival": "2026-08-26 23:50:38"
+        },
+        {
+          "event_date": "2026-08-27",
+          "device": "android",
+          "expected_events": 613,
+          "observed_events": 613,
+          "latest_arrival": "2026-08-27 23:57:36"
+        },
+        {
+          "event_date": "2026-08-27",
+          "device": "ios",
+          "expected_events": 408,
+          "observed_events": 408,
+          "latest_arrival": "2026-08-28 00:01:37"
+        },
+        {
+          "event_date": "2026-08-27",
+          "device": "web",
+          "expected_events": 146,
+          "observed_events": 146,
+          "latest_arrival": "2026-08-27 23:59:42"
+        },
+        {
+          "event_date": "2026-08-28",
+          "device": "android",
+          "expected_events": 544,
+          "observed_events": 544,
+          "latest_arrival": "2026-08-29 00:07:52"
+        },
+        {
+          "event_date": "2026-08-28",
+          "device": "ios",
+          "expected_events": 323,
+          "observed_events": 323,
+          "latest_arrival": "2026-08-29 00:05:11"
+        },
+        {
+          "event_date": "2026-08-28",
+          "device": "web",
+          "expected_events": 124,
+          "observed_events": 124,
+          "latest_arrival": "2026-08-28 23:59:43"
+        },
+        {
+          "event_date": "2026-08-29",
+          "device": "android",
+          "expected_events": 522,
+          "observed_events": 522,
+          "latest_arrival": "2026-08-30 00:07:34"
+        },
+        {
+          "event_date": "2026-08-29",
+          "device": "ios",
+          "expected_events": 355,
+          "observed_events": 355,
+          "latest_arrival": "2026-08-29 23:59:26"
+        },
+        {
+          "event_date": "2026-08-29",
+          "device": "web",
+          "expected_events": 145,
+          "observed_events": 145,
+          "latest_arrival": "2026-08-30 00:04:12"
+        },
+        {
+          "event_date": "2026-08-30",
+          "device": "android",
+          "expected_events": 606,
+          "observed_events": 606,
+          "latest_arrival": "2026-08-31 00:03:07"
+        },
+        {
+          "event_date": "2026-08-30",
+          "device": "ios",
+          "expected_events": 400,
+          "observed_events": 400,
+          "latest_arrival": "2026-08-31 00:02:42"
+        },
+        {
+          "event_date": "2026-08-30",
+          "device": "web",
+          "expected_events": 169,
+          "observed_events": 169,
+          "latest_arrival": "2026-08-31 00:07:36"
+        },
+        {
+          "event_date": "2026-08-31",
+          "device": "android",
+          "expected_events": 530,
+          "observed_events": 530,
+          "latest_arrival": "2026-09-01 00:04:34"
+        },
+        {
+          "event_date": "2026-08-31",
+          "device": "ios",
+          "expected_events": 387,
+          "observed_events": 387,
+          "latest_arrival": "2026-08-31 23:55:13"
+        },
+        {
+          "event_date": "2026-08-31",
+          "device": "web",
+          "expected_events": 196,
+          "observed_events": 196,
+          "latest_arrival": "2026-08-31 23:27:53"
+        },
+        {
+          "event_date": "2026-09-01",
+          "device": "android",
+          "expected_events": 518,
+          "observed_events": 518,
+          "latest_arrival": "2026-09-02 00:06:01"
+        },
+        {
+          "event_date": "2026-09-01",
+          "device": "ios",
+          "expected_events": 343,
+          "observed_events": 343,
+          "latest_arrival": "2026-09-01 23:58:40"
+        },
+        {
+          "event_date": "2026-09-01",
+          "device": "web",
+          "expected_events": 161,
+          "observed_events": 161,
+          "latest_arrival": "2026-09-01 23:43:11"
+        },
+        {
+          "event_date": "2026-09-02",
+          "device": "android",
+          "expected_events": 570,
+          "observed_events": 570,
+          "latest_arrival": "2026-09-03 00:06:36"
+        },
+        {
+          "event_date": "2026-09-02",
+          "device": "ios",
+          "expected_events": 419,
+          "observed_events": 419,
+          "latest_arrival": "2026-09-02 23:57:17"
+        },
+        {
+          "event_date": "2026-09-02",
+          "device": "web",
+          "expected_events": 148,
+          "observed_events": 148,
+          "latest_arrival": "2026-09-02 23:44:42"
+        },
+        {
+          "event_date": "2026-09-03",
+          "device": "android",
+          "expected_events": 527,
+          "observed_events": 527,
+          "latest_arrival": "2026-09-04 00:04:35"
+        },
+        {
+          "event_date": "2026-09-03",
+          "device": "ios",
+          "expected_events": 315,
+          "observed_events": 315,
+          "latest_arrival": "2026-09-03 23:57:18"
+        },
+        {
+          "event_date": "2026-09-03",
+          "device": "web",
+          "expected_events": 155,
+          "observed_events": 155,
+          "latest_arrival": "2026-09-03 23:42:39"
+        },
+        {
+          "event_date": "2026-09-04",
+          "device": "android",
+          "expected_events": 579,
+          "observed_events": 0,
+          "latest_arrival": null
+        },
+        {
+          "event_date": "2026-09-04",
+          "device": "ios",
+          "expected_events": 309,
+          "observed_events": 309,
+          "latest_arrival": "2026-09-05 00:03:51"
+        },
+        {
+          "event_date": "2026-09-04",
+          "device": "web",
+          "expected_events": 165,
+          "observed_events": 165,
+          "latest_arrival": "2026-09-04 22:27:23"
+        },
+        {
+          "event_date": "2026-09-05",
+          "device": "android",
+          "expected_events": 601,
+          "observed_events": 0,
+          "latest_arrival": null
+        },
+        {
+          "event_date": "2026-09-05",
+          "device": "ios",
+          "expected_events": 403,
+          "observed_events": 403,
+          "latest_arrival": "2026-09-06 00:07:12"
+        },
+        {
+          "event_date": "2026-09-05",
+          "device": "web",
+          "expected_events": 125,
+          "observed_events": 125,
+          "latest_arrival": "2026-09-05 23:38:51"
+        },
+        {
+          "event_date": "2026-09-06",
+          "device": "android",
+          "expected_events": 517,
+          "observed_events": 0,
+          "latest_arrival": null
+        },
+        {
+          "event_date": "2026-09-06",
+          "device": "ios",
+          "expected_events": 361,
+          "observed_events": 361,
+          "latest_arrival": "2026-09-07 00:01:26"
+        },
+        {
+          "event_date": "2026-09-06",
+          "device": "web",
+          "expected_events": 112,
+          "observed_events": 112,
+          "latest_arrival": "2026-09-06 23:50:04"
+        }
+      ],
+      "source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+      "metric_version": "onboarding.v2.0.0",
+      "data_as_of": "2026-09-07 08:00:00"
+    },
+    {
+      "id": "onboarding-event-validation",
+      "label": "窗口内事件版本、时间/日期、用户归属与批次一致性",
+      "sql": "SELECT COUNT(*) AS visible_events,\n          COALESCE(SUM(CASE WHEN e.schema_version NOT IN (:schema_0) THEN 1 ELSE 0 END),0) AS unsupported_schema_events,\n          COALESCE(SUM(CASE WHEN u.user_id IS NULL OR b.batch_id IS NULL\n            OR datetime(e.event_time) IS NULL OR datetime(e.ingested_at) IS NULL\n            OR datetime(e.event_time,'+0 days')<>e.event_time\n            OR datetime(e.ingested_at,'+0 days')<>e.ingested_at\n            OR datetime(u.signup_at,'+0 days') IS NULL\n            OR datetime(u.signup_at,'+0 days')<>u.signup_at\n            OR u.signup_date<>date(u.signup_at)\n            OR e.event_time<u.signup_at OR e.event_time>e.ingested_at\n            OR e.event_date<>date(e.event_time)\n            OR e.device<>u.device OR e.channel<>u.channel OR e.app_version<>u.app_version\n            OR e.batch_id<>(e.event_date || ':' || e.device)\n            OR e.event_date<>b.event_date OR e.device<>b.device\n            THEN 1 ELSE 0 END),0) AS invalid_event_relationships,\n          COUNT(*)-COUNT(DISTINCT e.event_id) AS duplicate_event_ids\n          FROM onboarding_events e LEFT JOIN onboarding_users u ON e.user_id=u.user_id\n          LEFT JOIN onboarding_ingest_batches b ON e.batch_id=b.batch_id\n          WHERE (e.event_date BETWEEN :relevant_start AND :relevant_end\n            OR date(e.event_time) BETWEEN :relevant_start AND :relevant_end\n            OR b.event_date BETWEEN :relevant_start AND :relevant_end)\n            AND (u.device IN (:quality_device_0,:quality_device_1,:quality_device_2) OR e.device IN (:quality_device_0,:quality_device_1,:quality_device_2)\n              OR b.device IN (:quality_device_0,:quality_device_1,:quality_device_2))\n            AND e.ingested_at<=:as_of",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "as_of": "2026-09-07 08:00:00",
+        "activation_seconds": 60,
+        "batch_start": "2026-06-01",
+        "batch_end": "2026-09-06",
+        "quality_device_0": "android",
+        "quality_device_1": "ios",
+        "quality_device_2": "web",
+        "relevant_start": "2026-08-17",
+        "relevant_end": "2026-09-06",
+        "schema_0": "1.0"
+      },
+      "rows": [
+        {
+          "visible_events": 21304,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "duplicate_event_ids": 0
+        }
+      ],
+      "source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+      "metric_version": "onboarding.v2.0.0",
+      "data_as_of": "2026-09-07 08:00:00"
+    },
+    {
+      "id": "onboarding-event-validation-new_user_retention_d1",
+      "label": "窗口内事件版本、时间/日期、用户归属与批次一致性",
+      "sql": "SELECT COUNT(*) AS visible_events,\n          COALESCE(SUM(CASE WHEN e.schema_version NOT IN (:schema_0) THEN 1 ELSE 0 END),0) AS unsupported_schema_events,\n          COALESCE(SUM(CASE WHEN u.user_id IS NULL OR b.batch_id IS NULL\n            OR datetime(e.event_time) IS NULL OR datetime(e.ingested_at) IS NULL\n            OR datetime(e.event_time,'+0 days')<>e.event_time\n            OR datetime(e.ingested_at,'+0 days')<>e.ingested_at\n            OR datetime(u.signup_at,'+0 days') IS NULL\n            OR datetime(u.signup_at,'+0 days')<>u.signup_at\n            OR u.signup_date<>date(u.signup_at)\n            OR e.event_time<u.signup_at OR e.event_time>e.ingested_at\n            OR e.event_date<>date(e.event_time)\n            OR e.device<>u.device OR e.channel<>u.channel OR e.app_version<>u.app_version\n            OR e.batch_id<>(e.event_date || ':' || e.device)\n            OR e.event_date<>b.event_date OR e.device<>b.device\n            THEN 1 ELSE 0 END),0) AS invalid_event_relationships,\n          COUNT(*)-COUNT(DISTINCT e.event_id) AS duplicate_event_ids\n          FROM onboarding_events e LEFT JOIN onboarding_users u ON e.user_id=u.user_id\n          LEFT JOIN onboarding_ingest_batches b ON e.batch_id=b.batch_id\n          WHERE (e.event_date BETWEEN :relevant_start AND :relevant_end\n            OR date(e.event_time) BETWEEN :relevant_start AND :relevant_end\n            OR b.event_date BETWEEN :relevant_start AND :relevant_end)\n            AND (u.device IN (:quality_device_0,:quality_device_1,:quality_device_2) OR e.device IN (:quality_device_0,:quality_device_1,:quality_device_2)\n              OR b.device IN (:quality_device_0,:quality_device_1,:quality_device_2))\n            AND e.ingested_at<=:as_of",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "as_of": "2026-09-07 08:00:00",
+        "activation_seconds": 60,
+        "batch_start": "2026-06-01",
+        "batch_end": "2026-09-06",
+        "quality_device_0": "android",
+        "quality_device_1": "ios",
+        "quality_device_2": "web",
+        "relevant_start": "2026-08-17",
+        "relevant_end": "2026-08-31",
+        "schema_0": "1.0"
+      },
+      "rows": [
+        {
+          "visible_events": 16673,
+          "unsupported_schema_events": 0,
+          "invalid_event_relationships": 0,
+          "duplicate_event_ids": 0
+        }
+      ],
+      "source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+      "metric_version": "onboarding.v2.0.0",
+      "data_as_of": "2026-09-07 08:00:00"
+    }
+  ],
+  "trace": [
+    {
+      "tool": "static_snapshot",
+      "status": "completed",
+      "description": "本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。"
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "注册 cohort 范围、人数与最晚注册时间",
+      "duration_ms": 0.55
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "当前筛选实际涉及的设备分区",
+      "duration_ms": 0.35
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "源端批次清单与快照可见事件，计算连续设备水位",
+      "duration_ms": 34.21
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "窗口内事件版本、时间/日期、用户归属与批次一致性",
+      "duration_ms": 54.41
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "窗口内事件版本、时间/日期、用户归属与批次一致性",
+      "duration_ms": 50.47
+    }
+  ],
+  "limitations": [
+    "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+    "渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。",
+    "使用稳定匿名 UID；未实现企业跨设备身份合并。"
+  ],
+  "suggestions": [
+    "切换回填快照 recovered，保持分析日期不变，检查水位与结果是否恢复。",
+    "如分析较早 cohort 或已完成的 D1，请更换指标后重新进行质量检查。"
+  ],
+  "plan": [
+    {
+      "step": 1,
+      "tool": "get_metric_contract",
+      "purpose": "冻结指标、cohort、时区和完整观察窗口",
+      "status": "completed"
+    },
+    {
+      "step": 2,
+      "tool": "check_data_quality",
+      "purpose": "验证实际到达批次、连续水位和事件版本",
+      "status": "blocked"
+    },
+    {
+      "step": 3,
+      "tool": "query_cohort_metrics",
+      "purpose": "用同一 cohort 计算精确留存和有序漏斗",
+      "status": "pending"
+    },
+    {
+      "step": 4,
+      "tool": "decompose_change",
+      "purpose": "区分结构变化、分层表现与版本关联",
+      "status": "pending"
+    },
+    {
+      "step": 5,
+      "tool": "build_evidence_report",
+      "purpose": "组织证据、竞争解释、行动和复查条件",
+      "status": "pending"
+    }
+  ],
+  "hypotheses": [],
+  "data_quality": {
+    "status": "blocked",
+    "as_of": "2026-09-07 08:00:00",
+    "watermark": "2026-09-04 00:00:00",
+    "watermarks_by_device": {
+      "android": "2026-09-04 00:00:00",
+      "ios": "2026-09-07 00:00:00",
+      "web": "2026-09-07 00:00:00"
+    },
+    "required_until": "2026-09-07 00:00:00",
+    "checks": [
+      {
+        "id": "observation_mature",
+        "name": "完整观察窗口",
+        "status": "passed",
+        "observed": "2026-09-07 08:00:00",
+        "expected": "2026-09-07 00:00:00",
+        "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+        "evidence_ids": [
+          "onboarding-cohort-scope"
+        ]
+      },
+      {
+        "id": "continuous_watermark",
+        "name": "连续数据水位",
+        "status": "blocked",
+        "observed": "2026-09-04 00:00:00",
+        "expected": "2026-09-07 00:00:00",
+        "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+        "evidence_ids": [
+          "onboarding-batch-watermark"
+        ]
+      },
+      {
+        "id": "source_manifest",
+        "name": "源端清单计数",
+        "status": "blocked",
+        "observed": 3,
+        "expected": 0,
+        "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+        "evidence_ids": [
+          "onboarding-batch-watermark"
+        ]
+      },
+      {
+        "id": "schema_version",
+        "name": "事件版本兼容",
+        "status": "passed",
+        "observed": 0,
+        "expected": 0,
+        "detail": "只接受版本化指标合同支持的埋点 schema。",
+        "evidence_ids": [
+          "onboarding-event-validation"
+        ]
+      },
+      {
+        "id": "event_integrity",
+        "name": "事件关系与幂等性",
+        "status": "passed",
+        "observed": 0,
+        "expected": 0,
+        "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+        "evidence_ids": [
+          "onboarding-event-validation"
+        ]
+      }
+    ],
+    "affected_batches": [
+      {
+        "event_date": "2026-09-04",
+        "device": "android",
+        "expected_events": 579,
+        "observed_events": 0,
+        "latest_arrival": null
+      },
+      {
+        "event_date": "2026-09-05",
+        "device": "android",
+        "expected_events": 601,
+        "observed_events": 0,
+        "latest_arrival": null
+      },
+      {
+        "event_date": "2026-09-06",
+        "device": "android",
+        "expected_events": 517,
+        "observed_events": 0,
+        "latest_arrival": null
+      }
+    ],
+    "affected_metrics": [
+      "new_user_retention_d7",
+      "return_within_days_1_7"
+    ],
+    "metric_availability": [
+      {
+        "metric_id": "new_user_retention_d1",
+        "metric": "精确 D1 留存率",
+        "required_until": "2026-09-01 00:00:00",
+        "mature": true,
+        "watermark_complete": true,
+        "schema_valid": true,
+        "event_integrity_valid": true,
+        "unsupported_schema_events": 0,
+        "invalid_event_relationships": 0,
+        "evidence_ids": [
+          "onboarding-event-validation-new_user_retention_d1",
+          "onboarding-batch-watermark"
+        ],
+        "available": true
+      },
+      {
+        "metric_id": "new_user_retention_d7",
+        "metric": "精确 D7 留存率",
+        "required_until": "2026-09-07 00:00:00",
+        "mature": true,
+        "watermark_complete": false,
+        "schema_valid": true,
+        "event_integrity_valid": true,
+        "unsupported_schema_events": 0,
+        "invalid_event_relationships": 0,
+        "evidence_ids": [
+          "onboarding-event-validation",
+          "onboarding-batch-watermark"
+        ],
+        "available": false
+      },
+      {
+        "metric_id": "return_within_days_1_7",
+        "metric": "次 1—7 日内回访率",
+        "required_until": "2026-09-07 00:00:00",
+        "mature": true,
+        "watermark_complete": false,
+        "schema_valid": true,
+        "event_integrity_valid": true,
+        "unsupported_schema_events": 0,
+        "invalid_event_relationships": 0,
+        "evidence_ids": [
+          "onboarding-event-validation",
+          "onboarding-batch-watermark"
+        ],
+        "available": false
+      },
+      {
+        "metric_id": "activated_24h",
+        "metric": "24 小时有序激活率",
+        "required_until": "2026-08-31 23:55:31",
+        "mature": true,
+        "watermark_complete": true,
+        "schema_valid": true,
+        "event_integrity_valid": true,
+        "unsupported_schema_events": 0,
+        "invalid_event_relationships": 0,
+        "evidence_ids": [
+          "onboarding-event-validation-new_user_retention_d1",
+          "onboarding-batch-watermark"
+        ],
+        "available": true
+      }
+    ],
+    "message": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+    "cohorts": [
+      {
+        "period": "current",
+        "users": 898,
+        "first_signup_date": "2026-08-24",
+        "last_signup_date": "2026-08-30",
+        "latest_signup_at": "2026-08-30 23:55:31"
+      },
+      {
+        "period": "previous",
+        "users": 856,
+        "first_signup_date": "2026-08-17",
+        "last_signup_date": "2026-08-23",
+        "latest_signup_at": "2026-08-23 23:43:21"
+      }
+    ],
+    "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
+  },
+  "decision": {
+    "status": "repair_data",
+    "label": "先修复数据，暂停经营判断",
+    "actions": [
+      "核对相关源端批次清单与导入日志。",
+      "保持原 cohort 和指标口径，回填后重新执行同一查询。"
+    ],
+    "review_trigger": "2026-09-07 00:00:00"
+  },
+  "domain": "onboarding",
+  "mode": "demo",
+  "request": {
+    "domain": "onboarding",
+    "task": "diagnose",
+    "question": "检查D7留存下降与批次数据延迟，说明哪些结论可以使用。",
+    "filters": {
+      "scenario": "late_data",
+      "metric": "new_user_retention_d7"
+    },
+    "mode": "demo"
+  },
+  "static_snapshot": true,
+  "created_at": "2026-09-19T09:24:37.144573+00:00",
+  "run_id": "8bee9a91b87130945b9f3cd30c7f8b34",
+  "provenance": {
+    "application_version": "0.2.0",
+    "data_kind": "synthetic",
+    "metric_version": "onboarding.v2.0.0",
+    "snapshot_sha256": "8bee9a91b87130945b9f3cd30c7f8b34eea41d26aa368134b891f0660b22ce10",
+    "fingerprint_scope": "request, metric_contract, kpis, status",
+    "execution": "Python business tools; no model call"
+  }
+}

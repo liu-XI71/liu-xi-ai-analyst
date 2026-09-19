@@ -1,6 +1,6 @@
 # 复购分群与预算留出计划
 
-运行编号：— · 模式：demo · 时间：2026-09-19T07:56:56.954110+00:00
+运行编号：1ef3bb3529b008714531bdafce111554 · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
@@ -302,10 +302,23 @@ SELECT customer_id,region,recency,frequency,window_value_cents,history_value_cen
 
 ## 执行记录
 
-- static_snapshot：由同一Python业务引擎生成的固定演示快照，未执行当前自由输入问题，未调用模型。
+- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
 - validate_repurchase_request：日期、任务、地区、预算和留出比例校验通过。
 - query_repurchase_sql：当前窗口成熟队列：只读SQL返回1行，证据rp-cohort。
 - query_repurchase_sql：截至日RFM分群：只读SQL返回5行，证据rp-segments。
 - query_repurchase_sql：仅用截止日前信息排序的候选：只读SQL返回100行，证据rp-candidates。
 - allocate_repurchase_holdout：用种子liuxi-2026生成可复现分配，计划成本160.00元不超过预算200.00元；不执行触达。
 - validate_repurchase_output：事实来自只读SQL与确定性计算；未生成无证据的营销增量或净LTV。
+
+## 版本与来源
+
+```json
+{
+  "application_version": "0.2.0",
+  "data_kind": "synthetic",
+  "metric_version": "repurchase-1.0.0",
+  "snapshot_sha256": "1ef3bb3529b008714531bdafce1115542139665ed39404f67b1d3959c64e2a61",
+  "fingerprint_scope": "request, metric_contract, kpis, status",
+  "execution": "Python business tools; no model call"
+}
+```

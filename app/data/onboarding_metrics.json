@@ -1,0 +1,35 @@
+{
+  "version": "onboarding.v2.0.0",
+  "timezone": "Asia/Shanghai",
+  "effective_from": "2026-06-01",
+  "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+  "user_key": "user_id",
+  "allowed_dimensions": ["channel", "device", "app_version"],
+  "accepted_event_schema_versions": ["1.0"],
+  "activation_duration_seconds": 60,
+  "funnel": {
+    "id": "registration_to_activation_24h",
+    "window_hours": 24,
+    "interval": "[注册时间, 注册时间 + 24 小时)",
+    "steps": [
+      {"id": "registered", "name": "注册成功", "event": "signup"},
+      {"id": "onboarded", "name": "完成引导", "event": "onboarding_completed"},
+      {"id": "feed_success", "name": "首屏加载成功", "event": "first_feed_success"},
+      {"id": "activated", "name": "有效内容消费 ≥ 60 秒", "event": "content_consumed"}
+    ],
+    "ordering": "同一注册 cohort，后一步事件时间必须晚于前一步，所有步骤在注册后 24 小时内；D1/D7 是并列后续结果，不作为漏斗步骤",
+    "skip_policy": "演示产品要求完成引导；未完成引导的直达用户不计入有序路径转化"
+  },
+  "metrics": [
+    {"id":"new_registered_users","name":"新注册用户数","unit":"人","kind":"count","numerator":"注册成功去重匿名用户数","denominator":"不适用","grain":"用户","window":"注册日期区间","maturity":{"type":"calendar","days":0},"calculation":{"success_column":"registered"}},
+    {"id":"onboarding_complete_24h","name":"24 小时引导完成率","unit":"%","kind":"rate","numerator":"注册后 24 小时内按序完成引导的去重用户数","denominator":"满 24 小时且质量通过的注册 cohort 用户数","grain":"用户","window":"[注册时间, 注册时间 + 24 小时)","maturity":{"type":"hours","hours":24},"calculation":{"success_column":"onboarded"}},
+    {"id":"first_feed_success_24h","name":"24 小时有序首屏成功率","unit":"%","kind":"rate","numerator":"注册后 24 小时内依次完成引导、首屏成功的去重用户数","denominator":"满 24 小时且质量通过的注册 cohort 用户数","grain":"用户","window":"[注册时间, 注册时间 + 24 小时)","maturity":{"type":"hours","hours":24},"calculation":{"success_column":"feed_success"}},
+    {"id":"activated_24h","name":"24 小时有序激活率","unit":"%","kind":"rate","numerator":"24 小时内按注册→引导→首屏→单次有效消费不少于 60 秒顺序完成的去重用户数","denominator":"满 24 小时且质量通过的注册 cohort 用户数","grain":"用户","window":"[注册时间, 注册时间 + 24 小时)","maturity":{"type":"hours","hours":24},"calculation":{"success_column":"activated"}},
+    {"id":"new_user_retention_d1","name":"精确 D1 留存率","unit":"%","kind":"rate","numerator":"注册后第 1 个自然日发生 app_active 的 cohort 去重用户数","denominator":"D1 自然日已完整结束且数据水位覆盖的注册 cohort 用户数","grain":"用户","window":"注册日 + 1 自然日","maturity":{"type":"calendar","days":1},"calculation":{"success_column":"d1"},"not_equivalent_to":"注册后 24 小时回访率"},
+    {"id":"new_user_retention_d7","name":"精确 D7 留存率","unit":"%","kind":"rate","numerator":"注册后第 7 个自然日发生 app_active 的 cohort 去重用户数","denominator":"D7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数","grain":"用户","window":"注册日 + 7 自然日","maturity":{"type":"calendar","days":7},"calculation":{"success_column":"d7"},"not_equivalent_to":"次 1—7 日内任意回访率"},
+    {"id":"return_within_days_1_7","name":"次 1—7 日内回访率","unit":"%","kind":"rate","numerator":"注册后第 1 至第 7 个自然日至少一次 app_active 的 cohort 去重用户数","denominator":"第 7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数","grain":"用户","window":"[注册日 + 1 日, 注册日 + 7 日]","maturity":{"type":"calendar","days":7},"calculation":{"success_column":"within7"},"not_equivalent_to":"精确 D7 留存率"},
+    {"id":"daily_active_users","name":"日活跃用户数","unit":"人","kind":"count","numerator":"当日 app_active 或 content_consumed 的去重匿名用户数","denominator":"不适用","grain":"用户 × 自然日","window":"指定自然日","maturity":{"type":"calendar","days":0},"calculation":{"events":["app_active","content_consumed"]},"notes":"注册事件自身不算活跃；跨日求和得到用户日，不能当作期间去重用户"},
+    {"id":"first_feed_failure_rate","name":"24 小时首次 Feed 请求失败率","unit":"%","kind":"rate","numerator":"注册后 24 小时内首次 Feed 请求明确失败的去重用户数","denominator":"注册后 24 小时内有首次 Feed 请求、且已满 24 小时的 cohort 用户数","grain":"用户的首次 Feed 请求","window":"[注册时间, 注册时间 + 24 小时)","maturity":{"type":"hours","hours":24},"calculation":{"success_column":"feed_failed","denominator_column":"feed_requested"},"notes":"缺少请求结果不自动记为失败，也不记为成功；完整性由独立质量检查控制"},
+    {"id":"negative_feedback_24h","name":"24 小时负反馈用户率","unit":"%","kind":"rate","numerator":"注册后 24 小时内至少一次 negative_feedback 的 cohort 去重用户数","denominator":"满 24 小时且质量通过的注册 cohort 用户数","grain":"用户","window":"[注册时间, 注册时间 + 24 小时)","maturity":{"type":"hours","hours":24},"calculation":{"success_column":"negative_feedback"},"notes":"演示事件代表不感兴趣或举报；用作描述性体验围栏"}
+  ]
+}

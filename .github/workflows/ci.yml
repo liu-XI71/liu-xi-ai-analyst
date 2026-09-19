@@ -27,16 +27,23 @@ jobs:
           cache-dependency-path: |
             requirements.txt
             requirements-dev.txt
+            constraints-tested.txt
       - name: Install dependencies
-        run: python -m pip install -r requirements-dev.txt
+        run: python -m pip install -r requirements-dev.txt -c constraints-tested.txt
       - name: Run tests without model credentials
         run: python -m pytest -q
       - name: Verify public regression cases
         run: |
           python scripts/evaluate.py
           python scripts/evaluate.py --suite audit
+          python scripts/evaluate_v2.py
       - name: Export deterministic static demonstration
         run: python scripts/export_demo.py
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Verify frontend contracts and static resources
+        run: node tests/check_frontend.mjs
       - name: Upload reproducible web artifact
         uses: actions/upload-artifact@v4
         with:

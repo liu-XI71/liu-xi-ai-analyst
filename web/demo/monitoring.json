@@ -1,0 +1,843 @@
+{
+  "status": "observed_batches",
+  "title": "增长监控与告警恢复",
+  "cadence": "日级批次；可手动触发或由调度器调用",
+  "scheduler_status": "replay_of_executed_batches",
+  "data_source": "固定种子合成增长数据",
+  "jobs": [
+    {
+      "run_id": "7d04d6fb55d948c4970583ca49a9ba66",
+      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "scenario": "recovered",
+      "policy_version": "monitoring.v2.1",
+      "created_at": "2026-09-19T09:24:38.509437+00:00",
+      "status": "completed",
+      "reused": false,
+      "analysis_status": "completed",
+      "summary": "本期 精确 D7 留存率 21.27%（191/898），对比期 27.22%（233/856），变化 -5.95 个百分点。渠道 × 端对称分解中，结构贡献 -0.92、组内表现贡献 -5.03 个百分点；质量检查已通过。",
+      "data_quality": {
+        "status": "passed",
+        "as_of": "2026-09-08 12:00:00",
+        "watermark": "2026-09-08 00:00:00",
+        "watermarks_by_device": {
+          "android": "2026-09-08 00:00:00",
+          "ios": "2026-09-08 00:00:00",
+          "web": "2026-09-08 00:00:00"
+        },
+        "required_until": "2026-09-07 00:00:00",
+        "checks": [
+          {
+            "id": "observation_mature",
+            "name": "完整观察窗口",
+            "status": "passed",
+            "observed": "2026-09-08 12:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "evidence_ids": [
+              "onboarding-cohort-scope"
+            ]
+          },
+          {
+            "id": "continuous_watermark",
+            "name": "连续数据水位",
+            "status": "passed",
+            "observed": "2026-09-08 00:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "source_manifest",
+            "name": "源端清单计数",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "schema_version",
+            "name": "事件版本兼容",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "只接受版本化指标合同支持的埋点 schema。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          },
+          {
+            "id": "event_integrity",
+            "name": "事件关系与幂等性",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          }
+        ],
+        "affected_batches": [],
+        "affected_metrics": [],
+        "metric_availability": [
+          {
+            "metric_id": "new_user_retention_d1",
+            "metric": "精确 D1 留存率",
+            "required_until": "2026-09-01 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "new_user_retention_d7",
+            "metric": "精确 D7 留存率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "return_within_days_1_7",
+            "metric": "次 1—7 日内回访率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "activated_24h",
+            "metric": "24 小时有序激活率",
+            "required_until": "2026-08-31 23:55:31",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          }
+        ],
+        "message": "所选主指标及有序漏斗质量检查通过；旁路指标按各自窗口单独判断可用性。",
+        "cohorts": [
+          {
+            "period": "current",
+            "users": 898,
+            "first_signup_date": "2026-08-24",
+            "last_signup_date": "2026-08-30",
+            "latest_signup_at": "2026-08-30 23:55:31"
+          },
+          {
+            "period": "previous",
+            "users": 856,
+            "first_signup_date": "2026-08-17",
+            "last_signup_date": "2026-08-23",
+            "latest_signup_at": "2026-08-23 23:43:21"
+          }
+        ],
+        "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
+      },
+      "source": "固定种子合成事件的实际批次检查",
+      "data_as_of": "2026-09-08 12:00:00",
+      "evidence_ids": [
+        "onboarding-cohort-scope",
+        "onboarding-cohort-devices",
+        "onboarding-batch-watermark",
+        "onboarding-event-validation",
+        "onboarding-event-validation-new_user_retention_d1",
+        "onboarding-totals",
+        "onboarding-strata",
+        "onboarding-daily",
+        "onboarding-version-slices",
+        "onboarding-daily-active",
+        "onboarding-change-log"
+      ]
+    },
+    {
+      "run_id": "9f03c960b7e9450b9da4a178fa609326",
+      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "scenario": "late_data",
+      "policy_version": "monitoring.v2.1",
+      "created_at": "2026-09-19T09:24:38.508164+00:00",
+      "status": "data_waiting",
+      "reused": false,
+      "analysis_status": "data_quality_blocked",
+      "summary": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+      "data_quality": {
+        "status": "blocked",
+        "as_of": "2026-09-07 08:00:00",
+        "watermark": "2026-09-04 00:00:00",
+        "watermarks_by_device": {
+          "android": "2026-09-04 00:00:00",
+          "ios": "2026-09-07 00:00:00",
+          "web": "2026-09-07 00:00:00"
+        },
+        "required_until": "2026-09-07 00:00:00",
+        "checks": [
+          {
+            "id": "observation_mature",
+            "name": "完整观察窗口",
+            "status": "passed",
+            "observed": "2026-09-07 08:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "evidence_ids": [
+              "onboarding-cohort-scope"
+            ]
+          },
+          {
+            "id": "continuous_watermark",
+            "name": "连续数据水位",
+            "status": "blocked",
+            "observed": "2026-09-04 00:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "source_manifest",
+            "name": "源端清单计数",
+            "status": "blocked",
+            "observed": 3,
+            "expected": 0,
+            "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "schema_version",
+            "name": "事件版本兼容",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "只接受版本化指标合同支持的埋点 schema。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          },
+          {
+            "id": "event_integrity",
+            "name": "事件关系与幂等性",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          }
+        ],
+        "affected_batches": [
+          {
+            "event_date": "2026-09-04",
+            "device": "android",
+            "expected_events": 579,
+            "observed_events": 0,
+            "latest_arrival": null
+          },
+          {
+            "event_date": "2026-09-05",
+            "device": "android",
+            "expected_events": 601,
+            "observed_events": 0,
+            "latest_arrival": null
+          },
+          {
+            "event_date": "2026-09-06",
+            "device": "android",
+            "expected_events": 517,
+            "observed_events": 0,
+            "latest_arrival": null
+          }
+        ],
+        "affected_metrics": [
+          "new_user_retention_d7",
+          "return_within_days_1_7"
+        ],
+        "metric_availability": [
+          {
+            "metric_id": "new_user_retention_d1",
+            "metric": "精确 D1 留存率",
+            "required_until": "2026-09-01 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "new_user_retention_d7",
+            "metric": "精确 D7 留存率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": false,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": false
+          },
+          {
+            "metric_id": "return_within_days_1_7",
+            "metric": "次 1—7 日内回访率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": false,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": false
+          },
+          {
+            "metric_id": "activated_24h",
+            "metric": "24 小时有序激活率",
+            "required_until": "2026-08-31 23:55:31",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          }
+        ],
+        "message": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。",
+        "cohorts": [
+          {
+            "period": "current",
+            "users": 898,
+            "first_signup_date": "2026-08-24",
+            "last_signup_date": "2026-08-30",
+            "latest_signup_at": "2026-08-30 23:55:31"
+          },
+          {
+            "period": "previous",
+            "users": 856,
+            "first_signup_date": "2026-08-17",
+            "last_signup_date": "2026-08-23",
+            "latest_signup_at": "2026-08-23 23:43:21"
+          }
+        ],
+        "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
+      },
+      "source": "固定种子合成事件的实际批次检查",
+      "data_as_of": "2026-09-07 08:00:00",
+      "evidence_ids": [
+        "onboarding-cohort-scope",
+        "onboarding-cohort-devices",
+        "onboarding-batch-watermark",
+        "onboarding-event-validation",
+        "onboarding-event-validation-new_user_retention_d1"
+      ]
+    },
+    {
+      "run_id": "36479e0bbebb4a619f46d338c644c083",
+      "job_key": "829117ce26f6f75bd7a559bcde662af88c0b268da580f6aa80c8111c5e551959",
+      "scenario": "business_drop",
+      "policy_version": "monitoring.v2.1",
+      "created_at": "2026-09-19T09:24:38.506372+00:00",
+      "status": "completed",
+      "reused": false,
+      "analysis_status": "completed",
+      "summary": "本期 精确 D7 留存率 21.27%（191/898），对比期 27.22%（233/856），变化 -5.95 个百分点。渠道 × 端对称分解中，结构贡献 -0.92、组内表现贡献 -5.03 个百分点；质量检查已通过。",
+      "data_quality": {
+        "status": "passed",
+        "as_of": "2026-09-19 08:00:00",
+        "watermark": "2026-09-19 00:00:00",
+        "watermarks_by_device": {
+          "android": "2026-09-19 00:00:00",
+          "ios": "2026-09-19 00:00:00",
+          "web": "2026-09-19 00:00:00"
+        },
+        "required_until": "2026-09-07 00:00:00",
+        "checks": [
+          {
+            "id": "observation_mature",
+            "name": "完整观察窗口",
+            "status": "passed",
+            "observed": "2026-09-19 08:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "evidence_ids": [
+              "onboarding-cohort-scope"
+            ]
+          },
+          {
+            "id": "continuous_watermark",
+            "name": "连续数据水位",
+            "status": "passed",
+            "observed": "2026-09-19 00:00:00",
+            "expected": "2026-09-07 00:00:00",
+            "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "source_manifest",
+            "name": "源端清单计数",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+            "evidence_ids": [
+              "onboarding-batch-watermark"
+            ]
+          },
+          {
+            "id": "schema_version",
+            "name": "事件版本兼容",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "只接受版本化指标合同支持的埋点 schema。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          },
+          {
+            "id": "event_integrity",
+            "name": "事件关系与幂等性",
+            "status": "passed",
+            "observed": 0,
+            "expected": 0,
+            "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+            "evidence_ids": [
+              "onboarding-event-validation"
+            ]
+          }
+        ],
+        "affected_batches": [],
+        "affected_metrics": [],
+        "metric_availability": [
+          {
+            "metric_id": "new_user_retention_d1",
+            "metric": "精确 D1 留存率",
+            "required_until": "2026-09-01 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "new_user_retention_d7",
+            "metric": "精确 D7 留存率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "return_within_days_1_7",
+            "metric": "次 1—7 日内回访率",
+            "required_until": "2026-09-07 00:00:00",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          },
+          {
+            "metric_id": "activated_24h",
+            "metric": "24 小时有序激活率",
+            "required_until": "2026-08-31 23:55:31",
+            "mature": true,
+            "watermark_complete": true,
+            "schema_valid": true,
+            "event_integrity_valid": true,
+            "unsupported_schema_events": 0,
+            "invalid_event_relationships": 0,
+            "evidence_ids": [
+              "onboarding-event-validation-new_user_retention_d1",
+              "onboarding-batch-watermark"
+            ],
+            "available": true
+          }
+        ],
+        "message": "所选主指标及有序漏斗质量检查通过；旁路指标按各自窗口单独判断可用性。",
+        "cohorts": [
+          {
+            "period": "current",
+            "users": 898,
+            "first_signup_date": "2026-08-24",
+            "last_signup_date": "2026-08-30",
+            "latest_signup_at": "2026-08-30 23:55:31"
+          },
+          {
+            "period": "previous",
+            "users": 856,
+            "first_signup_date": "2026-08-17",
+            "last_signup_date": "2026-08-23",
+            "latest_signup_at": "2026-08-23 23:43:21"
+          }
+        ],
+        "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
+      },
+      "source": "固定种子合成事件的实际批次检查",
+      "data_as_of": "2026-09-19 08:00:00",
+      "evidence_ids": [
+        "onboarding-cohort-scope",
+        "onboarding-cohort-devices",
+        "onboarding-batch-watermark",
+        "onboarding-event-validation",
+        "onboarding-event-validation-new_user_retention_d1",
+        "onboarding-totals",
+        "onboarding-strata",
+        "onboarding-daily",
+        "onboarding-version-slices",
+        "onboarding-daily-active",
+        "onboarding-change-log"
+      ]
+    }
+  ],
+  "alerts": [
+    {
+      "alert_key": "onboarding:d7:8c39e0bedc9b",
+      "category": "business",
+      "title": "成熟 D7 留存变化",
+      "status": "open",
+      "first_seen": "2026-09-19T09:24:38.506372+00:00",
+      "last_seen": "2026-09-19T09:24:38.509437+00:00",
+      "resolved_at": null,
+      "occurrences": 3,
+      "details": {
+        "note": "本期与对比期差异 -5.950 个百分点。",
+        "delta_pp": -5.95,
+        "threshold_pp": -2,
+        "rule_type": "fixed_demo_threshold",
+        "evidence_ids": [
+          "onboarding-cohort-scope",
+          "onboarding-cohort-devices",
+          "onboarding-batch-watermark",
+          "onboarding-event-validation",
+          "onboarding-event-validation-new_user_retention_d1",
+          "onboarding-totals",
+          "onboarding-strata",
+          "onboarding-daily",
+          "onboarding-version-slices",
+          "onboarding-daily-active",
+          "onboarding-change-log"
+        ],
+        "interpretation": "阈值用于演示预警流程，不代表统计显著或企业生产阈值。"
+      }
+    },
+    {
+      "alert_key": "onboarding:quality:8c39e0bedc9b",
+      "category": "data_quality",
+      "title": "增长数据批次完整性",
+      "status": "resolved",
+      "first_seen": "2026-09-19T09:24:38.508164+00:00",
+      "last_seen": "2026-09-19T09:24:38.509437+00:00",
+      "resolved_at": "2026-09-19T09:24:38.509437+00:00",
+      "occurrences": 2,
+      "details": {
+        "note": "水位与批次校验通过，允许重新计算成熟指标。",
+        "evidence_ids": [
+          "onboarding-cohort-scope",
+          "onboarding-cohort-devices",
+          "onboarding-batch-watermark",
+          "onboarding-event-validation",
+          "onboarding-event-validation-new_user_retention_d1",
+          "onboarding-totals",
+          "onboarding-strata",
+          "onboarding-daily",
+          "onboarding-version-slices",
+          "onboarding-daily-active",
+          "onboarding-change-log"
+        ],
+        "quality": {
+          "status": "passed",
+          "as_of": "2026-09-08 12:00:00",
+          "watermark": "2026-09-08 00:00:00",
+          "watermarks_by_device": {
+            "android": "2026-09-08 00:00:00",
+            "ios": "2026-09-08 00:00:00",
+            "web": "2026-09-08 00:00:00"
+          },
+          "required_until": "2026-09-07 00:00:00",
+          "checks": [
+            {
+              "id": "observation_mature",
+              "name": "完整观察窗口",
+              "status": "passed",
+              "observed": "2026-09-08 12:00:00",
+              "expected": "2026-09-07 00:00:00",
+              "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+              "evidence_ids": [
+                "onboarding-cohort-scope"
+              ]
+            },
+            {
+              "id": "continuous_watermark",
+              "name": "连续数据水位",
+              "status": "passed",
+              "observed": "2026-09-08 00:00:00",
+              "expected": "2026-09-07 00:00:00",
+              "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。",
+              "evidence_ids": [
+                "onboarding-batch-watermark"
+              ]
+            },
+            {
+              "id": "source_manifest",
+              "name": "源端清单计数",
+              "status": "passed",
+              "observed": 0,
+              "expected": 0,
+              "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。",
+              "evidence_ids": [
+                "onboarding-batch-watermark"
+              ]
+            },
+            {
+              "id": "schema_version",
+              "name": "事件版本兼容",
+              "status": "passed",
+              "observed": 0,
+              "expected": 0,
+              "detail": "只接受版本化指标合同支持的埋点 schema。",
+              "evidence_ids": [
+                "onboarding-event-validation"
+              ]
+            },
+            {
+              "id": "event_integrity",
+              "name": "事件关系与幂等性",
+              "status": "passed",
+              "observed": 0,
+              "expected": 0,
+              "detail": "检查匿名用户归属、事件时间/自然日、批次日期/设备、事件先后与 event_id 唯一性。",
+              "evidence_ids": [
+                "onboarding-event-validation"
+              ]
+            }
+          ],
+          "affected_batches": [],
+          "affected_metrics": [],
+          "metric_availability": [
+            {
+              "metric_id": "new_user_retention_d1",
+              "metric": "精确 D1 留存率",
+              "required_until": "2026-09-01 00:00:00",
+              "mature": true,
+              "watermark_complete": true,
+              "schema_valid": true,
+              "event_integrity_valid": true,
+              "unsupported_schema_events": 0,
+              "invalid_event_relationships": 0,
+              "evidence_ids": [
+                "onboarding-event-validation-new_user_retention_d1",
+                "onboarding-batch-watermark"
+              ],
+              "available": true
+            },
+            {
+              "metric_id": "new_user_retention_d7",
+              "metric": "精确 D7 留存率",
+              "required_until": "2026-09-07 00:00:00",
+              "mature": true,
+              "watermark_complete": true,
+              "schema_valid": true,
+              "event_integrity_valid": true,
+              "unsupported_schema_events": 0,
+              "invalid_event_relationships": 0,
+              "evidence_ids": [
+                "onboarding-event-validation",
+                "onboarding-batch-watermark"
+              ],
+              "available": true
+            },
+            {
+              "metric_id": "return_within_days_1_7",
+              "metric": "次 1—7 日内回访率",
+              "required_until": "2026-09-07 00:00:00",
+              "mature": true,
+              "watermark_complete": true,
+              "schema_valid": true,
+              "event_integrity_valid": true,
+              "unsupported_schema_events": 0,
+              "invalid_event_relationships": 0,
+              "evidence_ids": [
+                "onboarding-event-validation",
+                "onboarding-batch-watermark"
+              ],
+              "available": true
+            },
+            {
+              "metric_id": "activated_24h",
+              "metric": "24 小时有序激活率",
+              "required_until": "2026-08-31 23:55:31",
+              "mature": true,
+              "watermark_complete": true,
+              "schema_valid": true,
+              "event_integrity_valid": true,
+              "unsupported_schema_events": 0,
+              "invalid_event_relationships": 0,
+              "evidence_ids": [
+                "onboarding-event-validation-new_user_retention_d1",
+                "onboarding-batch-watermark"
+              ],
+              "available": true
+            }
+          ],
+          "message": "所选主指标及有序漏斗质量检查通过；旁路指标按各自窗口单独判断可用性。",
+          "cohorts": [
+            {
+              "period": "current",
+              "users": 898,
+              "first_signup_date": "2026-08-24",
+              "last_signup_date": "2026-08-30",
+              "latest_signup_at": "2026-08-30 23:55:31"
+            },
+            {
+              "period": "previous",
+              "users": 856,
+              "first_signup_date": "2026-08-17",
+              "last_signup_date": "2026-08-23",
+              "latest_signup_at": "2026-08-23 23:43:21"
+            }
+          ],
+          "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
+        }
+      }
+    }
+  ],
+  "transitions": [
+    {
+      "id": 5,
+      "alert_key": "onboarding:d7:8c39e0bedc9b",
+      "occurred_at": "2026-09-19T09:24:38.509437+00:00",
+      "previous_status": "data_waiting",
+      "status": "open",
+      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "note": "本期与对比期差异 -5.950 个百分点。"
+    },
+    {
+      "id": 4,
+      "alert_key": "onboarding:quality:8c39e0bedc9b",
+      "occurred_at": "2026-09-19T09:24:38.509437+00:00",
+      "previous_status": "open",
+      "status": "resolved",
+      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "note": "水位与批次校验通过，允许重新计算成熟指标。"
+    },
+    {
+      "id": 3,
+      "alert_key": "onboarding:d7:8c39e0bedc9b",
+      "occurred_at": "2026-09-19T09:24:38.508164+00:00",
+      "previous_status": "open",
+      "status": "data_waiting",
+      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "note": "本次未取得可用的完整数据，保留原业务告警，等待成熟或回填后复核。"
+    },
+    {
+      "id": 2,
+      "alert_key": "onboarding:quality:8c39e0bedc9b",
+      "occurred_at": "2026-09-19T09:24:38.508164+00:00",
+      "previous_status": null,
+      "status": "open",
+      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "note": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。"
+    },
+    {
+      "id": 1,
+      "alert_key": "onboarding:d7:8c39e0bedc9b",
+      "occurred_at": "2026-09-19T09:24:38.506372+00:00",
+      "previous_status": null,
+      "status": "open",
+      "job_key": "829117ce26f6f75bd7a559bcde662af88c0b268da580f6aa80c8111c5e551959",
+      "note": "本期与对比期差异 -5.950 个百分点。"
+    }
+  ],
+  "rules": [
+    {
+      "id": "data_quality",
+      "description": "质量检查失败时暂停受影响业务判断，完整后回填恢复"
+    },
+    {
+      "id": "retention_change",
+      "description": "成熟 D7 与对比期差异不高于 -2 个百分点时生成业务告警"
+    }
+  ],
+  "limitations": [
+    "批次检查记录可复现；不代表真实企业实时监控。",
+    "数据恢复不自动消除真实业务下滑，业务告警独立复核。"
+  ],
+  "static_snapshot": true,
+  "source": "合成场景的实际检查、阻断与回填记录"
+}

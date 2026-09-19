@@ -1,70 +1,285 @@
 {
   "domains": [
     {
-      "id": "growth",
-      "name": "增长诊断与自动周报",
-      "description": "确认留存口径，查询成熟队列，分解结构和表现，复盘随机实验并交付证据。",
-      "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "id": "onboarding",
+      "name": "新用户增长与留存决策",
+      "description": "从真实执行的事件查询开始，识别指标下滑、延迟假象与待验证解释，生成可复算的决策备忘录。",
+      "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
       "data_range": {
-        "start": "2026-07-06",
-        "end": "2026-09-06"
+        "start": "2026-06-01",
+        "end": "2026-09-18"
       },
       "default_request": {
-        "domain": "growth",
+        "domain": "onboarding",
         "task": "diagnose",
         "start": "2026-08-24",
         "end": "2026-08-30",
         "compare_start": "2026-08-17",
         "compare_end": "2026-08-23",
-        "filters": {}
+        "filters": {
+          "metric": "new_user_retention_d7",
+          "scenario": "business_drop"
+        }
       },
       "metrics": [
         {
-          "id": "retained_within_next_7_days",
-          "name": "次 7 日内留存率",
-          "version": "growth.v1.0",
-          "numerator": "注册后第 1—7 个自然日内，至少有一次活动的成熟队列用户数",
-          "denominator": "注册日期 + 7 日不晚于数据快照日的去重注册用户数",
+          "id": "new_registered_users",
+          "name": "新注册用户数",
+          "unit": "人",
+          "kind": "count",
+          "numerator": "注册成功去重匿名用户数",
+          "denominator": "不适用",
           "grain": "用户",
-          "window": "(注册日, 注册日 + 7 日]",
-          "unit": "%",
-          "timezone": "Asia/Shanghai；数据以本地自然日存储",
-          "snapshot_date": "2026-09-06",
-          "latest_mature_cohort": "2026-08-30",
-          "exclusions": [
-            "注册当日活动",
-            "未完成 7 日观察的队列"
-          ],
-          "not_equivalent_to": "精确 D7 留存（仅注册后第 7 日活动）",
-          "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果"
-        },
-        {
-          "id": "experiment_lift_pp",
-          "name": "实验次 7 日内留存绝对提升",
-          "unit": "百分点",
-          "definition": "处理组留存率 − 对照组留存率；按注册用户随机分配，按分配组 ITT 分析"
-        }
-      ],
-      "tables": [
-        {
-          "name": "growth_users",
-          "description": "每用户一行的注册、获客维度和随机实验分组",
-          "columns": [
-            "user_id",
-            "signup_date",
+          "window": "注册日期区间",
+          "maturity": {
+            "type": "calendar",
+            "days": 0
+          },
+          "calculation": {
+            "success_column": "registered"
+          },
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
             "channel",
             "device",
-            "experiment_arm",
-            "incentive_cost",
-            "revenue_7d"
+            "app_version"
           ]
         },
         {
-          "name": "growth_activity",
-          "description": "用户自然日活动；同用户同日去重",
-          "columns": [
-            "user_id",
-            "activity_date"
+          "id": "onboarding_complete_24h",
+          "name": "24 小时引导完成率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后 24 小时内按序完成引导的去重用户数",
+          "denominator": "满 24 小时且质量通过的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "[注册时间, 注册时间 + 24 小时)",
+          "maturity": {
+            "type": "hours",
+            "hours": 24
+          },
+          "calculation": {
+            "success_column": "onboarded"
+          },
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "first_feed_success_24h",
+          "name": "24 小时有序首屏成功率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后 24 小时内依次完成引导、首屏成功的去重用户数",
+          "denominator": "满 24 小时且质量通过的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "[注册时间, 注册时间 + 24 小时)",
+          "maturity": {
+            "type": "hours",
+            "hours": 24
+          },
+          "calculation": {
+            "success_column": "feed_success"
+          },
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "activated_24h",
+          "name": "24 小时有序激活率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "24 小时内按注册→引导→首屏→单次有效消费不少于 60 秒顺序完成的去重用户数",
+          "denominator": "满 24 小时且质量通过的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "[注册时间, 注册时间 + 24 小时)",
+          "maturity": {
+            "type": "hours",
+            "hours": 24
+          },
+          "calculation": {
+            "success_column": "activated"
+          },
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "new_user_retention_d1",
+          "name": "精确 D1 留存率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后第 1 个自然日发生 app_active 的 cohort 去重用户数",
+          "denominator": "D1 自然日已完整结束且数据水位覆盖的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "注册日 + 1 自然日",
+          "maturity": {
+            "type": "calendar",
+            "days": 1
+          },
+          "calculation": {
+            "success_column": "d1"
+          },
+          "not_equivalent_to": "注册后 24 小时回访率",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "new_user_retention_d7",
+          "name": "精确 D7 留存率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后第 7 个自然日发生 app_active 的 cohort 去重用户数",
+          "denominator": "D7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "注册日 + 7 自然日",
+          "maturity": {
+            "type": "calendar",
+            "days": 7
+          },
+          "calculation": {
+            "success_column": "d7"
+          },
+          "not_equivalent_to": "次 1—7 日内任意回访率",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "return_within_days_1_7",
+          "name": "次 1—7 日内回访率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后第 1 至第 7 个自然日至少一次 app_active 的 cohort 去重用户数",
+          "denominator": "第 7 自然日已完整结束且数据水位覆盖的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "[注册日 + 1 日, 注册日 + 7 日]",
+          "maturity": {
+            "type": "calendar",
+            "days": 7
+          },
+          "calculation": {
+            "success_column": "within7"
+          },
+          "not_equivalent_to": "精确 D7 留存率",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "daily_active_users",
+          "name": "日活跃用户数",
+          "unit": "人",
+          "kind": "count",
+          "numerator": "当日 app_active 或 content_consumed 的去重匿名用户数",
+          "denominator": "不适用",
+          "grain": "用户 × 自然日",
+          "window": "指定自然日",
+          "maturity": {
+            "type": "calendar",
+            "days": 0
+          },
+          "calculation": {
+            "events": [
+              "app_active",
+              "content_consumed"
+            ]
+          },
+          "notes": "注册事件自身不算活跃；跨日求和得到用户日，不能当作期间去重用户",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "first_feed_failure_rate",
+          "name": "24 小时首次 Feed 请求失败率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后 24 小时内首次 Feed 请求明确失败的去重用户数",
+          "denominator": "注册后 24 小时内有首次 Feed 请求、且已满 24 小时的 cohort 用户数",
+          "grain": "用户的首次 Feed 请求",
+          "window": "[注册时间, 注册时间 + 24 小时)",
+          "maturity": {
+            "type": "hours",
+            "hours": 24
+          },
+          "calculation": {
+            "success_column": "feed_failed",
+            "denominator_column": "feed_requested"
+          },
+          "notes": "缺少请求结果不自动记为失败，也不记为成功；完整性由独立质量检查控制",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "id": "negative_feedback_24h",
+          "name": "24 小时负反馈用户率",
+          "unit": "%",
+          "kind": "rate",
+          "numerator": "注册后 24 小时内至少一次 negative_feedback 的 cohort 去重用户数",
+          "denominator": "满 24 小时且质量通过的注册 cohort 用户数",
+          "grain": "用户",
+          "window": "[注册时间, 注册时间 + 24 小时)",
+          "maturity": {
+            "type": "hours",
+            "hours": 24
+          },
+          "calculation": {
+            "success_column": "negative_feedback"
+          },
+          "notes": "演示事件代表不感兴趣或举报；用作描述性体验围栏",
+          "version": "onboarding.v2.0.0",
+          "timezone": "Asia/Shanghai",
+          "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
+          "dimensions": [
+            "channel",
+            "device",
+            "app_version"
           ]
         }
       ],
@@ -100,20 +315,429 @@
             "value": "web",
             "label": "网页"
           }
+        ],
+        "app_version": [
+          {
+            "value": "1.8.0",
+            "label": "1.8.0"
+          },
+          {
+            "value": "1.9.0",
+            "label": "1.9.0"
+          }
+        ],
+        "metric": [
+          {
+            "value": "new_user_retention_d1",
+            "label": "精确 D1 留存率"
+          },
+          {
+            "value": "new_user_retention_d7",
+            "label": "精确 D7 留存率"
+          },
+          {
+            "value": "return_within_days_1_7",
+            "label": "次 1—7 日内回访率"
+          },
+          {
+            "value": "activated_24h",
+            "label": "24 小时有序激活率"
+          }
+        ],
+        "scenario": [
+          {
+            "value": "business_drop",
+            "label": "完整数据：新用户留存诊断"
+          },
+          {
+            "value": "late_data",
+            "label": "延迟快照：先检查数据质量"
+          },
+          {
+            "value": "recovered",
+            "label": "回填快照：重算并恢复分析"
+          }
         ]
       },
+      "scenarios": {
+        "business_drop": {
+          "label": "完整数据：新用户留存诊断",
+          "as_of": "2026-09-19 08:00:00"
+        },
+        "late_data": {
+          "label": "延迟快照：先检查数据质量",
+          "as_of": "2026-09-07 08:00:00"
+        },
+        "recovered": {
+          "label": "回填快照：重算并恢复分析",
+          "as_of": "2026-09-08 12:00:00"
+        }
+      },
+      "funnel_contract": {
+        "id": "registration_to_activation_24h",
+        "window_hours": 24,
+        "interval": "[注册时间, 注册时间 + 24 小时)",
+        "steps": [
+          {
+            "id": "registered",
+            "name": "注册成功",
+            "event": "signup"
+          },
+          {
+            "id": "onboarded",
+            "name": "完成引导",
+            "event": "onboarding_completed"
+          },
+          {
+            "id": "feed_success",
+            "name": "首屏加载成功",
+            "event": "first_feed_success"
+          },
+          {
+            "id": "activated",
+            "name": "有效内容消费 ≥ 60 秒",
+            "event": "content_consumed"
+          }
+        ],
+        "ordering": "同一注册 cohort，后一步事件时间必须晚于前一步，所有步骤在注册后 24 小时内；D1/D7 是并列后续结果，不作为漏斗步骤",
+        "skip_policy": "演示产品要求完成引导；未完成引导的直达用户不计入有序路径转化"
+      },
+      "tables": [
+        {
+          "name": "onboarding_users",
+          "description": "稳定匿名 UID 的注册 cohort；每用户一行，不跨设备合并",
+          "columns": [
+            "user_id",
+            "signup_at",
+            "signup_date",
+            "channel",
+            "device",
+            "app_version"
+          ]
+        },
+        {
+          "name": "onboarding_events",
+          "description": "去重后的产品事件，含源端事件时间与真实可查询的到达时间；查询必须带 ingested_at 截止条件",
+          "columns": [
+            "event_id",
+            "user_id",
+            "event_name",
+            "event_time",
+            "ingested_at",
+            "event_date",
+            "channel",
+            "device",
+            "app_version",
+            "batch_id",
+            "schema_version",
+            "request_id",
+            "duration_seconds"
+          ]
+        },
+        {
+          "name": "onboarding_ingest_batches",
+          "description": "源端日 × 设备批次清单，用于可见事件计数校验与连续水位；不含诊断答案",
+          "columns": [
+            "batch_id",
+            "event_date",
+            "device",
+            "expected_events",
+            "manifest_available_at"
+          ]
+        },
+        {
+          "name": "onboarding_changes",
+          "description": "版本和投放变更日志，供诊断检索；同期变更不等于因果证据",
+          "columns": [
+            "change_id",
+            "change_at",
+            "device",
+            "app_version",
+            "change_type",
+            "description"
+          ]
+        },
+        {
+          "name": "onboarding_snapshots",
+          "description": "演示快照的可见时间截止，三种场景查询同一份事件",
+          "columns": [
+            "scenario",
+            "as_of"
+          ]
+        }
+      ],
       "examples": [
         {
-          "question": "比较最近两周已完成观察的新增队列，次 7 日内留存为什么变化？按渠道和设备检查。",
+          "question": "最近两个成熟注册周的精确 D7 为什么变化？结合渠道、端、版本与注册后漏斗，给出下一步验证。",
           "task": "diagnose"
         },
         {
-          "question": "复盘 8 月 17—30 日的随机增长实验，检查提升、置信区间、SRM 和成本门槛。",
-          "task": "experiment"
+          "question": "检查注册后 24 小时有序漏斗，定位本期最大的转化损失。",
+          "task": "funnel"
         },
         {
-          "question": "生成增长周报，展示变化、分层证据、假设和下一步建议。",
+          "question": "如果 9 月 7 日看到留存下降，应先检查哪些数据质量证据？",
+          "task": "quality",
+          "filters": {
+            "scenario": "late_data"
+          }
+        },
+        {
+          "question": "生成新用户增长决策备忘录，列出事实、竞争解释、待办及复查条件。",
           "task": "report"
+        }
+      ]
+    },
+    {
+      "id": "experiments",
+      "name": "实验评审与增长决策",
+      "description": "先审数据、分配和观察窗口，再评估 D7 效应、功效设计与体验围栏。",
+      "data_source": "固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益",
+      "data_range": {
+        "start": "2026-08-17",
+        "end": "2026-09-06"
+      },
+      "default_request": {
+        "domain": "experiments",
+        "task": "experiment",
+        "start": "2026-08-17",
+        "end": "2026-08-30",
+        "filters": {
+          "scenario": "healthy_gain"
+        }
+      },
+      "metrics": [
+        {
+          "id": "experiment_new_user_retention_d7",
+          "name": "实验新用户精确 D7 留存率",
+          "version": "experiments.v2.0",
+          "numerator": "注册后第 7 个自然日发生至少一次 qualified_activity 的原始分配用户数",
+          "denominator": "预注册入组窗口内所有合格的新注册随机分配用户；固定窗口全部成熟后评审",
+          "grain": "用户",
+          "unit": "%",
+          "timezone": "Asia/Shanghai；时间戳为该时区本地时间",
+          "timestamp_format": "YYYY-MM-DD HH:MM:SS；有效公历日期，秒精度，空格分隔，无时区后缀",
+          "date_format": "YYYY-MM-DD；有效公历日期",
+          "timestamp_policy": "非规范时间格式整份评审标记 invalid_data；接入层须显式转换时区并规范化，不静默丢弃事件",
+          "window": "[注册日 + 7 日 00:00:00, 注册日 + 8 日 00:00:00)",
+          "analysis_population": "ITT：按原始分配组分析，包括未暴露用户；不按事后活跃筛选",
+          "maturity": "采集水位覆盖完整 D7 自然日，且注册后 24 小时负反馈窗口完整",
+          "not_equivalent_to": "次 7 日内任意回访、D1 或曝光用户中的留存",
+          "data_source": "固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益"
+        },
+        {
+          "id": "negative_feedback_24h",
+          "name": "注册后 24 小时负反馈率",
+          "unit": "%",
+          "definition": "有至少一次 negative_feedback 事件的分配用户 / 所有分配用户；[注册时间, 注册时间+24h)；仅完整窗口"
+        }
+      ],
+      "tables": [
+        {
+          "name": "experiment_registry",
+          "description": "预注册目标、分配比、窗口、功效与围栏",
+          "columns": [
+            "experiment_id",
+            "start_date",
+            "end_date",
+            "snapshot_date",
+            "expected_treatment_share",
+            "baseline_rate",
+            "mde",
+            "alpha",
+            "power",
+            "min_business_lift",
+            "negative_baseline",
+            "negative_margin",
+            "guardrail_alpha",
+            "config_version",
+            "expected_assignment_count"
+          ]
+        },
+        {
+          "name": "experiment_assignments",
+          "description": "原始用户级随机分配记录；重复和串组在评审时检出",
+          "columns": [
+            "assignment_id",
+            "experiment_id",
+            "user_id",
+            "arm",
+            "registered_at",
+            "assigned_at",
+            "config_version"
+          ]
+        },
+        {
+          "name": "experiment_exposures",
+          "description": "实际暴露日志，只用于核查，不改变 ITT 分母",
+          "columns": [
+            "exposure_id",
+            "experiment_id",
+            "user_id",
+            "arm",
+            "exposed_at"
+          ]
+        },
+        {
+          "name": "experiment_outcomes",
+          "description": "合格活跃及负反馈事件，按时间窗口重新计算指标",
+          "columns": [
+            "event_id",
+            "experiment_id",
+            "user_id",
+            "event_name",
+            "event_at",
+            "ingested_at",
+            "schema_version"
+          ]
+        },
+        {
+          "name": "experiment_coverage",
+          "description": "每个分配用户的采集水位与完整标记",
+          "columns": [
+            "experiment_id",
+            "user_id",
+            "observed_until",
+            "complete"
+          ]
+        },
+        {
+          "name": "experiment_changelog",
+          "description": "实验配置变更轨迹",
+          "columns": [
+            "change_id",
+            "experiment_id",
+            "changed_at",
+            "field",
+            "old_value",
+            "new_value",
+            "material"
+          ]
+        }
+      ],
+      "filters": {
+        "scenario": [
+          {
+            "value": "healthy_gain",
+            "label": "健康正向 · 完整固定窗口",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "srm",
+            "label": "分配异常 · 样本比例失衡",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "guardrail",
+            "label": "体验代价 · 负反馈围栏恶化",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "immature",
+            "label": "等待观察 · D7 尚未成熟",
+            "start": "2026-09-03",
+            "end": "2026-09-06"
+          },
+          {
+            "value": "underpowered",
+            "label": "证据不足 · 未达设计样本量",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "unequal_allocation",
+            "label": "非等流量 · 预注册 30:70",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "config_change",
+            "label": "配置变更 · 运行中修改版本",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          },
+          {
+            "value": "data_gap",
+            "label": "到数缺口 · 采集覆盖不完整",
+            "start": "2026-08-17",
+            "end": "2026-08-30"
+          }
+        ]
+      },
+      "scenarios": [
+        {
+          "value": "healthy_gain",
+          "label": "健康正向 · 完整固定窗口",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "srm",
+          "label": "分配异常 · 样本比例失衡",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "guardrail",
+          "label": "体验代价 · 负反馈围栏恶化",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "immature",
+          "label": "等待观察 · D7 尚未成熟",
+          "start": "2026-09-03",
+          "end": "2026-09-06"
+        },
+        {
+          "value": "underpowered",
+          "label": "证据不足 · 未达设计样本量",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "unequal_allocation",
+          "label": "非等流量 · 预注册 30:70",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "config_change",
+          "label": "配置变更 · 运行中修改版本",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        },
+        {
+          "value": "data_gap",
+          "label": "到数缺口 · 采集覆盖不完整",
+          "start": "2026-08-17",
+          "end": "2026-08-30"
+        }
+      ],
+      "examples": [
+        {
+          "question": "新用户承接实验能否进入灰度评审？检查 D7 提升、分配质量和负反馈围栏。",
+          "task": "experiment",
+          "filters": {
+            "scenario": "healthy_gain"
+          }
+        },
+        {
+          "question": "实验表面正向，但负反馈是否超过预设容忍范围？",
+          "task": "experiment",
+          "filters": {
+            "scenario": "guardrail"
+          }
+        },
+        {
+          "question": "生成包含功效设计、质量门槛、效果区间和复查动作的实验决策备忘录。",
+          "task": "report",
+          "filters": {
+            "scenario": "healthy_gain"
+          }
         }
       ]
     },
@@ -247,6 +871,123 @@
           "task": "report"
         }
       ]
+    },
+    {
+      "id": "growth",
+      "name": "增长诊断与自动周报",
+      "description": "确认留存口径，查询成熟队列，分解结构和表现，复盘随机实验并交付证据。",
+      "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "data_range": {
+        "start": "2026-07-06",
+        "end": "2026-09-06"
+      },
+      "default_request": {
+        "domain": "growth",
+        "task": "diagnose",
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "filters": {}
+      },
+      "metrics": [
+        {
+          "id": "retained_within_next_7_days",
+          "name": "次 7 日内留存率",
+          "version": "growth.v1.0",
+          "numerator": "注册后第 1—7 个自然日内，至少有一次活动的成熟队列用户数",
+          "denominator": "注册日期 + 7 日不晚于数据快照日的去重注册用户数",
+          "grain": "用户",
+          "window": "(注册日, 注册日 + 7 日]",
+          "unit": "%",
+          "timezone": "Asia/Shanghai；数据以本地自然日存储",
+          "snapshot_date": "2026-09-06",
+          "latest_mature_cohort": "2026-08-30",
+          "exclusions": [
+            "注册当日活动",
+            "未完成 7 日观察的队列"
+          ],
+          "not_equivalent_to": "精确 D7 留存（仅注册后第 7 日活动）",
+          "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果"
+        },
+        {
+          "id": "experiment_lift_pp",
+          "name": "实验次 7 日内留存绝对提升",
+          "unit": "百分点",
+          "definition": "处理组留存率 − 对照组留存率；按注册用户随机分配，按分配组 ITT 分析"
+        }
+      ],
+      "tables": [
+        {
+          "name": "growth_users",
+          "description": "每用户一行的注册、获客维度和随机实验分组",
+          "columns": [
+            "user_id",
+            "signup_date",
+            "channel",
+            "device",
+            "experiment_arm",
+            "incentive_cost",
+            "revenue_7d"
+          ]
+        },
+        {
+          "name": "growth_activity",
+          "description": "用户自然日活动；同用户同日去重",
+          "columns": [
+            "user_id",
+            "activity_date"
+          ]
+        }
+      ],
+      "filters": {
+        "channel": [
+          {
+            "value": "organic",
+            "label": "自然流量"
+          },
+          {
+            "value": "paid_search",
+            "label": "付费搜索"
+          },
+          {
+            "value": "social",
+            "label": "社交投放"
+          },
+          {
+            "value": "referral",
+            "label": "好友推荐"
+          }
+        ],
+        "device": [
+          {
+            "value": "android",
+            "label": "Android"
+          },
+          {
+            "value": "ios",
+            "label": "iOS"
+          },
+          {
+            "value": "web",
+            "label": "网页"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "question": "比较最近两周已完成观察的新增队列，次 7 日内留存为什么变化？按渠道和设备检查。",
+          "task": "diagnose"
+        },
+        {
+          "question": "复盘 8 月 17—30 日的随机增长实验，检查提升、置信区间、SRM 和成本门槛。",
+          "task": "experiment"
+        },
+        {
+          "question": "生成增长周报，展示变化、分层证据、假设和下一步建议。",
+          "task": "report"
+        }
+      ]
     }
   ],
   "model": {
@@ -255,6 +996,6 @@
     "model": "gpt-5-mini",
     "provider": "OpenAI Responses API"
   },
-  "version": "0.1.0",
-  "data_notice": "固定种子合成数据；当前为静态演示快照，没有调用大模型。"
+  "version": "0.2.0",
+  "data_notice": "匿名合成数据；静态回放由 Python 实际查询生成。"
 }

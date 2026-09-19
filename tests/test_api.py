@@ -15,7 +15,8 @@ def test_run_readback_and_export(client):
     assert r.status_code==200
     data=r.json();assert data['status']=='completed' and data['mode']=='demo'
     assert data['evidence'] and data['charts']
-    loaded=client.get('/api/v1/runs/'+data['run_id']);assert loaded.json()==data
+    loaded=client.get('/api/v1/runs/'+data['run_id']);assert loaded.json()=={k:v for k,v in data.items() if k!='feedback_token'}
+    assert 'feedback_token' not in loaded.json()
     for fmt in ['html','md']:
         report=client.get(f"/api/v1/runs/{data['run_id']}/report?format={fmt}")
         assert report.status_code==200 and 'SQL' in report.text
@@ -71,17 +72,18 @@ def test_real_loop_dispatch_with_fake_provider(client):
     assert result['model_run']['rounds']==4
     assert result['model_run']['usage']=={'input_tokens':40,'output_tokens':20}
     assert result['model_run']['sql_generation']=='model'
+    assert result['model_run']['live_verified'] is False
     assert any(e['id']=='AIQ01' for e in result['evidence'])
     assert any(isinstance(x,dict) and x.get('type')=='function_call_output' for x in mock.responses.calls[-1]['input'])
     # This verifies protocol only. It is not evidence of a real provider call.
 
 def test_model_cannot_drop_explicit_filters(client):
-    mock=fake_client([('analyze_business',analysis_args())]*3)
+    mock=fake_client([('get_business_context',{})]+[('analyze_business',analysis_args())]*3)
     with pytest.raises(live_agent.ModelUnavailable,match='连续'):
         live_agent.execute({'domain':'growth','question':'留存下降','filters':{'channel':'organic'}},client=mock)
 
 def test_invalid_report_selection_is_rejected(client):
-    mock=fake_client([('analyze_business',analysis_args())]+[('finish_report',{'finding_indices':[-1]})]*3)
+    mock=fake_client([('get_business_context',{}),('analyze_business',analysis_args())]+[('finish_report',{'finding_indices':[-1]})]*3)
     with pytest.raises(live_agent.ModelUnavailable):live_agent.execute({'domain':'growth','question':'留存下降'},client=mock)
 
 def test_report_escapes_user_question(client):
