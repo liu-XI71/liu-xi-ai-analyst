@@ -1,0 +1,260 @@
+{
+  "domains": [
+    {
+      "id": "growth",
+      "name": "增长诊断与自动周报",
+      "description": "确认留存口径，查询成熟队列，分解结构和表现，复盘随机实验并交付证据。",
+      "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "data_range": {
+        "start": "2026-07-06",
+        "end": "2026-09-06"
+      },
+      "default_request": {
+        "domain": "growth",
+        "task": "diagnose",
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23",
+        "filters": {}
+      },
+      "metrics": [
+        {
+          "id": "retained_within_next_7_days",
+          "name": "次 7 日内留存率",
+          "version": "growth.v1.0",
+          "numerator": "注册后第 1—7 个自然日内，至少有一次活动的成熟队列用户数",
+          "denominator": "注册日期 + 7 日不晚于数据快照日的去重注册用户数",
+          "grain": "用户",
+          "window": "(注册日, 注册日 + 7 日]",
+          "unit": "%",
+          "timezone": "Asia/Shanghai；数据以本地自然日存储",
+          "snapshot_date": "2026-09-06",
+          "latest_mature_cohort": "2026-08-30",
+          "exclusions": [
+            "注册当日活动",
+            "未完成 7 日观察的队列"
+          ],
+          "not_equivalent_to": "精确 D7 留存（仅注册后第 7 日活动）",
+          "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果"
+        },
+        {
+          "id": "experiment_lift_pp",
+          "name": "实验次 7 日内留存绝对提升",
+          "unit": "百分点",
+          "definition": "处理组留存率 − 对照组留存率；按注册用户随机分配，按分配组 ITT 分析"
+        }
+      ],
+      "tables": [
+        {
+          "name": "growth_users",
+          "description": "每用户一行的注册、获客维度和随机实验分组",
+          "columns": [
+            "user_id",
+            "signup_date",
+            "channel",
+            "device",
+            "experiment_arm",
+            "incentive_cost",
+            "revenue_7d"
+          ]
+        },
+        {
+          "name": "growth_activity",
+          "description": "用户自然日活动；同用户同日去重",
+          "columns": [
+            "user_id",
+            "activity_date"
+          ]
+        }
+      ],
+      "filters": {
+        "channel": [
+          {
+            "value": "organic",
+            "label": "自然流量"
+          },
+          {
+            "value": "paid_search",
+            "label": "付费搜索"
+          },
+          {
+            "value": "social",
+            "label": "社交投放"
+          },
+          {
+            "value": "referral",
+            "label": "好友推荐"
+          }
+        ],
+        "device": [
+          {
+            "value": "android",
+            "label": "Android"
+          },
+          {
+            "value": "ios",
+            "label": "iOS"
+          },
+          {
+            "value": "web",
+            "label": "网页"
+          }
+        ]
+      },
+      "examples": [
+        {
+          "question": "比较最近两周已完成观察的新增队列，次 7 日内留存为什么变化？按渠道和设备检查。",
+          "task": "diagnose"
+        },
+        {
+          "question": "复盘 8 月 17—30 日的随机增长实验，检查提升、置信区间、SRM 和成本门槛。",
+          "task": "experiment"
+        },
+        {
+          "question": "生成增长周报，展示变化、分层证据、假设和下一步建议。",
+          "task": "report"
+        }
+      ]
+    },
+    {
+      "id": "repurchase",
+      "name": "复购运营 Agent",
+      "description": "从正向订单计算成熟队列复购、时点RFM分群、预算内匿名候选和可复现随机留出建议。",
+      "data_source": "固定种子合成订单；非真实客户、非实际营销结果",
+      "data_range": {
+        "start": "2026-01-01",
+        "end": "2026-06-30"
+      },
+      "default_request": {
+        "question": "截至5月31日，按历史购买分群，在200元预算内制定召回候选与随机留出方案。",
+        "domain": "repurchase",
+        "task": "segment",
+        "start": "2026-03-01",
+        "end": "2026-05-31",
+        "filters": {
+          "budget": 200,
+          "contact_cost": 2,
+          "holdout_ratio": 0.2
+        }
+      },
+      "metrics": [
+        {
+          "id": "customers",
+          "label": "首次观察购买客户数",
+          "unit": "count",
+          "rule": "全量明细中首次观察购买日在所选窗口内的去重客户数，不等于真实获客。"
+        },
+        {
+          "id": "repeat7",
+          "label": "次7日内复购率",
+          "unit": "ratio",
+          "rule": "首个观察购买日后D1—D7至少一笔正向订单的客户 / 完整观察D7的客户；当日再购排除。"
+        },
+        {
+          "id": "repeat30",
+          "label": "次30日内复购率",
+          "unit": "ratio",
+          "rule": "首个观察购买日后D1—D30至少一笔正向订单的客户 / 完整观察D30的客户。"
+        },
+        {
+          "id": "value30",
+          "label": "首购起30日人均正向交易额",
+          "unit": "CNY",
+          "rule": "完整观察D30客户从首个观察购买日D0至D29的正向订单金额 / 完整观察D30客户数；未扣退款、成本，不是净LTV或利润。"
+        },
+        {
+          "id": "rfm",
+          "label": "时点RFM分群",
+          "unit": "customers",
+          "rule": "R为截止日距最近正向购买天数，F为截止日及之前全部观察订单数，M为所选start/end窗口正向交易额；不使用未来订单排序。"
+        }
+      ],
+      "tables": [
+        {
+          "name": "repurchase_customers",
+          "description": "固定种子合成匿名客户",
+          "columns": [
+            {
+              "name": "customer_id",
+              "type": "TEXT",
+              "description": "合成匿名客户ID"
+            },
+            {
+              "name": "region",
+              "type": "TEXT",
+              "description": "合成地区"
+            }
+          ]
+        },
+        {
+          "name": "repurchase_orders",
+          "description": "仅含正向交易；不存在真实退款、成本和营销触达记录",
+          "columns": [
+            {
+              "name": "order_id",
+              "type": "TEXT"
+            },
+            {
+              "name": "customer_id",
+              "type": "TEXT"
+            },
+            {
+              "name": "order_date",
+              "type": "TEXT"
+            },
+            {
+              "name": "amount_cents",
+              "type": "INTEGER",
+              "description": "合成CNY分"
+            }
+          ]
+        }
+      ],
+      "filters": {
+        "region": [
+          "all",
+          "华东",
+          "华南",
+          "华北",
+          "西部"
+        ],
+        "segment": [
+          "all",
+          "first",
+          "active",
+          "cooling",
+          "dormant",
+          "single"
+        ],
+        "budget": "0—1000000元，默认200",
+        "contact_cost": "每位处理组客户的最大计划成本，默认2元",
+        "holdout_ratio": "0.1—0.5，默认0.2",
+        "seed": "分组种子，默认liuxi-2026",
+        "limit": "候选人数上限，默认100，最多200"
+      },
+      "examples": [
+        {
+          "question": "截至5月31日，按历史购买分群，在200元预算内制定召回候选与随机留出方案。",
+          "task": "segment"
+        },
+        {
+          "question": "分析3月至5月首次观察购买队列的次7日和次30日复购，按地区拆分。",
+          "task": "diagnose"
+        },
+        {
+          "question": "生成复购运营报告，说明成熟窗口、候选预算和留出计划。",
+          "task": "report"
+        }
+      ]
+    }
+  ],
+  "model": {
+    "configured": false,
+    "mode": "demo",
+    "model": "gpt-5-mini",
+    "provider": "OpenAI Responses API"
+  },
+  "version": "0.1.0",
+  "data_notice": "固定种子合成数据；当前为静态演示快照，没有调用大模型。"
+}

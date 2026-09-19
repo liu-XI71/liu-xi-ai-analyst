@@ -1,0 +1,15 @@
+{
+  "status": "not_run",
+  "title": "真实模型评测尚未运行",
+  "mode": "live",
+  "live_status": "not_run",
+  "reason": "没有 OPENAI_API_KEY；未调用模型，也未以demo结果代替。",
+  "generated_at": "2026-09-19T07:50:55.607343+00:00",
+  "total": 0,
+  "passed": 0,
+  "failed": 0,
+  "requested_cases": 60,
+  "cases_sha256": "247dce245b0ef327d7e415f5f0ba979ebac1b5d28319caa05ca66d3452670d19",
+  "metrics": [],
+  "cases": []
+}

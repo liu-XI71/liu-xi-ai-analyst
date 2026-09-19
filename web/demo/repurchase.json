@@ -1,0 +1,2320 @@
+{
+  "status": "completed",
+  "title": "复购分群与预算留出计划",
+  "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+  "metric_contract": {
+    "version": "repurchase-1.0.0",
+    "data_source": "固定种子合成订单；非真实客户、非实际营销结果",
+    "observation_end": "2026-06-30",
+    "metrics": [
+      {
+        "id": "customers",
+        "label": "首次观察购买客户数",
+        "unit": "count",
+        "rule": "全量明细中首次观察购买日在所选窗口内的去重客户数，不等于真实获客。"
+      },
+      {
+        "id": "repeat7",
+        "label": "次7日内复购率",
+        "unit": "ratio",
+        "rule": "首个观察购买日后D1—D7至少一笔正向订单的客户 / 完整观察D7的客户；当日再购排除。"
+      },
+      {
+        "id": "repeat30",
+        "label": "次30日内复购率",
+        "unit": "ratio",
+        "rule": "首个观察购买日后D1—D30至少一笔正向订单的客户 / 完整观察D30的客户。"
+      },
+      {
+        "id": "value30",
+        "label": "首购起30日人均正向交易额",
+        "unit": "CNY",
+        "rule": "完整观察D30客户从首个观察购买日D0至D29的正向订单金额 / 完整观察D30客户数；未扣退款、成本，不是净LTV或利润。"
+      },
+      {
+        "id": "rfm",
+        "label": "时点RFM分群",
+        "unit": "customers",
+        "rule": "R为截止日距最近正向购买天数，F为截止日及之前全部观察订单数，M为所选start/end窗口正向交易额；不使用未来订单排序。"
+      }
+    ],
+    "window": {
+      "start": "2026-03-01",
+      "end": "2026-05-31"
+    },
+    "candidate_cutoff": "2026-05-31",
+    "monetary_window": {
+      "start": "2026-03-01",
+      "end": "2026-05-31"
+    },
+    "frequency_window": {
+      "start": "2026-01-01",
+      "end": "2026-05-31"
+    },
+    "allocation": {
+      "budget": 200.0,
+      "contact_cost": 2.0,
+      "planned_cost": 160.0,
+      "holdout_ratio_requested": 0.2,
+      "holdout_ratio_actual": 0.2,
+      "seed": "liuxi-2026",
+      "algorithm": "候选按窗口金额、历史金额、最近购买排序；SHA-256(seed:customer_id)稳定排序后前round(n*ratio)人为留出；只计划处理组计成本",
+      "candidate_limit": 100,
+      "treatment_n": 80,
+      "holdout_n": 20
+    }
+  },
+  "kpis": [
+    {
+      "id": "rfm_customers",
+      "label": "截至日分群客户",
+      "value": 1005,
+      "unit": "count"
+    },
+    {
+      "id": "candidates",
+      "label": "预算内候选（含留出）",
+      "value": 100,
+      "unit": "count"
+    },
+    {
+      "id": "planned_cost",
+      "label": "计划处理成本",
+      "value": 160.0,
+      "unit": "CNY"
+    },
+    {
+      "id": "holdout",
+      "label": "随机留出人数",
+      "value": 20,
+      "unit": "count"
+    }
+  ],
+  "tables": [
+    {
+      "id": "rp-segments-table",
+      "title": "截止日RFM分群（M为所选窗口金额）",
+      "columns": [
+        "label",
+        "customers",
+        "avg_recency",
+        "avg_frequency",
+        "window_value",
+        "history_value"
+      ],
+      "rows": [
+        {
+          "segment": "single",
+          "customers": 382,
+          "avg_recency": 88.84,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2774777,
+          "history_value_cents": 5434831,
+          "label": "单次购买沉默",
+          "window_value": 27747.77,
+          "history_value": 54348.31
+        },
+        {
+          "segment": "active",
+          "customers": 277,
+          "avg_recency": 11.42,
+          "avg_frequency": 4.55,
+          "window_value_cents": 15024189,
+          "history_value_cents": 18763725,
+          "label": "活跃复购",
+          "window_value": 150241.89,
+          "history_value": 187637.25
+        },
+        {
+          "segment": "first",
+          "customers": 168,
+          "avg_recency": 14.64,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2579802,
+          "history_value_cents": 2579802,
+          "label": "近期单次购买",
+          "window_value": 25798.02,
+          "history_value": 25798.02
+        },
+        {
+          "segment": "cooling",
+          "customers": 105,
+          "avg_recency": 44.0,
+          "avg_frequency": 3.17,
+          "window_value_cents": 3923741,
+          "history_value_cents": 5340859,
+          "label": "31—60日未购",
+          "window_value": 39237.41,
+          "history_value": 53408.59
+        },
+        {
+          "segment": "dormant",
+          "customers": 73,
+          "avg_recency": 87.36,
+          "avg_frequency": 2.51,
+          "window_value_cents": 1111835,
+          "history_value_cents": 2639957,
+          "label": "60日以上未购",
+          "window_value": 11118.35,
+          "history_value": 26399.57
+        }
+      ]
+    },
+    {
+      "id": "rp-candidates-table",
+      "title": "匿名候选与随机分配建议（未执行触达）",
+      "columns": [
+        "customer_id",
+        "region",
+        "segment",
+        "recency",
+        "frequency",
+        "window_value",
+        "assignment",
+        "planned_cost"
+      ],
+      "rows": [
+        {
+          "customer_id": "SYN-fbcd152916",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 8,
+          "window_value": 1450.3,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b890f2dba4",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 39,
+          "frequency": 8,
+          "window_value": 1352.2,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-ccd42c931a",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 31,
+          "frequency": 7,
+          "window_value": 1334.92,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-8bd0b57ed2",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 36,
+          "frequency": 5,
+          "window_value": 1181.6,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-f9ed36ba93",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 33,
+          "frequency": 7,
+          "window_value": 1169.26,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-0150f2575e",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 5,
+          "window_value": 925.85,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-29a5d91624",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 31,
+          "frequency": 5,
+          "window_value": 861.97,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-d69b406ca2",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 67,
+          "frequency": 4,
+          "window_value": 860.99,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-101ea504cb",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 31,
+          "frequency": 3,
+          "window_value": 832.38,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-3f40f98373",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 3,
+          "window_value": 796.62,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-75716c35bc",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 41,
+          "frequency": 3,
+          "window_value": 769.4,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-6cbacb89a6",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 36,
+          "frequency": 6,
+          "window_value": 716.19,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-4ec0cf98f0",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 56,
+          "frequency": 3,
+          "window_value": 715.78,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-8242b97818",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 5,
+          "window_value": 683.37,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-0e031a522b",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 40,
+          "frequency": 4,
+          "window_value": 682.78,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-1be75d5cfe",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 82,
+          "frequency": 3,
+          "window_value": 670.73,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-a339f1dc15",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 3,
+          "window_value": 665.93,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-1faede2743",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 3,
+          "window_value": 637.61,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-10b4fc4513",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 2,
+          "window_value": 625.24,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-2ce66c50e4",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 4,
+          "window_value": 622.77,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-d60c8c0607",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 3,
+          "window_value": 616.47,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-f3a0e62ab0",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 2,
+          "window_value": 601.39,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-7185caade5",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 3,
+          "window_value": 573.07,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-06616f2ba7",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 59,
+          "frequency": 3,
+          "window_value": 571.08,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-385173ca4e",
+          "region": "华北",
+          "segment": "60日以上未购",
+          "recency": 62,
+          "frequency": 2,
+          "window_value": 560.03,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-7d0626c0e4",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 61,
+          "frequency": 2,
+          "window_value": 552.02,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-77e6e4bcbf",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 9,
+          "window_value": 545.02,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b638e39e0b",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 57,
+          "frequency": 4,
+          "window_value": 544.99,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b8d143c9a5",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 2,
+          "window_value": 539.66,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-ce4782c7fe",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 2,
+          "window_value": 526.38,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b06ab88647",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 61,
+          "frequency": 2,
+          "window_value": 523.74,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-65f061160d",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 60,
+          "frequency": 3,
+          "window_value": 518.97,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-31f3ae9511",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 37,
+          "frequency": 5,
+          "window_value": 516.55,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-52c3035530",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 37,
+          "frequency": 4,
+          "window_value": 516.13,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-ac7781c3b1",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 37,
+          "frequency": 3,
+          "window_value": 499.79,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-3d6cbfbb35",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 52,
+          "frequency": 3,
+          "window_value": 483.4,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-8c7b30bb5f",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 35,
+          "frequency": 5,
+          "window_value": 476.04,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-c16a480e5b",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 2,
+          "window_value": 473.31,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-a08ad986fb",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 59,
+          "frequency": 5,
+          "window_value": 460.32,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-c1c3bc46a1",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 53,
+          "frequency": 8,
+          "window_value": 455.36,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-833e1b3c62",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 46,
+          "frequency": 2,
+          "window_value": 452.88,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-8b78a6ad19",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 52,
+          "frequency": 2,
+          "window_value": 446.18,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-a77283a6b0",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 37,
+          "frequency": 3,
+          "window_value": 433.28,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-bf9a08ac14",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 39,
+          "frequency": 2,
+          "window_value": 420.54,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-230ef9264f",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 63,
+          "frequency": 2,
+          "window_value": 418.66,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-9911816cac",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 38,
+          "frequency": 2,
+          "window_value": 399.95,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-18a5dc2679",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 70,
+          "frequency": 3,
+          "window_value": 391.47,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-3e48a8f94c",
+          "region": "华北",
+          "segment": "60日以上未购",
+          "recency": 61,
+          "frequency": 3,
+          "window_value": 391.31,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-c22f6e2576",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 76,
+          "frequency": 4,
+          "window_value": 385.88,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-d5e1dd58dc",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 67,
+          "frequency": 2,
+          "window_value": 384.86,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-71dcd96637",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 52,
+          "frequency": 2,
+          "window_value": 379.82,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-27099cf31b",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 44,
+          "frequency": 3,
+          "window_value": 373.67,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-5a3664b294",
+          "region": "西部",
+          "segment": "60日以上未购",
+          "recency": 81,
+          "frequency": 2,
+          "window_value": 367.71,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-ef1ec8dc74",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 50,
+          "frequency": 3,
+          "window_value": 364.53,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-c032a63a49",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 70,
+          "frequency": 3,
+          "window_value": 364.52,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-ee7ab6aa08",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 51,
+          "frequency": 5,
+          "window_value": 356.79,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b02e8f9606",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 31,
+          "frequency": 3,
+          "window_value": 351.08,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-8e94b20fb6",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 60,
+          "frequency": 2,
+          "window_value": 348.53,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b817625929",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 79,
+          "frequency": 2,
+          "window_value": 338.9,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-c3c649793a",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 47,
+          "frequency": 2,
+          "window_value": 327.71,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-0a9c92483a",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 62,
+          "frequency": 3,
+          "window_value": 327.22,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-27172dea07",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 77,
+          "frequency": 3,
+          "window_value": 324.3,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-5a5e42fa72",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 2,
+          "window_value": 324.12,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-5ebf7b1de2",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 31,
+          "frequency": 2,
+          "window_value": 315.76,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-22b84f7180",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 39,
+          "frequency": 3,
+          "window_value": 296.12,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-354a997e26",
+          "region": "华东",
+          "segment": "60日以上未购",
+          "recency": 67,
+          "frequency": 2,
+          "window_value": 295.62,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-a58a99eb97",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 49,
+          "frequency": 2,
+          "window_value": 295.07,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-cbd772ef5b",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 39,
+          "frequency": 2,
+          "window_value": 293.43,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-440b240ae4",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 57,
+          "frequency": 2,
+          "window_value": 291.31,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-c806554252",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 65,
+          "frequency": 3,
+          "window_value": 280.33,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-48e878a7b0",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 49,
+          "frequency": 2,
+          "window_value": 277.83,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-2c23edb865",
+          "region": "西部",
+          "segment": "31—60日未购",
+          "recency": 40,
+          "frequency": 2,
+          "window_value": 277.01,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-386b424ec6",
+          "region": "华北",
+          "segment": "60日以上未购",
+          "recency": 90,
+          "frequency": 2,
+          "window_value": 273.56,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-5214677ebc",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 69,
+          "frequency": 2,
+          "window_value": 272.93,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-3985692fc0",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 39,
+          "frequency": 2,
+          "window_value": 268.2,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-77cf65b783",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 52,
+          "frequency": 2,
+          "window_value": 267.82,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-7b1eb60f61",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 58,
+          "frequency": 2,
+          "window_value": 267.55,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-33bcb7e354",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 4,
+          "window_value": 256.13,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-bc8bc99584",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 42,
+          "frequency": 2,
+          "window_value": 254.13,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-89de956909",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 3,
+          "window_value": 246.1,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-87642086ac",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 38,
+          "frequency": 3,
+          "window_value": 240.53,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-dc98c1d6b5",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 5,
+          "window_value": 234.8,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-5d01ab1699",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 3,
+          "window_value": 225.78,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-2104bb6e6c",
+          "region": "西部",
+          "segment": "60日以上未购",
+          "recency": 78,
+          "frequency": 5,
+          "window_value": 225.49,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-53abecabd6",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 2,
+          "window_value": 224.0,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-30d0398b1c",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 32,
+          "frequency": 2,
+          "window_value": 219.11,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-570d44c9de",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 59,
+          "frequency": 3,
+          "window_value": 211.42,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-4946d6d3fd",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 55,
+          "frequency": 4,
+          "window_value": 208.2,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-232c9d6fee",
+          "region": "华北",
+          "segment": "60日以上未购",
+          "recency": 76,
+          "frequency": 2,
+          "window_value": 202.71,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-74f9909fa0",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 2,
+          "window_value": 202.46,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-b8dba617c9",
+          "region": "华南",
+          "segment": "60日以上未购",
+          "recency": 81,
+          "frequency": 2,
+          "window_value": 202.09,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-6c65a93c51",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 47,
+          "frequency": 2,
+          "window_value": 201.52,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-cf8465e8de",
+          "region": "华南",
+          "segment": "31—60日未购",
+          "recency": 41,
+          "frequency": 4,
+          "window_value": 200.34,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-bf7cdc4cb8",
+          "region": "华北",
+          "segment": "60日以上未购",
+          "recency": 75,
+          "frequency": 2,
+          "window_value": 200.32,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-cefb1ebccd",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 38,
+          "frequency": 2,
+          "window_value": 199.69,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-9ac668d8ca",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 45,
+          "frequency": 2,
+          "window_value": 199.41,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-cbf07e7e50",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 34,
+          "frequency": 4,
+          "window_value": 193.18,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-cddfe8ad91",
+          "region": "华北",
+          "segment": "31—60日未购",
+          "recency": 54,
+          "frequency": 3,
+          "window_value": 188.94,
+          "assignment": "随机留出",
+          "planned_cost": 0
+        },
+        {
+          "customer_id": "SYN-e8891298cf",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 52,
+          "frequency": 2,
+          "window_value": 184.57,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        },
+        {
+          "customer_id": "SYN-9875e2119a",
+          "region": "华东",
+          "segment": "31—60日未购",
+          "recency": 45,
+          "frequency": 4,
+          "window_value": 181.02,
+          "assignment": "计划处理",
+          "planned_cost": 2.0
+        }
+      ]
+    }
+  ],
+  "charts": [
+    {
+      "id": "rp-segment-chart",
+      "title": "截至日客户分群",
+      "type": "bar",
+      "x_key": "label",
+      "y_keys": [
+        "customers"
+      ],
+      "data": [
+        {
+          "segment": "single",
+          "customers": 382,
+          "avg_recency": 88.84,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2774777,
+          "history_value_cents": 5434831,
+          "label": "单次购买沉默",
+          "window_value": 27747.77,
+          "history_value": 54348.31
+        },
+        {
+          "segment": "active",
+          "customers": 277,
+          "avg_recency": 11.42,
+          "avg_frequency": 4.55,
+          "window_value_cents": 15024189,
+          "history_value_cents": 18763725,
+          "label": "活跃复购",
+          "window_value": 150241.89,
+          "history_value": 187637.25
+        },
+        {
+          "segment": "first",
+          "customers": 168,
+          "avg_recency": 14.64,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2579802,
+          "history_value_cents": 2579802,
+          "label": "近期单次购买",
+          "window_value": 25798.02,
+          "history_value": 25798.02
+        },
+        {
+          "segment": "cooling",
+          "customers": 105,
+          "avg_recency": 44.0,
+          "avg_frequency": 3.17,
+          "window_value_cents": 3923741,
+          "history_value_cents": 5340859,
+          "label": "31—60日未购",
+          "window_value": 39237.41,
+          "history_value": 53408.59
+        },
+        {
+          "segment": "dormant",
+          "customers": 73,
+          "avg_recency": 87.36,
+          "avg_frequency": 2.51,
+          "window_value_cents": 1111835,
+          "history_value_cents": 2639957,
+          "label": "60日以上未购",
+          "window_value": 11118.35,
+          "history_value": 26399.57
+        }
+      ],
+      "unit": "count"
+    }
+  ],
+  "findings": [
+    {
+      "kind": "fact",
+      "text": "截至2026-05-31，所选分群有1005名客户；预算200.00元、每位计划处理成本2.00元，共安排100名候选，其中计划处理80人、随机留出20人，计划成本160.00元。",
+      "evidence_ids": [
+        "rp-segments",
+        "rp-candidates"
+      ]
+    },
+    {
+      "kind": "action",
+      "text": "候选仅作运营讨论；先核验营销同意和触达条件，再预注册客户级随机实验、D1—D30复购主指标、退款与成本护栏及所需样本量。当前没有营销增量结果。",
+      "evidence_ids": [
+        "rp-candidates"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "rp-cohort",
+      "label": "当前窗口成熟队列",
+      "sql": "WITH firsts AS (\n SELECT customer_id, MIN(order_date) AS first_date FROM repurchase_orders GROUP BY customer_id\n), cohort AS (\n SELECT f.customer_id,f.first_date,c.region,\n  CASE WHEN date(f.first_date,'+7 days')<=:observed_end THEN 1 ELSE 0 END AS mature7,\n  CASE WHEN date(f.first_date,'+30 days')<=:observed_end THEN 1 ELSE 0 END AS mature30,\n  CASE WHEN EXISTS(SELECT 1 FROM repurchase_orders o WHERE o.customer_id=f.customer_id\n   AND o.order_date>f.first_date AND o.order_date<=date(f.first_date,'+7 days') AND o.order_date<=:observed_end) THEN 1 ELSE 0 END AS returned7,\n  CASE WHEN EXISTS(SELECT 1 FROM repurchase_orders o WHERE o.customer_id=f.customer_id\n   AND o.order_date>f.first_date AND o.order_date<=date(f.first_date,'+30 days') AND o.order_date<=:observed_end) THEN 1 ELSE 0 END AS returned30,\n  (SELECT COALESCE(SUM(o.amount_cents),0) FROM repurchase_orders o WHERE o.customer_id=f.customer_id\n   AND o.order_date>=f.first_date AND o.order_date<=date(f.first_date,'+29 days') AND o.order_date<=:observed_end) AS value30_cents\n FROM firsts f JOIN repurchase_customers c USING(customer_id)\n WHERE f.first_date BETWEEN :start AND :end AND (:region='all' OR c.region=:region)\n)\nSELECT COUNT(*) AS customers, COALESCE(SUM(mature7),0) AS mature7,\n COALESCE(SUM(mature7*returned7),0) AS repeat7, COALESCE(SUM(mature30),0) AS mature30,\n COALESCE(SUM(mature30*returned30),0) AS repeat30, COALESCE(SUM(mature30*value30_cents),0) AS value30_cents FROM cohort",
+      "parameters": {
+        "start": "2026-03-01",
+        "end": "2026-05-31",
+        "observed_end": "2026-06-30",
+        "region": "all"
+      },
+      "rows": [
+        {
+          "customers": 616,
+          "mature7": 616,
+          "repeat7": 62,
+          "mature30": 616,
+          "repeat30": 175,
+          "value30_cents": 13866434
+        }
+      ],
+      "source": "固定种子合成订单；非真实客户、非实际营销结果",
+      "metric_version": "repurchase-1.0.0"
+    },
+    {
+      "id": "rp-segments",
+      "label": "截至日RFM分群",
+      "sql": "WITH history AS (\n SELECT o.customer_id,c.region,MIN(o.order_date) AS first_date,MAX(o.order_date) AS last_date,\n COUNT(*) AS frequency, SUM(o.amount_cents) AS history_value_cents,\n SUM(CASE WHEN o.order_date>=:start THEN o.amount_cents ELSE 0 END) AS window_value_cents,\n CAST(julianday(:end)-julianday(MAX(o.order_date)) AS INTEGER) AS recency\n FROM repurchase_orders o JOIN repurchase_customers c USING(customer_id)\n WHERE o.order_date<=:end AND (:region='all' OR c.region=:region)\n GROUP BY o.customer_id,c.region\n), rfm AS (\n SELECT *,CASE WHEN frequency=1 AND recency<=30 THEN 'first'\n  WHEN frequency=1 THEN 'single' WHEN recency<=30 THEN 'active'\n  WHEN recency<=60 THEN 'cooling' ELSE 'dormant' END AS segment\n FROM history\n)\nSELECT segment,COUNT(*) AS customers,ROUND(AVG(recency),2) AS avg_recency,\n ROUND(AVG(frequency),2) AS avg_frequency,SUM(window_value_cents) AS window_value_cents,\n SUM(history_value_cents) AS history_value_cents FROM rfm\n WHERE (:segment='all' OR segment=:segment) GROUP BY segment ORDER BY customers DESC,segment",
+      "parameters": {
+        "start": "2026-03-01",
+        "end": "2026-05-31",
+        "region": "all",
+        "segment": "all"
+      },
+      "rows": [
+        {
+          "segment": "single",
+          "customers": 382,
+          "avg_recency": 88.84,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2774777,
+          "history_value_cents": 5434831
+        },
+        {
+          "segment": "active",
+          "customers": 277,
+          "avg_recency": 11.42,
+          "avg_frequency": 4.55,
+          "window_value_cents": 15024189,
+          "history_value_cents": 18763725
+        },
+        {
+          "segment": "first",
+          "customers": 168,
+          "avg_recency": 14.64,
+          "avg_frequency": 1.0,
+          "window_value_cents": 2579802,
+          "history_value_cents": 2579802
+        },
+        {
+          "segment": "cooling",
+          "customers": 105,
+          "avg_recency": 44.0,
+          "avg_frequency": 3.17,
+          "window_value_cents": 3923741,
+          "history_value_cents": 5340859
+        },
+        {
+          "segment": "dormant",
+          "customers": 73,
+          "avg_recency": 87.36,
+          "avg_frequency": 2.51,
+          "window_value_cents": 1111835,
+          "history_value_cents": 2639957
+        }
+      ],
+      "source": "固定种子合成订单；非真实客户、非实际营销结果",
+      "metric_version": "repurchase-1.0.0"
+    },
+    {
+      "id": "rp-candidates",
+      "label": "仅用截止日前信息排序的候选",
+      "sql": "WITH history AS (\n SELECT o.customer_id,c.region,MIN(o.order_date) AS first_date,MAX(o.order_date) AS last_date,\n COUNT(*) AS frequency, SUM(o.amount_cents) AS history_value_cents,\n SUM(CASE WHEN o.order_date>=:start THEN o.amount_cents ELSE 0 END) AS window_value_cents,\n CAST(julianday(:end)-julianday(MAX(o.order_date)) AS INTEGER) AS recency\n FROM repurchase_orders o JOIN repurchase_customers c USING(customer_id)\n WHERE o.order_date<=:end AND (:region='all' OR c.region=:region)\n GROUP BY o.customer_id,c.region\n), rfm AS (\n SELECT *,CASE WHEN frequency=1 AND recency<=30 THEN 'first'\n  WHEN frequency=1 THEN 'single' WHEN recency<=30 THEN 'active'\n  WHEN recency<=60 THEN 'cooling' ELSE 'dormant' END AS segment\n FROM history\n)\nSELECT customer_id,region,recency,frequency,window_value_cents,history_value_cents,segment\n FROM rfm WHERE ((:segment='all' AND segment IN ('cooling','dormant')) OR segment=:segment)\n ORDER BY window_value_cents DESC,history_value_cents DESC,recency ASC,customer_id LIMIT :limit",
+      "parameters": {
+        "start": "2026-03-01",
+        "end": "2026-05-31",
+        "region": "all",
+        "segment": "all",
+        "limit": 100
+      },
+      "rows": [
+        {
+          "customer_id": "SYN-fbcd152916",
+          "region": "华南",
+          "recency": 32,
+          "frequency": 8,
+          "window_value_cents": 145030,
+          "history_value_cents": 197063,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b890f2dba4",
+          "region": "华南",
+          "recency": 39,
+          "frequency": 8,
+          "window_value_cents": 135220,
+          "history_value_cents": 222280,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-ccd42c931a",
+          "region": "华南",
+          "recency": 31,
+          "frequency": 7,
+          "window_value_cents": 133492,
+          "history_value_cents": 133492,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-8bd0b57ed2",
+          "region": "西部",
+          "recency": 36,
+          "frequency": 5,
+          "window_value_cents": 118160,
+          "history_value_cents": 118160,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-f9ed36ba93",
+          "region": "华南",
+          "recency": 33,
+          "frequency": 7,
+          "window_value_cents": 116926,
+          "history_value_cents": 140697,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-0150f2575e",
+          "region": "华南",
+          "recency": 42,
+          "frequency": 5,
+          "window_value_cents": 92585,
+          "history_value_cents": 110809,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-29a5d91624",
+          "region": "华东",
+          "recency": 31,
+          "frequency": 5,
+          "window_value_cents": 86197,
+          "history_value_cents": 129428,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-d69b406ca2",
+          "region": "华南",
+          "recency": 67,
+          "frequency": 4,
+          "window_value_cents": 86099,
+          "history_value_cents": 86099,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-101ea504cb",
+          "region": "华东",
+          "recency": 31,
+          "frequency": 3,
+          "window_value_cents": 83238,
+          "history_value_cents": 83238,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-3f40f98373",
+          "region": "华北",
+          "recency": 34,
+          "frequency": 3,
+          "window_value_cents": 79662,
+          "history_value_cents": 79662,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-75716c35bc",
+          "region": "华南",
+          "recency": 41,
+          "frequency": 3,
+          "window_value_cents": 76940,
+          "history_value_cents": 99455,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-6cbacb89a6",
+          "region": "华南",
+          "recency": 36,
+          "frequency": 6,
+          "window_value_cents": 71619,
+          "history_value_cents": 71619,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-4ec0cf98f0",
+          "region": "华南",
+          "recency": 56,
+          "frequency": 3,
+          "window_value_cents": 71578,
+          "history_value_cents": 71578,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-8242b97818",
+          "region": "华南",
+          "recency": 32,
+          "frequency": 5,
+          "window_value_cents": 68337,
+          "history_value_cents": 106638,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-0e031a522b",
+          "region": "华南",
+          "recency": 40,
+          "frequency": 4,
+          "window_value_cents": 68278,
+          "history_value_cents": 82309,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-1be75d5cfe",
+          "region": "华南",
+          "recency": 82,
+          "frequency": 3,
+          "window_value_cents": 67073,
+          "history_value_cents": 106869,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-a339f1dc15",
+          "region": "华南",
+          "recency": 34,
+          "frequency": 3,
+          "window_value_cents": 66593,
+          "history_value_cents": 66593,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-1faede2743",
+          "region": "华东",
+          "recency": 55,
+          "frequency": 3,
+          "window_value_cents": 63761,
+          "history_value_cents": 96953,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-10b4fc4513",
+          "region": "华北",
+          "recency": 42,
+          "frequency": 2,
+          "window_value_cents": 62524,
+          "history_value_cents": 62524,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-2ce66c50e4",
+          "region": "华南",
+          "recency": 42,
+          "frequency": 4,
+          "window_value_cents": 62277,
+          "history_value_cents": 62277,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-d60c8c0607",
+          "region": "华北",
+          "recency": 34,
+          "frequency": 3,
+          "window_value_cents": 61647,
+          "history_value_cents": 61647,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-f3a0e62ab0",
+          "region": "华南",
+          "recency": 42,
+          "frequency": 2,
+          "window_value_cents": 60139,
+          "history_value_cents": 60139,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-7185caade5",
+          "region": "西部",
+          "recency": 34,
+          "frequency": 3,
+          "window_value_cents": 57307,
+          "history_value_cents": 57307,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-06616f2ba7",
+          "region": "华东",
+          "recency": 59,
+          "frequency": 3,
+          "window_value_cents": 57108,
+          "history_value_cents": 72232,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-385173ca4e",
+          "region": "华北",
+          "recency": 62,
+          "frequency": 2,
+          "window_value_cents": 56003,
+          "history_value_cents": 56003,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-7d0626c0e4",
+          "region": "华南",
+          "recency": 61,
+          "frequency": 2,
+          "window_value_cents": 55202,
+          "history_value_cents": 55202,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-77e6e4bcbf",
+          "region": "华北",
+          "recency": 32,
+          "frequency": 9,
+          "window_value_cents": 54502,
+          "history_value_cents": 151211,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b638e39e0b",
+          "region": "华南",
+          "recency": 57,
+          "frequency": 4,
+          "window_value_cents": 54499,
+          "history_value_cents": 90980,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b8d143c9a5",
+          "region": "华东",
+          "recency": 42,
+          "frequency": 2,
+          "window_value_cents": 53966,
+          "history_value_cents": 53966,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-ce4782c7fe",
+          "region": "华南",
+          "recency": 42,
+          "frequency": 2,
+          "window_value_cents": 52638,
+          "history_value_cents": 52638,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b06ab88647",
+          "region": "华东",
+          "recency": 61,
+          "frequency": 2,
+          "window_value_cents": 52374,
+          "history_value_cents": 52374,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-65f061160d",
+          "region": "西部",
+          "recency": 60,
+          "frequency": 3,
+          "window_value_cents": 51897,
+          "history_value_cents": 70935,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-31f3ae9511",
+          "region": "华东",
+          "recency": 37,
+          "frequency": 5,
+          "window_value_cents": 51655,
+          "history_value_cents": 63465,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-52c3035530",
+          "region": "华东",
+          "recency": 37,
+          "frequency": 4,
+          "window_value_cents": 51613,
+          "history_value_cents": 75930,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-ac7781c3b1",
+          "region": "华北",
+          "recency": 37,
+          "frequency": 3,
+          "window_value_cents": 49979,
+          "history_value_cents": 77046,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-3d6cbfbb35",
+          "region": "华东",
+          "recency": 52,
+          "frequency": 3,
+          "window_value_cents": 48340,
+          "history_value_cents": 48340,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-8c7b30bb5f",
+          "region": "华北",
+          "recency": 35,
+          "frequency": 5,
+          "window_value_cents": 47604,
+          "history_value_cents": 91627,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-c16a480e5b",
+          "region": "华东",
+          "recency": 55,
+          "frequency": 2,
+          "window_value_cents": 47331,
+          "history_value_cents": 47331,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-a08ad986fb",
+          "region": "华东",
+          "recency": 59,
+          "frequency": 5,
+          "window_value_cents": 46032,
+          "history_value_cents": 110391,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-c1c3bc46a1",
+          "region": "华北",
+          "recency": 53,
+          "frequency": 8,
+          "window_value_cents": 45536,
+          "history_value_cents": 144943,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-833e1b3c62",
+          "region": "西部",
+          "recency": 46,
+          "frequency": 2,
+          "window_value_cents": 45288,
+          "history_value_cents": 45288,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-8b78a6ad19",
+          "region": "西部",
+          "recency": 52,
+          "frequency": 2,
+          "window_value_cents": 44618,
+          "history_value_cents": 44618,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-a77283a6b0",
+          "region": "华东",
+          "recency": 37,
+          "frequency": 3,
+          "window_value_cents": 43328,
+          "history_value_cents": 43328,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-bf9a08ac14",
+          "region": "华北",
+          "recency": 39,
+          "frequency": 2,
+          "window_value_cents": 42054,
+          "history_value_cents": 42054,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-230ef9264f",
+          "region": "华东",
+          "recency": 63,
+          "frequency": 2,
+          "window_value_cents": 41866,
+          "history_value_cents": 41866,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-9911816cac",
+          "region": "华东",
+          "recency": 38,
+          "frequency": 2,
+          "window_value_cents": 39995,
+          "history_value_cents": 39995,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-18a5dc2679",
+          "region": "华东",
+          "recency": 70,
+          "frequency": 3,
+          "window_value_cents": 39147,
+          "history_value_cents": 39147,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-3e48a8f94c",
+          "region": "华北",
+          "recency": 61,
+          "frequency": 3,
+          "window_value_cents": 39131,
+          "history_value_cents": 51293,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-c22f6e2576",
+          "region": "华东",
+          "recency": 76,
+          "frequency": 4,
+          "window_value_cents": 38588,
+          "history_value_cents": 78739,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-d5e1dd58dc",
+          "region": "华东",
+          "recency": 67,
+          "frequency": 2,
+          "window_value_cents": 38486,
+          "history_value_cents": 38486,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-71dcd96637",
+          "region": "华北",
+          "recency": 52,
+          "frequency": 2,
+          "window_value_cents": 37982,
+          "history_value_cents": 37982,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-27099cf31b",
+          "region": "华北",
+          "recency": 44,
+          "frequency": 3,
+          "window_value_cents": 37367,
+          "history_value_cents": 50470,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-5a3664b294",
+          "region": "西部",
+          "recency": 81,
+          "frequency": 2,
+          "window_value_cents": 36771,
+          "history_value_cents": 51454,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-ef1ec8dc74",
+          "region": "华南",
+          "recency": 50,
+          "frequency": 3,
+          "window_value_cents": 36453,
+          "history_value_cents": 51296,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-c032a63a49",
+          "region": "华南",
+          "recency": 70,
+          "frequency": 3,
+          "window_value_cents": 36452,
+          "history_value_cents": 36452,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-ee7ab6aa08",
+          "region": "华东",
+          "recency": 51,
+          "frequency": 5,
+          "window_value_cents": 35679,
+          "history_value_cents": 67385,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b02e8f9606",
+          "region": "华东",
+          "recency": 31,
+          "frequency": 3,
+          "window_value_cents": 35108,
+          "history_value_cents": 35108,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-8e94b20fb6",
+          "region": "华南",
+          "recency": 60,
+          "frequency": 2,
+          "window_value_cents": 34853,
+          "history_value_cents": 34853,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b817625929",
+          "region": "华南",
+          "recency": 79,
+          "frequency": 2,
+          "window_value_cents": 33890,
+          "history_value_cents": 33890,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-c3c649793a",
+          "region": "华南",
+          "recency": 47,
+          "frequency": 2,
+          "window_value_cents": 32771,
+          "history_value_cents": 32771,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-0a9c92483a",
+          "region": "华东",
+          "recency": 62,
+          "frequency": 3,
+          "window_value_cents": 32722,
+          "history_value_cents": 92099,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-27172dea07",
+          "region": "华东",
+          "recency": 77,
+          "frequency": 3,
+          "window_value_cents": 32430,
+          "history_value_cents": 75763,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-5a5e42fa72",
+          "region": "华东",
+          "recency": 32,
+          "frequency": 2,
+          "window_value_cents": 32412,
+          "history_value_cents": 32412,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-5ebf7b1de2",
+          "region": "华南",
+          "recency": 31,
+          "frequency": 2,
+          "window_value_cents": 31576,
+          "history_value_cents": 31576,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-22b84f7180",
+          "region": "华南",
+          "recency": 39,
+          "frequency": 3,
+          "window_value_cents": 29612,
+          "history_value_cents": 76433,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-354a997e26",
+          "region": "华东",
+          "recency": 67,
+          "frequency": 2,
+          "window_value_cents": 29562,
+          "history_value_cents": 59071,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-a58a99eb97",
+          "region": "华东",
+          "recency": 49,
+          "frequency": 2,
+          "window_value_cents": 29507,
+          "history_value_cents": 29507,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-cbd772ef5b",
+          "region": "华东",
+          "recency": 39,
+          "frequency": 2,
+          "window_value_cents": 29343,
+          "history_value_cents": 29343,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-440b240ae4",
+          "region": "西部",
+          "recency": 57,
+          "frequency": 2,
+          "window_value_cents": 29131,
+          "history_value_cents": 29131,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-c806554252",
+          "region": "华南",
+          "recency": 65,
+          "frequency": 3,
+          "window_value_cents": 28033,
+          "history_value_cents": 36407,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-48e878a7b0",
+          "region": "华北",
+          "recency": 49,
+          "frequency": 2,
+          "window_value_cents": 27783,
+          "history_value_cents": 27783,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-2c23edb865",
+          "region": "西部",
+          "recency": 40,
+          "frequency": 2,
+          "window_value_cents": 27701,
+          "history_value_cents": 50549,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-386b424ec6",
+          "region": "华北",
+          "recency": 90,
+          "frequency": 2,
+          "window_value_cents": 27356,
+          "history_value_cents": 27356,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-5214677ebc",
+          "region": "华南",
+          "recency": 69,
+          "frequency": 2,
+          "window_value_cents": 27293,
+          "history_value_cents": 27293,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-3985692fc0",
+          "region": "华东",
+          "recency": 39,
+          "frequency": 2,
+          "window_value_cents": 26820,
+          "history_value_cents": 26820,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-77cf65b783",
+          "region": "华南",
+          "recency": 52,
+          "frequency": 2,
+          "window_value_cents": 26782,
+          "history_value_cents": 26782,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-7b1eb60f61",
+          "region": "华东",
+          "recency": 58,
+          "frequency": 2,
+          "window_value_cents": 26755,
+          "history_value_cents": 51176,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-33bcb7e354",
+          "region": "华南",
+          "recency": 55,
+          "frequency": 4,
+          "window_value_cents": 25613,
+          "history_value_cents": 86998,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-bc8bc99584",
+          "region": "华北",
+          "recency": 42,
+          "frequency": 2,
+          "window_value_cents": 25413,
+          "history_value_cents": 25413,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-89de956909",
+          "region": "华南",
+          "recency": 32,
+          "frequency": 3,
+          "window_value_cents": 24610,
+          "history_value_cents": 24610,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-87642086ac",
+          "region": "华东",
+          "recency": 38,
+          "frequency": 3,
+          "window_value_cents": 24053,
+          "history_value_cents": 24053,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-dc98c1d6b5",
+          "region": "华南",
+          "recency": 55,
+          "frequency": 5,
+          "window_value_cents": 23480,
+          "history_value_cents": 56327,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-5d01ab1699",
+          "region": "华南",
+          "recency": 55,
+          "frequency": 3,
+          "window_value_cents": 22578,
+          "history_value_cents": 70130,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-2104bb6e6c",
+          "region": "西部",
+          "recency": 78,
+          "frequency": 5,
+          "window_value_cents": 22549,
+          "history_value_cents": 67975,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-53abecabd6",
+          "region": "华南",
+          "recency": 32,
+          "frequency": 2,
+          "window_value_cents": 22400,
+          "history_value_cents": 22400,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-30d0398b1c",
+          "region": "华南",
+          "recency": 32,
+          "frequency": 2,
+          "window_value_cents": 21911,
+          "history_value_cents": 21911,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-570d44c9de",
+          "region": "华北",
+          "recency": 59,
+          "frequency": 3,
+          "window_value_cents": 21142,
+          "history_value_cents": 21142,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-4946d6d3fd",
+          "region": "华南",
+          "recency": 55,
+          "frequency": 4,
+          "window_value_cents": 20820,
+          "history_value_cents": 30456,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-232c9d6fee",
+          "region": "华北",
+          "recency": 76,
+          "frequency": 2,
+          "window_value_cents": 20271,
+          "history_value_cents": 20271,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-74f9909fa0",
+          "region": "华南",
+          "recency": 34,
+          "frequency": 2,
+          "window_value_cents": 20246,
+          "history_value_cents": 20246,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-b8dba617c9",
+          "region": "华南",
+          "recency": 81,
+          "frequency": 2,
+          "window_value_cents": 20209,
+          "history_value_cents": 20209,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-6c65a93c51",
+          "region": "华北",
+          "recency": 47,
+          "frequency": 2,
+          "window_value_cents": 20152,
+          "history_value_cents": 36995,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-cf8465e8de",
+          "region": "华南",
+          "recency": 41,
+          "frequency": 4,
+          "window_value_cents": 20034,
+          "history_value_cents": 38251,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-bf7cdc4cb8",
+          "region": "华北",
+          "recency": 75,
+          "frequency": 2,
+          "window_value_cents": 20032,
+          "history_value_cents": 20032,
+          "segment": "dormant"
+        },
+        {
+          "customer_id": "SYN-cefb1ebccd",
+          "region": "华北",
+          "recency": 38,
+          "frequency": 2,
+          "window_value_cents": 19969,
+          "history_value_cents": 19969,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-9ac668d8ca",
+          "region": "华北",
+          "recency": 45,
+          "frequency": 2,
+          "window_value_cents": 19941,
+          "history_value_cents": 19941,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-cbf07e7e50",
+          "region": "华北",
+          "recency": 34,
+          "frequency": 4,
+          "window_value_cents": 19318,
+          "history_value_cents": 83841,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-cddfe8ad91",
+          "region": "华北",
+          "recency": 54,
+          "frequency": 3,
+          "window_value_cents": 18894,
+          "history_value_cents": 18894,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-e8891298cf",
+          "region": "华东",
+          "recency": 52,
+          "frequency": 2,
+          "window_value_cents": 18457,
+          "history_value_cents": 18457,
+          "segment": "cooling"
+        },
+        {
+          "customer_id": "SYN-9875e2119a",
+          "region": "华东",
+          "recency": 45,
+          "frequency": 4,
+          "window_value_cents": 18102,
+          "history_value_cents": 23103,
+          "segment": "cooling"
+        }
+      ],
+      "source": "固定种子合成订单；非真实客户、非实际营销结果",
+      "metric_version": "repurchase-1.0.0"
+    }
+  ],
+  "trace": [
+    {
+      "tool": "static_snapshot",
+      "status": "completed",
+      "description": "由同一Python业务引擎生成的固定演示快照，未执行当前自由输入问题，未调用模型。"
+    },
+    {
+      "tool": "validate_repurchase_request",
+      "status": "completed",
+      "description": "日期、任务、地区、预算和留出比例校验通过。"
+    },
+    {
+      "tool": "query_repurchase_sql",
+      "status": "completed",
+      "description": "当前窗口成熟队列：只读SQL返回1行，证据rp-cohort。"
+    },
+    {
+      "tool": "query_repurchase_sql",
+      "status": "completed",
+      "description": "截至日RFM分群：只读SQL返回5行，证据rp-segments。"
+    },
+    {
+      "tool": "query_repurchase_sql",
+      "status": "completed",
+      "description": "仅用截止日前信息排序的候选：只读SQL返回100行，证据rp-candidates。"
+    },
+    {
+      "tool": "allocate_repurchase_holdout",
+      "status": "completed",
+      "description": "用种子liuxi-2026生成可复现分配，计划成本160.00元不超过预算200.00元；不执行触达。"
+    },
+    {
+      "tool": "validate_repurchase_output",
+      "status": "completed",
+      "description": "事实来自只读SQL与确定性计算；未生成无证据的营销增量或净LTV。"
+    }
+  ],
+  "limitations": [
+    "数据为固定种子生成的模拟交易，只验证分析流程，不代表真实公司业绩。",
+    "首次观察购买不等于真实首购或广告获客；正向交易额未扣退款、成本，不能写成净LTV、利润或ROI。",
+    "分群是描述性规则，不识别复购原因；候选没有联系方式和营销同意信息。",
+    "随机留出是未来实验分配建议，未执行触达、未观测营销增量。"
+  ],
+  "suggestions": [
+    "查看真实执行SQL与参数，复核成熟分母和D1—D7/D1—D30口径。",
+    "用相同种子复现留出；改变seed只改变分配，不改变候选历史分群。",
+    "导出报告保存数据快照、口径版本和计划，后续接入经授权的订单再验证。"
+  ],
+  "domain": "repurchase",
+  "mode": "demo",
+  "request": {
+    "question": "在200元触达预算下，哪些客户值得优先召回并设置留出组？",
+    "domain": "repurchase",
+    "task": "segment",
+    "mode": "demo"
+  },
+  "static_snapshot": true,
+  "created_at": "2026-09-19T07:56:56.954110+00:00"
+}

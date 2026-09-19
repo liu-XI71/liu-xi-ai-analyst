@@ -1,0 +1,31 @@
+# Deployment configuration. A successful Blueprint creation is still required.
+# yaml-language-server: $schema=https://render.com/schema/render.yaml.json
+services:
+  - type: web
+    name: liu-xi-ai-analyst
+    runtime: docker
+    plan: free
+    region: singapore
+    repo: https://github.com/liu-XI71/liu-xi-ai-analyst
+    branch: main
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/health
+    autoDeployTrigger: checksPass
+    envVars:
+      - key: PORT
+        value: "10000"
+      - key: ANALYST_DATA_DIR
+        value: /app/var
+      - key: OPENAI_MODEL
+        value: gpt-5-mini
+      - key: OPENAI_API_KEY
+        sync: false
+      - key: LIVE_ACCESS_TOKEN
+        generateValue: true
+      - key: ALLOW_LIVE_PUBLIC
+        value: "false"
+      - key: LIVE_DAILY_LIMIT
+        value: "40"
+      - key: CORS_ORIGINS
+        value: https://liu-xi71.github.io

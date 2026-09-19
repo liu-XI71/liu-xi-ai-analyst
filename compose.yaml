@@ -1,0 +1,21 @@
+services:
+  analyst:
+    build:
+      context: .
+    ports:
+      - "127.0.0.1:${PORT:-8765}:8765"
+    env_file:
+      - .env.local
+    environment:
+      PORT: "8765"
+      ANALYST_DATA_DIR: /app/var
+      ALLOW_LIVE_PUBLIC: "false"
+    volumes:
+      - analyst-data:/app/var
+    read_only: true
+    tmpfs:
+      - /tmp
+    restart: unless-stopped
+
+volumes:
+  analyst-data:

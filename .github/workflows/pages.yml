@@ -1,0 +1,62 @@
+name: Publish independent portfolio
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: independent-portfolio-pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ""
+      ALLOW_LIVE_PUBLIC: "false"
+      ANALYST_DATA_DIR: ${{ runner.temp }}/analyst-pages-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Verify before publication
+        run: python -m pytest -q
+      - name: Verify public regression cases
+        run: |
+          python scripts/evaluate.py
+          python scripts/evaluate.py --suite audit
+      - name: Generate offline data
+        run: python scripts/export_demo.py
+      - name: Configure Pages
+        uses: actions/configure-pages@v5
+      - name: Upload static portfolio
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: web
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy independent portfolio
+        id: deployment
+        uses: actions/deploy-pages@v4

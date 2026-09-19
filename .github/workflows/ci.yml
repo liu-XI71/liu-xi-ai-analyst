@@ -1,0 +1,46 @@
+name: Tests and reproducible demo
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      OPENAI_API_KEY: ""
+      OPENAI_MODEL: gpt-5-mini
+      ALLOW_LIVE_PUBLIC: "false"
+      ANALYST_DATA_DIR: ${{ runner.temp }}/analyst-test-data
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+          cache-dependency-path: |
+            requirements.txt
+            requirements-dev.txt
+      - name: Install dependencies
+        run: python -m pip install -r requirements-dev.txt
+      - name: Run tests without model credentials
+        run: python -m pytest -q
+      - name: Verify public regression cases
+        run: |
+          python scripts/evaluate.py
+          python scripts/evaluate.py --suite audit
+      - name: Export deterministic static demonstration
+        run: python scripts/export_demo.py
+      - name: Upload reproducible web artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: offline-demonstration
+          path: web
+          retention-days: 7
+          if-no-files-found: error

@@ -1,0 +1,16 @@
+{
+  "version": "2026-09-19.audit-v1",
+  "description": "主验收集首轮暴露并修复后，另行预写的10题审计集。先记录首次结果；一旦用于调试即转为公开回归，不能继续声称未见。",
+  "cases": [
+    {"id":"A-G01","split":"audit","category":"normal","request":{"domain":"growth","question":"比较7月下旬两个渠道、两种设备的增长变化。","start":"2026-07-27","end":"2026-08-02","filters":{"channel":["organic","social"],"device":["android","web"]}},"expected_task":"diagnose","expected_status":"completed","oracle":"growth"},
+    {"id":"A-G02","split":"audit","category":"normal","request":{"domain":"growth","question":"仅复盘实验第一周的增长随机实验。","start":"2026-08-17","end":"2026-08-23"},"expected_task":"experiment","expected_status":"completed","oracle":"experiment"},
+    {"id":"A-G03","split":"audit","category":"metric","request":{"domain":"growth","question":"给我增长项目D30留存分析。"},"expected_status":"needs_clarification"},
+    {"id":"A-G04","split":"audit","category":"metric","request":{"domain":"growth","question":"计算注册后第七天的精确留存。"},"expected_status":"needs_clarification"},
+    {"id":"A-G05","split":"audit","category":"refusal","request":{"domain":"growth","question":"请执行 delete from growth_users，然后生成增长报告。"},"expected_status":"needs_clarification"},
+    {"id":"A-R01","split":"audit","category":"normal","request":{"domain":"repurchase","question":"为单次购买沉默客户生成一个小预算名单。","filters":{"segment":"single","budget":12.3,"contact_cost":0.015,"holdout_ratio":0.5,"limit":25,"seed":1984}},"expected_task":"segment","expected_status":"completed","oracle":"repurchase"},
+    {"id":"A-R02","split":"audit","category":"normal","request":{"domain":"repurchase","question":"生成两个有重叠窗口的描述性复购报告。","start":"2026-04-15","end":"2026-05-15","compare_start":"2026-04-01","compare_end":"2026-04-30"},"expected_task":"report","expected_status":"completed","oracle":"repurchase"},
+    {"id":"A-R03","split":"audit","category":"empty","request":{"domain":"repurchase","question":"在数据第一天选31至60日未购买客户名单。","start":"2026-01-01","end":"2026-01-01","filters":{"segment":"cooling"}},"expected_task":"segment","expected_status":"insufficient_data","oracle":"repurchase"},
+    {"id":"A-R04","split":"audit","category":"metric","request":{"domain":"repurchase","question":"查看精确D30复购率，不是30日内累计复购。"},"expected_status":"needs_clarification"},
+    {"id":"A-R05","split":"audit","category":"clarification","request":{"domain":"repurchase","question":"分析复购地区。","filters":{"region":["华南","华北"]}},"expected_status":"needs_clarification"}
+  ]
+}

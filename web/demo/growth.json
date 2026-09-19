@@ -1,0 +1,1011 @@
+{
+  "status": "completed",
+  "title": "增长留存诊断",
+  "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 26.85%（294/1095），对比 2026-08-17 至 2026-08-23 的 36.03%，变化 -9.18 个百分点。对称分解中结构贡献 -6.05、组内表现贡献 -3.13 个百分点。",
+  "metric_contract": {
+    "id": "retained_within_next_7_days",
+    "name": "次 7 日内留存率",
+    "version": "growth.v1.0",
+    "numerator": "注册后第 1—7 个自然日内，至少有一次活动的成熟队列用户数",
+    "denominator": "注册日期 + 7 日不晚于数据快照日的去重注册用户数",
+    "grain": "用户",
+    "window": "(注册日, 注册日 + 7 日]",
+    "unit": "%",
+    "timezone": "Asia/Shanghai；数据以本地自然日存储",
+    "snapshot_date": "2026-09-06",
+    "latest_mature_cohort": "2026-08-30",
+    "exclusions": [
+      "注册当日活动",
+      "未完成 7 日观察的队列"
+    ],
+    "not_equivalent_to": "精确 D7 留存（仅注册后第 7 日活动）",
+    "data_source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+    "current_period": [
+      "2026-08-24",
+      "2026-08-30"
+    ],
+    "previous_period": [
+      "2026-08-17",
+      "2026-08-23"
+    ]
+  },
+  "kpis": [
+    {
+      "id": "retention_pct",
+      "label": "本期次 7 日内留存",
+      "value": 26.849,
+      "previous": 36.028,
+      "delta": -9.178,
+      "unit": "%"
+    },
+    {
+      "id": "mature_users",
+      "label": "本期成熟用户",
+      "value": 1095,
+      "previous": 1163,
+      "delta": -68,
+      "unit": "人"
+    },
+    {
+      "id": "mix_pp",
+      "label": "结构变化贡献",
+      "value": -6.05,
+      "unit": "百分点"
+    },
+    {
+      "id": "performance_pp",
+      "label": "组内表现贡献",
+      "value": -3.128,
+      "unit": "百分点"
+    }
+  ],
+  "tables": [
+    {
+      "id": "periods",
+      "title": "两期成熟队列",
+      "columns": [
+        "period",
+        "users",
+        "retained_users",
+        "retention_pct"
+      ],
+      "rows": [
+        {
+          "period": "current",
+          "users": 1095,
+          "retained_users": 294,
+          "retention_pct": 26.849
+        },
+        {
+          "period": "previous",
+          "users": 1163,
+          "retained_users": 419,
+          "retention_pct": 36.028
+        }
+      ]
+    },
+    {
+      "id": "decomposition",
+      "title": "渠道 × 设备的对称分解（百分点）",
+      "columns": [
+        "segment",
+        "previous_users",
+        "current_users",
+        "previous_rate_pct",
+        "current_rate_pct",
+        "mix_pp",
+        "performance_pp",
+        "total_pp"
+      ],
+      "rows": [
+        {
+          "channel": "organic",
+          "device": "ios",
+          "segment": "自然流量 / iOS",
+          "previous_users": 186,
+          "current_users": 63,
+          "previous_share_pct": 15.993,
+          "current_share_pct": 5.753,
+          "previous_rate_pct": 46.237,
+          "current_rate_pct": 39.683,
+          "mix_pp": -4.399,
+          "performance_pp": -0.713,
+          "total_pp": -5.112,
+          "new_or_lost": false
+        },
+        {
+          "channel": "referral",
+          "device": "ios",
+          "segment": "好友推荐 / iOS",
+          "previous_users": 86,
+          "current_users": 21,
+          "previous_share_pct": 7.395,
+          "current_share_pct": 1.918,
+          "previous_rate_pct": 46.512,
+          "current_rate_pct": 47.619,
+          "mix_pp": -2.578,
+          "performance_pp": 0.052,
+          "total_pp": -2.526,
+          "new_or_lost": false
+        },
+        {
+          "channel": "organic",
+          "device": "web",
+          "segment": "自然流量 / 网页",
+          "previous_users": 86,
+          "current_users": 27,
+          "previous_share_pct": 7.395,
+          "current_share_pct": 2.466,
+          "previous_rate_pct": 47.674,
+          "current_rate_pct": 44.444,
+          "mix_pp": -2.27,
+          "performance_pp": -0.159,
+          "total_pp": -2.429,
+          "new_or_lost": false
+        },
+        {
+          "channel": "referral",
+          "device": "web",
+          "segment": "好友推荐 / 网页",
+          "previous_users": 35,
+          "current_users": 6,
+          "previous_share_pct": 3.009,
+          "current_share_pct": 0.548,
+          "previous_rate_pct": 54.286,
+          "current_rate_pct": 50.0,
+          "mix_pp": -1.284,
+          "performance_pp": -0.076,
+          "total_pp": -1.36,
+          "new_or_lost": false
+        },
+        {
+          "channel": "organic",
+          "device": "android",
+          "segment": "自然流量 / Android",
+          "previous_users": 211,
+          "current_users": 130,
+          "previous_share_pct": 18.143,
+          "current_share_pct": 11.872,
+          "previous_rate_pct": 31.754,
+          "current_rate_pct": 41.538,
+          "mix_pp": -2.298,
+          "performance_pp": 1.468,
+          "total_pp": -0.829,
+          "new_or_lost": false
+        },
+        {
+          "channel": "social",
+          "device": "ios",
+          "segment": "社交投放 / iOS",
+          "previous_users": 81,
+          "current_users": 87,
+          "previous_share_pct": 6.965,
+          "current_share_pct": 7.945,
+          "previous_rate_pct": 29.63,
+          "current_rate_pct": 20.69,
+          "mix_pp": 0.247,
+          "performance_pp": -0.666,
+          "total_pp": -0.42,
+          "new_or_lost": false
+        },
+        {
+          "channel": "referral",
+          "device": "android",
+          "segment": "好友推荐 / Android",
+          "previous_users": 84,
+          "current_users": 54,
+          "previous_share_pct": 7.223,
+          "current_share_pct": 4.932,
+          "previous_rate_pct": 34.524,
+          "current_rate_pct": 44.444,
+          "mix_pp": -0.905,
+          "performance_pp": 0.603,
+          "total_pp": -0.302,
+          "new_or_lost": false
+        },
+        {
+          "channel": "social",
+          "device": "web",
+          "segment": "社交投放 / 网页",
+          "previous_users": 37,
+          "current_users": 27,
+          "previous_share_pct": 3.181,
+          "current_share_pct": 2.466,
+          "previous_rate_pct": 27.027,
+          "current_rate_pct": 25.926,
+          "mix_pp": -0.189,
+          "performance_pp": -0.031,
+          "total_pp": -0.221,
+          "new_or_lost": false
+        },
+        {
+          "channel": "social",
+          "device": "android",
+          "segment": "社交投放 / Android",
+          "previous_users": 85,
+          "current_users": 155,
+          "previous_share_pct": 7.309,
+          "current_share_pct": 14.155,
+          "previous_rate_pct": 21.176,
+          "current_rate_pct": 16.129,
+          "mix_pp": 1.277,
+          "performance_pp": -0.542,
+          "total_pp": 0.735,
+          "new_or_lost": false
+        },
+        {
+          "channel": "paid_search",
+          "device": "android",
+          "segment": "付费搜索 / Android",
+          "previous_users": 122,
+          "current_users": 285,
+          "previous_share_pct": 10.49,
+          "current_share_pct": 26.027,
+          "previous_rate_pct": 30.328,
+          "current_rate_pct": 15.439,
+          "mix_pp": 3.555,
+          "performance_pp": -2.719,
+          "total_pp": 0.837,
+          "new_or_lost": false
+        },
+        {
+          "channel": "paid_search",
+          "device": "web",
+          "segment": "付费搜索 / 网页",
+          "previous_users": 45,
+          "current_users": 73,
+          "previous_share_pct": 3.869,
+          "current_share_pct": 6.667,
+          "previous_rate_pct": 26.667,
+          "current_rate_pct": 30.137,
+          "mix_pp": 0.795,
+          "performance_pp": 0.183,
+          "total_pp": 0.977,
+          "new_or_lost": false
+        },
+        {
+          "channel": "paid_search",
+          "device": "ios",
+          "segment": "付费搜索 / iOS",
+          "previous_users": 105,
+          "current_users": 167,
+          "previous_share_pct": 9.028,
+          "current_share_pct": 15.251,
+          "previous_rate_pct": 34.286,
+          "current_rate_pct": 29.94,
+          "mix_pp": 1.998,
+          "performance_pp": -0.528,
+          "total_pp": 1.471,
+          "new_or_lost": false
+        }
+      ]
+    }
+  ],
+  "charts": [
+    {
+      "id": "trend",
+      "title": "成熟队列的次 7 日内留存趋势",
+      "type": "line",
+      "x_key": "signup_date",
+      "y_keys": [
+        "retention_pct"
+      ],
+      "unit": "%",
+      "data": [
+        {
+          "period": "previous",
+          "signup_date": "2026-08-17",
+          "users": 175,
+          "retained_users": 66,
+          "retention_pct": 37.7143
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-18",
+          "users": 165,
+          "retained_users": 54,
+          "retention_pct": 32.7273
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-19",
+          "users": 160,
+          "retained_users": 59,
+          "retention_pct": 36.875
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-20",
+          "users": 156,
+          "retained_users": 58,
+          "retention_pct": 37.1795
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-21",
+          "users": 175,
+          "retained_users": 53,
+          "retention_pct": 30.2857
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-22",
+          "users": 159,
+          "retained_users": 62,
+          "retention_pct": 38.9937
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-23",
+          "users": 173,
+          "retained_users": 67,
+          "retention_pct": 38.7283
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-24",
+          "users": 153,
+          "retained_users": 46,
+          "retention_pct": 30.0654
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-25",
+          "users": 154,
+          "retained_users": 42,
+          "retention_pct": 27.2727
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-26",
+          "users": 147,
+          "retained_users": 36,
+          "retention_pct": 24.4898
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-27",
+          "users": 163,
+          "retained_users": 43,
+          "retention_pct": 26.3804
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-28",
+          "users": 162,
+          "retained_users": 47,
+          "retention_pct": 29.0123
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-29",
+          "users": 145,
+          "retained_users": 30,
+          "retention_pct": 20.6897
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-30",
+          "users": 171,
+          "retained_users": 50,
+          "retention_pct": 29.2398
+        }
+      ]
+    },
+    {
+      "id": "contribution",
+      "title": "留存变化来源",
+      "type": "bar",
+      "x_key": "component",
+      "y_keys": [
+        "contribution_pp"
+      ],
+      "unit": "百分点",
+      "data": [
+        {
+          "component": "结构变化",
+          "contribution_pp": -6.05
+        },
+        {
+          "component": "组内表现",
+          "contribution_pp": -3.128
+        }
+      ]
+    },
+    {
+      "id": "channel",
+      "title": "分渠道留存率",
+      "type": "bar",
+      "x_key": "segment",
+      "y_keys": [
+        "previous_pct",
+        "current_pct"
+      ],
+      "unit": "%",
+      "data": [
+        {
+          "dimension": "channel",
+          "segment": "自然流量",
+          "previous_pct": 40.165631469979296,
+          "current_pct": 41.36363636363637
+        },
+        {
+          "dimension": "channel",
+          "segment": "付费搜索",
+          "previous_pct": 31.25,
+          "current_pct": 22.095238095238095
+        },
+        {
+          "dimension": "channel",
+          "segment": "好友推荐",
+          "previous_pct": 42.926829268292686,
+          "current_pct": 45.67901234567901
+        },
+        {
+          "dimension": "channel",
+          "segment": "社交投放",
+          "previous_pct": 25.615763546798032,
+          "current_pct": 18.587360594795538
+        }
+      ]
+    },
+    {
+      "id": "device",
+      "title": "分设备留存率",
+      "type": "bar",
+      "x_key": "segment",
+      "y_keys": [
+        "previous_pct",
+        "current_pct"
+      ],
+      "unit": "%",
+      "data": [
+        {
+          "dimension": "device",
+          "segment": "Android",
+          "previous_pct": 30.0796812749004,
+          "current_pct": 23.557692307692307
+        },
+        {
+          "dimension": "device",
+          "segment": "iOS",
+          "previous_pct": 40.61135371179039,
+          "current_pct": 30.473372781065088
+        },
+        {
+          "dimension": "device",
+          "segment": "网页",
+          "previous_pct": 40.39408866995074,
+          "current_pct": 33.08270676691729
+        }
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "kind": "fact",
+      "text": "2026-08-24 至 2026-08-30 的次 7 日内留存为 26.85%（294/1095），对比 2026-08-17 至 2026-08-23 的 36.03%，变化 -9.18 个百分点。对称分解中结构贡献 -6.05、组内表现贡献 -3.13 个百分点。",
+      "evidence_ids": [
+        "growth-totals",
+        "growth-strata"
+      ]
+    },
+    {
+      "kind": "fact",
+      "text": "按渠道 × 设备共同分层，绝对贡献最大的分层是「自然流量 / iOS」，贡献 -5.11 个百分点；这只是总体变化的算术分解。",
+      "evidence_ids": [
+        "growth-strata"
+      ]
+    },
+    {
+      "kind": "hypothesis",
+      "text": "分层结构和用户体验可能共同影响总体留存；现有行为数据不足以识别具体原因，需要结合投放记录、版本变更和进一步实验验证。",
+      "evidence_ids": [
+        "growth-strata",
+        "growth-dimensions"
+      ]
+    },
+    {
+      "kind": "action",
+      "text": "先核对「自然流量 / iOS」的获客来源和产品路径，再对候选改进设定随机实验、次 7 日内留存主指标及成本护栏。",
+      "evidence_ids": [
+        "growth-strata"
+      ]
+    }
+  ],
+  "evidence": [
+    {
+      "id": "growth-totals",
+      "label": "两期成熟用户与留存人数",
+      "sql": "WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_date UNION ALL SELECT 'previous', :compare_start, :compare_end), cohort AS (\n        SELECT p.period, u.user_id, u.signup_date, u.channel, u.device,\n            u.experiment_arm, u.incentive_cost, u.revenue_7d,\n            EXISTS(SELECT 1 FROM growth_activity a\n                WHERE a.user_id = u.user_id\n                  AND a.activity_date > u.signup_date\n                  AND a.activity_date <= date(u.signup_date, '+7 days')) AS retained\n        FROM growth_users u JOIN periods p\n          ON u.signup_date BETWEEN p.start_date AND p.end_date\n        WHERE date(u.signup_date, '+7 days') <= :snapshot\n    ) SELECT period, COUNT(*) AS users, SUM(retained) AS retained_users FROM cohort GROUP BY period",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "snapshot": "2026-09-06",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23"
+      },
+      "rows": [
+        {
+          "period": "current",
+          "users": 1095,
+          "retained_users": 294
+        },
+        {
+          "period": "previous",
+          "users": 1163,
+          "retained_users": 419
+        }
+      ],
+      "source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "metric_version": "growth.v1.0"
+    },
+    {
+      "id": "growth-strata",
+      "label": "两期渠道 × 设备成熟留存",
+      "sql": "WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_date UNION ALL SELECT 'previous', :compare_start, :compare_end), cohort AS (\n        SELECT p.period, u.user_id, u.signup_date, u.channel, u.device,\n            u.experiment_arm, u.incentive_cost, u.revenue_7d,\n            EXISTS(SELECT 1 FROM growth_activity a\n                WHERE a.user_id = u.user_id\n                  AND a.activity_date > u.signup_date\n                  AND a.activity_date <= date(u.signup_date, '+7 days')) AS retained\n        FROM growth_users u JOIN periods p\n          ON u.signup_date BETWEEN p.start_date AND p.end_date\n        WHERE date(u.signup_date, '+7 days') <= :snapshot\n    ) SELECT period, channel, device, COUNT(*) AS users, SUM(retained) AS retained_users FROM cohort GROUP BY period, channel, device ORDER BY period, channel, device",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "snapshot": "2026-09-06",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23"
+      },
+      "rows": [
+        {
+          "period": "current",
+          "channel": "organic",
+          "device": "android",
+          "users": 130,
+          "retained_users": 54
+        },
+        {
+          "period": "current",
+          "channel": "organic",
+          "device": "ios",
+          "users": 63,
+          "retained_users": 25
+        },
+        {
+          "period": "current",
+          "channel": "organic",
+          "device": "web",
+          "users": 27,
+          "retained_users": 12
+        },
+        {
+          "period": "current",
+          "channel": "paid_search",
+          "device": "android",
+          "users": 285,
+          "retained_users": 44
+        },
+        {
+          "period": "current",
+          "channel": "paid_search",
+          "device": "ios",
+          "users": 167,
+          "retained_users": 50
+        },
+        {
+          "period": "current",
+          "channel": "paid_search",
+          "device": "web",
+          "users": 73,
+          "retained_users": 22
+        },
+        {
+          "period": "current",
+          "channel": "referral",
+          "device": "android",
+          "users": 54,
+          "retained_users": 24
+        },
+        {
+          "period": "current",
+          "channel": "referral",
+          "device": "ios",
+          "users": 21,
+          "retained_users": 10
+        },
+        {
+          "period": "current",
+          "channel": "referral",
+          "device": "web",
+          "users": 6,
+          "retained_users": 3
+        },
+        {
+          "period": "current",
+          "channel": "social",
+          "device": "android",
+          "users": 155,
+          "retained_users": 25
+        },
+        {
+          "period": "current",
+          "channel": "social",
+          "device": "ios",
+          "users": 87,
+          "retained_users": 18
+        },
+        {
+          "period": "current",
+          "channel": "social",
+          "device": "web",
+          "users": 27,
+          "retained_users": 7
+        },
+        {
+          "period": "previous",
+          "channel": "organic",
+          "device": "android",
+          "users": 211,
+          "retained_users": 67
+        },
+        {
+          "period": "previous",
+          "channel": "organic",
+          "device": "ios",
+          "users": 186,
+          "retained_users": 86
+        },
+        {
+          "period": "previous",
+          "channel": "organic",
+          "device": "web",
+          "users": 86,
+          "retained_users": 41
+        },
+        {
+          "period": "previous",
+          "channel": "paid_search",
+          "device": "android",
+          "users": 122,
+          "retained_users": 37
+        },
+        {
+          "period": "previous",
+          "channel": "paid_search",
+          "device": "ios",
+          "users": 105,
+          "retained_users": 36
+        },
+        {
+          "period": "previous",
+          "channel": "paid_search",
+          "device": "web",
+          "users": 45,
+          "retained_users": 12
+        },
+        {
+          "period": "previous",
+          "channel": "referral",
+          "device": "android",
+          "users": 84,
+          "retained_users": 29
+        },
+        {
+          "period": "previous",
+          "channel": "referral",
+          "device": "ios",
+          "users": 86,
+          "retained_users": 40
+        },
+        {
+          "period": "previous",
+          "channel": "referral",
+          "device": "web",
+          "users": 35,
+          "retained_users": 19
+        },
+        {
+          "period": "previous",
+          "channel": "social",
+          "device": "android",
+          "users": 85,
+          "retained_users": 18
+        },
+        {
+          "period": "previous",
+          "channel": "social",
+          "device": "ios",
+          "users": 81,
+          "retained_users": 24
+        },
+        {
+          "period": "previous",
+          "channel": "social",
+          "device": "web",
+          "users": 37,
+          "retained_users": 10
+        }
+      ],
+      "source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "metric_version": "growth.v1.0"
+    },
+    {
+      "id": "growth-daily",
+      "label": "按注册日的成熟队列趋势",
+      "sql": "WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_date UNION ALL SELECT 'previous', :compare_start, :compare_end), cohort AS (\n        SELECT p.period, u.user_id, u.signup_date, u.channel, u.device,\n            u.experiment_arm, u.incentive_cost, u.revenue_7d,\n            EXISTS(SELECT 1 FROM growth_activity a\n                WHERE a.user_id = u.user_id\n                  AND a.activity_date > u.signup_date\n                  AND a.activity_date <= date(u.signup_date, '+7 days')) AS retained\n        FROM growth_users u JOIN periods p\n          ON u.signup_date BETWEEN p.start_date AND p.end_date\n        WHERE date(u.signup_date, '+7 days') <= :snapshot\n    ) SELECT period, signup_date, COUNT(*) AS users, SUM(retained) AS retained_users, ROUND(100.0 * SUM(retained) / COUNT(*), 4) AS retention_pct FROM cohort GROUP BY period, signup_date ORDER BY signup_date",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "snapshot": "2026-09-06",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23"
+      },
+      "rows": [
+        {
+          "period": "previous",
+          "signup_date": "2026-08-17",
+          "users": 175,
+          "retained_users": 66,
+          "retention_pct": 37.7143
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-18",
+          "users": 165,
+          "retained_users": 54,
+          "retention_pct": 32.7273
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-19",
+          "users": 160,
+          "retained_users": 59,
+          "retention_pct": 36.875
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-20",
+          "users": 156,
+          "retained_users": 58,
+          "retention_pct": 37.1795
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-21",
+          "users": 175,
+          "retained_users": 53,
+          "retention_pct": 30.2857
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-22",
+          "users": 159,
+          "retained_users": 62,
+          "retention_pct": 38.9937
+        },
+        {
+          "period": "previous",
+          "signup_date": "2026-08-23",
+          "users": 173,
+          "retained_users": 67,
+          "retention_pct": 38.7283
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-24",
+          "users": 153,
+          "retained_users": 46,
+          "retention_pct": 30.0654
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-25",
+          "users": 154,
+          "retained_users": 42,
+          "retention_pct": 27.2727
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-26",
+          "users": 147,
+          "retained_users": 36,
+          "retention_pct": 24.4898
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-27",
+          "users": 163,
+          "retained_users": 43,
+          "retention_pct": 26.3804
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-28",
+          "users": 162,
+          "retained_users": 47,
+          "retention_pct": 29.0123
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-29",
+          "users": 145,
+          "retained_users": 30,
+          "retention_pct": 20.6897
+        },
+        {
+          "period": "current",
+          "signup_date": "2026-08-30",
+          "users": 171,
+          "retained_users": 50,
+          "retention_pct": 29.2398
+        }
+      ],
+      "source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "metric_version": "growth.v1.0"
+    },
+    {
+      "id": "growth-dimensions",
+      "label": "渠道及设备单维留存对比",
+      "sql": "WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_date UNION ALL SELECT 'previous', :compare_start, :compare_end), cohort AS (\n        SELECT p.period, u.user_id, u.signup_date, u.channel, u.device,\n            u.experiment_arm, u.incentive_cost, u.revenue_7d,\n            EXISTS(SELECT 1 FROM growth_activity a\n                WHERE a.user_id = u.user_id\n                  AND a.activity_date > u.signup_date\n                  AND a.activity_date <= date(u.signup_date, '+7 days')) AS retained\n        FROM growth_users u JOIN periods p\n          ON u.signup_date BETWEEN p.start_date AND p.end_date\n        WHERE date(u.signup_date, '+7 days') <= :snapshot\n    ) SELECT period, 'channel' AS dimension, channel AS segment, COUNT(*) AS users, SUM(retained) AS retained_users FROM cohort GROUP BY period, channel UNION ALL SELECT period, 'device', device, COUNT(*), SUM(retained) FROM cohort GROUP BY period, device",
+      "parameters": {
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "snapshot": "2026-09-06",
+        "compare_start": "2026-08-17",
+        "compare_end": "2026-08-23"
+      },
+      "rows": [
+        {
+          "period": "current",
+          "dimension": "channel",
+          "segment": "organic",
+          "users": 220,
+          "retained_users": 91
+        },
+        {
+          "period": "current",
+          "dimension": "channel",
+          "segment": "paid_search",
+          "users": 525,
+          "retained_users": 116
+        },
+        {
+          "period": "current",
+          "dimension": "channel",
+          "segment": "referral",
+          "users": 81,
+          "retained_users": 37
+        },
+        {
+          "period": "current",
+          "dimension": "channel",
+          "segment": "social",
+          "users": 269,
+          "retained_users": 50
+        },
+        {
+          "period": "previous",
+          "dimension": "channel",
+          "segment": "organic",
+          "users": 483,
+          "retained_users": 194
+        },
+        {
+          "period": "previous",
+          "dimension": "channel",
+          "segment": "paid_search",
+          "users": 272,
+          "retained_users": 85
+        },
+        {
+          "period": "previous",
+          "dimension": "channel",
+          "segment": "referral",
+          "users": 205,
+          "retained_users": 88
+        },
+        {
+          "period": "previous",
+          "dimension": "channel",
+          "segment": "social",
+          "users": 203,
+          "retained_users": 52
+        },
+        {
+          "period": "current",
+          "dimension": "device",
+          "segment": "android",
+          "users": 624,
+          "retained_users": 147
+        },
+        {
+          "period": "current",
+          "dimension": "device",
+          "segment": "ios",
+          "users": 338,
+          "retained_users": 103
+        },
+        {
+          "period": "current",
+          "dimension": "device",
+          "segment": "web",
+          "users": 133,
+          "retained_users": 44
+        },
+        {
+          "period": "previous",
+          "dimension": "device",
+          "segment": "android",
+          "users": 502,
+          "retained_users": 151
+        },
+        {
+          "period": "previous",
+          "dimension": "device",
+          "segment": "ios",
+          "users": 458,
+          "retained_users": 186
+        },
+        {
+          "period": "previous",
+          "dimension": "device",
+          "segment": "web",
+          "users": 203,
+          "retained_users": 82
+        }
+      ],
+      "source": "固定种子 71 的合成增长数据；非真实企业经营结果",
+      "metric_version": "growth.v1.0"
+    }
+  ],
+  "trace": [
+    {
+      "tool": "static_snapshot",
+      "status": "completed",
+      "description": "由同一Python业务引擎生成的固定演示快照，未执行当前自由输入问题，未调用模型。"
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "两期成熟用户与留存人数",
+      "duration_ms": 2.26
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "两期渠道 × 设备成熟留存",
+      "duration_ms": 2.41
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "按注册日的成熟队列趋势",
+      "duration_ms": 2.08
+    },
+    {
+      "tool": "query_metric",
+      "status": "completed",
+      "description": "渠道及设备单维留存对比",
+      "duration_ms": 3.48
+    },
+    {
+      "tool": "decompose_change",
+      "status": "completed",
+      "description": "结构 + 表现 = -9.178200 pp；与总体变化的误差 0.000000000 pp。"
+    }
+  ],
+  "limitations": [
+    "固定种子 71 的合成增长数据；非真实企业经营结果",
+    "分层分解是描述性归因，不能证明渠道或设备变化导致留存变化。",
+    "渠道和设备分层表存在交叉，不能相加；总变化仅由渠道 × 设备联合分层计算。"
+  ],
+  "suggestions": [
+    "复盘同期随机实验，检查提升是否通过统计与业务门槛。",
+    "更换一个渠道或设备筛选，检查变化是否仍然成立。"
+  ],
+  "domain": "growth",
+  "mode": "demo",
+  "request": {
+    "question": "最近两个成熟队列的次7日内留存为何下降？",
+    "domain": "growth",
+    "task": "diagnose",
+    "mode": "demo"
+  },
+  "static_snapshot": true,
+  "created_at": "2026-09-19T07:56:56.921390+00:00"
+}

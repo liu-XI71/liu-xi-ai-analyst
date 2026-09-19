@@ -1,0 +1,4656 @@
+{
+  "status": "completed",
+  "title": "固定样本确定性流程验证",
+  "generated_at": "2026-09-19T07:52:22.518836+00:00",
+  "mode": "demo",
+  "transport": "AnalysisRequest validation + actual app.engine / app.live_agent",
+  "live_status": "not_run",
+  "total": 60,
+  "passed": 60,
+  "failed": 0,
+  "repeat": 1,
+  "cases_sha256": "247dce245b0ef327d7e415f5f0ba979ebac1b5d28319caa05ca66d3452670d19",
+  "metrics": [
+    {
+      "id": "intent",
+      "label": "有限任务路由通过率",
+      "value": 100.0,
+      "unit": "%",
+      "passed": 27,
+      "total": 27,
+      "description": "27/27 个适用样本；以样本为单位，任一该类检查失败即失败。"
+    },
+    {
+      "id": "numeric",
+      "label": "独立数值与不变量验证",
+      "value": 100.0,
+      "unit": "%",
+      "passed": 28,
+      "total": 28,
+      "description": "28/28 个适用样本；以样本为单位，任一该类检查失败即失败。"
+    },
+    {
+      "id": "status",
+      "label": "业务状态验证",
+      "value": 100.0,
+      "unit": "%",
+      "passed": 60,
+      "total": 60,
+      "description": "60/60 个适用样本；以样本为单位，任一该类检查失败即失败。"
+    },
+    {
+      "id": "evidence",
+      "label": "事实证据引用验证",
+      "value": 100.0,
+      "unit": "%",
+      "passed": 29,
+      "total": 29,
+      "description": "29/29 个适用样本；以样本为单位，任一该类检查失败即失败。"
+    },
+    {
+      "id": "exception_behavior",
+      "label": "异常与边界行为",
+      "value": 100.0,
+      "unit": "%",
+      "passed": 36,
+      "total": 36,
+      "description": "澄清、空数据、不成熟窗口、拒绝与口径歧义的预期状态。"
+    }
+  ],
+  "splits": {
+    "development": {
+      "total": 40,
+      "passed": 40
+    },
+    "heldout": {
+      "total": 20,
+      "passed": 20
+    }
+  },
+  "cases": [
+    {
+      "id": "G-D01",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "最近两期增长留存怎么变化？",
+      "request": {
+        "domain": "growth",
+        "question": "最近两期增长留存怎么变化？"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1095,
+          "actual": 1095
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1163,
+          "actual": 1163
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 26.84931506849315,
+          "actual": 26.849
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 36.02751504729149,
+          "actual": 36.028
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -9.178199978798336,
+          "actual": -9.178
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -9.178199978798336,
+          "actual": -9.178
+        }
+      ],
+      "duration_ms": 7.857,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 26.85%（294/1095），对比 2026-08-17 至 2026-08-23 的 36.03%，变化 -9.18 个百分点。对称分解中结构贡献 -6.05、组内表现贡献 -3.13 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D02",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "查看自然流量渠道的留存变化。",
+      "request": {
+        "domain": "growth",
+        "question": "查看自然流量渠道的留存变化。",
+        "filters": {
+          "channel": "organic"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 220,
+          "actual": 220
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 483,
+          "actual": 483
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 41.36363636363637,
+          "actual": 41.364
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 40.165631469979296,
+          "actual": 40.166
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1.198004893657071,
+          "actual": 1.198
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1.198004893657071,
+          "actual": 1.1980000000000002
+        }
+      ],
+      "duration_ms": 6.356,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 41.36%（91/220），对比 2026-08-17 至 2026-08-23 的 40.17%，变化 +1.20 个百分点。对称分解中结构贡献 -1.14、组内表现贡献 +2.34 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D03",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "查看Android设备的增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "查看Android设备的增长留存。",
+        "filters": {
+          "device": "android"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 624,
+          "actual": 624
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 502,
+          "actual": 502
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 23.557692307692307,
+          "actual": 23.558
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 30.0796812749004,
+          "actual": 30.08
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -6.521988967208092,
+          "actual": -6.522
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -6.521988967208092,
+          "actual": -6.522
+        }
+      ],
+      "duration_ms": 6.536,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 23.56%（147/624），对比 2026-08-17 至 2026-08-23 的 30.08%，变化 -6.52 个百分点。对称分解中结构贡献 -4.59、组内表现贡献 -1.93 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D04",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "比较7月末和8月初的增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "比较7月末和8月初的增长留存。",
+        "start": "2026-08-03",
+        "end": "2026-08-09",
+        "compare_start": "2026-07-27",
+        "compare_end": "2026-08-02"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1115,
+          "actual": 1115
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1130,
+          "actual": 1130
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 33.99103139013453,
+          "actual": 33.991
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 31.061946902654867,
+          "actual": 31.062
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 2.9290844874796633,
+          "actual": 2.929
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 2.9290844874796633,
+          "actual": 2.929
+        }
+      ],
+      "duration_ms": 6.956,
+      "summary": "2026-08-03 至 2026-08-09 的次 7 日内留存为 33.99%（379/1115），对比 2026-07-27 至 2026-08-02 的 31.06%，变化 +2.93 个百分点。对称分解中结构贡献 +0.19、组内表现贡献 +2.74 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D05",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "生成增长周报。",
+      "request": {
+        "domain": "growth",
+        "question": "生成增长周报。"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1095,
+          "actual": 1095
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1163,
+          "actual": 1163
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 26.84931506849315,
+          "actual": 26.849
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 36.02751504729149,
+          "actual": 36.028
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -9.178199978798336,
+          "actual": -9.178
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -9.178199978798336,
+          "actual": -9.178
+        }
+      ],
+      "duration_ms": 6.946,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 26.85%（294/1095），对比 2026-08-17 至 2026-08-23 的 36.03%，变化 -9.18 个百分点。对称分解中结构贡献 -6.05、组内表现贡献 -3.13 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D06",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "复盘同期随机实验和成本门槛。",
+      "request": {
+        "domain": "growth",
+        "question": "复盘同期随机实验和成本门槛。"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "experiment",
+          "actual": "experiment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立事件聚合 / control_users",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1134,
+          "actual": 1134
+        },
+        {
+          "name": "独立事件聚合 / treatment_users",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1124,
+          "actual": 1124
+        },
+        {
+          "name": "独立事件聚合 / lift_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6.214263746885335,
+          "actual": 6.214263746885335
+        },
+        {
+          "name": "独立事件聚合 / ci95_low_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 2.3874681021893296,
+          "actual": 2.3874681021893296
+        },
+        {
+          "name": "独立事件聚合 / ci95_high_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 10.04105939158134,
+          "actual": 10.041059391581339
+        },
+        {
+          "name": "独立事件聚合 / srm_p_value",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.8333205935342484,
+          "actual": 0.8333205935342484
+        }
+      ],
+      "duration_ms": 1.77,
+      "summary": "处理组留存 34.70%（390/1124），对照组 28.48%（323/1134），绝对提升 +6.21 个百分点，95% 置信区间 [2.39, 10.04]。可进入小流量验证。",
+      "error": null
+    },
+    {
+      "id": "G-D07",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "社交渠道增长诊断。",
+      "request": {
+        "domain": "growth",
+        "question": "社交渠道增长诊断。",
+        "task": "diagnose",
+        "filters": {
+          "channel": "social"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 269,
+          "actual": 269
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 203,
+          "actual": 203
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 18.587360594795538,
+          "actual": 18.587
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 25.615763546798032,
+          "actual": 25.616
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -7.028402952002494,
+          "actual": -7.028
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -7.028402952002494,
+          "actual": -7.029
+        }
+      ],
+      "duration_ms": 4.822,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 18.59%（50/269），对比 2026-08-17 至 2026-08-23 的 25.62%，变化 -7.03 个百分点。对称分解中结构贡献 -1.13、组内表现贡献 -5.90 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-D08",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "帮我看看。",
+      "request": {
+        "domain": "growth",
+        "question": "帮我看看。"
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.055,
+      "summary": "演示模式支持已定义的增长诊断、实验、复购分群和报告任务。请明确要分析的指标或选择一个示例问题。",
+      "error": null
+    },
+    {
+      "id": "G-D09",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "分析精确D7留存。",
+      "request": {
+        "domain": "growth",
+        "question": "分析精确D7留存。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.01,
+      "summary": "此示例定义为次 7 日内至少一次回访，不等于指定第 N 日的留存/复购。是否按已定义窗口指标分析？",
+      "error": null
+    },
+    {
+      "id": "G-D10",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "增长留存分析。",
+      "request": {
+        "domain": "growth",
+        "question": "增长留存分析。",
+        "start": "2026-02-30",
+        "end": "2026-08-30"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.021,
+      "summary": "start 不是有效日期。",
+      "error": null
+    },
+    {
+      "id": "G-D11",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "增长留存分析。",
+      "request": {
+        "domain": "growth",
+        "question": "增长留存分析。",
+        "start": "2026-08-30",
+        "end": "2026-08-24"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.014,
+      "summary": "本期开始日期不能晚于结束日期。",
+      "error": null
+    },
+    {
+      "id": "G-D12",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "增长留存分析。",
+      "request": {
+        "domain": "growth",
+        "question": "增长留存分析。",
+        "start": "2026-08-24"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.01,
+      "summary": "请同时提供本期开始和结束日期。",
+      "error": null
+    },
+    {
+      "id": "G-D13",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "比较增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "比较增长留存。",
+        "start": "2026-08-24",
+        "end": "2026-08-30",
+        "compare_start": "2026-08-23",
+        "compare_end": "2026-08-29"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.013,
+      "summary": "两期日期不能重叠，否则变化无法按独立队列解释。",
+      "error": null
+    },
+    {
+      "id": "G-D14",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "分析9月首周增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "分析9月首周增长留存。",
+        "start": "2026-08-31",
+        "end": "2026-09-06"
+      },
+      "category": "immature",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.016,
+      "summary": "请求包含未完成 7 日观察或未来日期。快照为 2026-09-06，成熟注册队列最晚到 2026-08-30；不混入未成熟用户。",
+      "error": null
+    },
+    {
+      "id": "G-D15",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "分析2025年增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "分析2025年增长留存。",
+        "start": "2025-08-01",
+        "end": "2025-08-07"
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.015,
+      "summary": "请求包含数据覆盖之前的日期。数据从 2026-07-06 开始，不能以部分覆盖冒充完整期间。",
+      "error": null
+    },
+    {
+      "id": "G-D16",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "按国家查看增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "按国家查看增长留存。",
+        "filters": {
+          "country": "CN"
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.037,
+      "summary": "不支持筛选字段 country；允许 channel、device。",
+      "error": null
+    },
+    {
+      "id": "G-D17",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "请删除所有增长用户数据。",
+      "request": {
+        "domain": "growth",
+        "question": "请删除所有增长用户数据。"
+      },
+      "category": "refusal",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.011,
+      "summary": "工作台仅提供只读分析，不执行数据删除。请选择分析任务。",
+      "error": null
+    },
+    {
+      "id": "G-D18",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "复盘7月随机实验。",
+      "request": {
+        "domain": "growth",
+        "question": "复盘7月随机实验。",
+        "start": "2026-07-20",
+        "end": "2026-07-26"
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.739,
+      "summary": "筛选时段内没有同时包含处理组和对照组的成熟实验数据。",
+      "error": null
+    },
+    {
+      "id": "G-D19",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "复盘增长实验。",
+      "request": {
+        "domain": "growth",
+        "question": "复盘增长实验。",
+        "compare_start": "2026-08-10",
+        "compare_end": "2026-08-16"
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.026,
+      "summary": "实验按同一时段的随机分组比较，不接受前后两期对比日期；请清空对比日期。",
+      "error": null
+    },
+    {
+      "id": "G-D20",
+      "repetition": 1,
+      "split": "development",
+      "domain": "growth",
+      "question": "为两个获客渠道生成增长报告。",
+      "request": {
+        "domain": "growth",
+        "question": "为两个获客渠道生成增长报告。",
+        "filters": {
+          "channel": [
+            "organic",
+            "referral"
+          ]
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 301,
+          "actual": 301
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 688,
+          "actual": 688
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 42.524916943521596,
+          "actual": 42.525
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 40.98837209302326,
+          "actual": 40.988
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1.5365448504983377,
+          "actual": 1.537
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1.5365448504983377,
+          "actual": 1.5369999999999997
+        }
+      ],
+      "duration_ms": 4.024,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 42.52%（128/301），对比 2026-08-17 至 2026-08-23 的 40.99%，变化 +1.54 个百分点。对称分解中结构贡献 -1.61、组内表现贡献 +3.15 个百分点。",
+      "error": null
+    },
+    {
+      "id": "R-D01",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "制定客户分群和预算留出计划。",
+      "request": {
+        "domain": "repurchase",
+        "question": "制定客户分群和预算留出计划。"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "segment",
+          "actual": "segment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1005,
+          "actual": 1005
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 100,
+          "actual": 100
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 160.0,
+          "actual": 160.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 5.133,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D02",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析次7日与次30日复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析次7日与次30日复购。"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 616,
+          "actual": 616
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.10064935064935066,
+          "actual": 0.10064935064935066
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2840909090909091,
+          "actual": 0.2840909090909091
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 225.1,
+          "actual": 225.1
+        }
+      ],
+      "duration_ms": 4.669,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D03",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "生成复购运营报告。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成复购运营报告。"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 616,
+          "actual": 616
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.10064935064935066,
+          "actual": 0.10064935064935066
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2840909090909091,
+          "actual": 0.2840909090909091
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 225.1,
+          "actual": 225.1
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1005,
+          "actual": 1005
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 100,
+          "actual": 100
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 160.0,
+          "actual": 160.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 20,
+          "actual": 20
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 7.997,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D04",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析华南地区复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析华南地区复购。",
+        "filters": {
+          "region": "华南"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 182,
+          "actual": 182
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.08241758241758242,
+          "actual": 0.08241758241758242
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2857142857142857,
+          "actual": 0.2857142857142857
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 233.05,
+          "actual": 233.05
+        }
+      ],
+      "duration_ms": 2.893,
+      "summary": "2026-03-01至2026-05-31，地区：华南。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D05",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "制定50元预算的客户召回名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "制定50元预算的客户召回名单。",
+        "filters": {
+          "budget": 50
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "segment",
+          "actual": "segment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1005,
+          "actual": 1005
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 31,
+          "actual": 31
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 50.0,
+          "actual": 50.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 4.616,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D06",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "为31到60日未购买客户分群并留出30%。",
+      "request": {
+        "domain": "repurchase",
+        "question": "为31到60日未购买客户分群并留出30%。",
+        "filters": {
+          "segment": "cooling",
+          "holdout_ratio": 0.3
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "segment",
+          "actual": "segment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 105,
+          "actual": 105
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 100,
+          "actual": 100
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 140.0,
+          "actual": 140.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 30,
+          "actual": 30
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 30,
+          "actual": 30
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 4.618,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D07",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "比较4月与3月复购队列。",
+      "request": {
+        "domain": "repurchase",
+        "question": "比较4月与3月复购队列。",
+        "start": "2026-04-01",
+        "end": "2026-04-30",
+        "compare_start": "2026-03-01",
+        "compare_end": "2026-03-31"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 192,
+          "actual": 192
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.08854166666666667,
+          "actual": 0.08854166666666667
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2864583333333333,
+          "actual": 0.2864583333333333
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 231.86,
+          "actual": 231.86
+        },
+        {
+          "name": "独立订单聚合 / 对比期 customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 207,
+          "actual": 207
+        },
+        {
+          "name": "独立订单聚合 / 对比期 repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.09178743961352658,
+          "actual": 0.09178743961352658
+        },
+        {
+          "name": "独立订单聚合 / 对比期 repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2898550724637681,
+          "actual": 0.2898550724637681
+        },
+        {
+          "name": "独立订单聚合 / 对比期 value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 222.93,
+          "actual": 222.93
+        }
+      ],
+      "duration_ms": 3.075,
+      "summary": "2026-04-01至2026-04-30，地区：全部。候选分群仅使用2026-04-30及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-D08",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "复购随机实验提高了多少？",
+      "request": {
+        "domain": "repurchase",
+        "question": "复购随机实验提高了多少？"
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "experiment",
+          "actual": "experiment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.039,
+      "summary": "复购场景支持分群、复购诊断与报告；目前没有真实随机触达结果，无法估计营销增量。",
+      "error": null
+    },
+    {
+      "id": "R-D09",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "查看精确第7天复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "查看精确第7天复购。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.057,
+      "summary": "此示例定义为首次购买后 30 日内至少一次复购，不等于指定第 N 日的留存/复购。是否按已定义窗口指标分析？",
+      "error": null
+    },
+    {
+      "id": "R-D10",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "制作客户分群。",
+      "request": {
+        "domain": "repurchase",
+        "question": "制作客户分群。",
+        "filters": {
+          "region": "东北"
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.029,
+      "summary": "请选择已登记地区：all、华东、华南、华北、西部",
+      "error": null
+    },
+    {
+      "id": "R-D11",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "生成客户名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成客户名单。",
+        "filters": {
+          "budget": -1
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.025,
+      "summary": "预算应大于等于0且不超过1000000元。",
+      "error": null
+    },
+    {
+      "id": "R-D12",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "生成客户名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成客户名单。",
+        "filters": {
+          "contact_cost": 0
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.069,
+      "summary": "每人计划成本应大于0且不超过1000000元。",
+      "error": null
+    },
+    {
+      "id": "R-D13",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "零预算客户名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "零预算客户名单。",
+        "filters": {
+          "budget": 0
+        }
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "segment",
+          "actual": "segment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1005,
+          "actual": 1005
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 3.429,
+      "summary": "2026-03-01至2026-05-31，地区：全部。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。当前样本或预算不足，请参阅说明。",
+      "error": null
+    },
+    {
+      "id": "R-D14",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析复购率。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析复购率。",
+        "start": "2026-05-31",
+        "end": "2026-03-01"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.033,
+      "summary": "结束日期不能早于开始日期。",
+      "error": null
+    },
+    {
+      "id": "R-D15",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析6月最后两天新增观察队列复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析6月最后两天新增观察队列复购。",
+        "start": "2026-06-29",
+        "end": "2026-06-30"
+      },
+      "category": "immature",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        }
+      ],
+      "duration_ms": 1.198,
+      "summary": "2026-06-29至2026-06-30，地区：全部。候选分群仅使用2026-06-30及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。当前样本或预算不足，请参阅说明。",
+      "error": null
+    },
+    {
+      "id": "R-D16",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析1月2日华南队列复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析1月2日华南队列复购。",
+        "start": "2026-01-02",
+        "end": "2026-01-02",
+        "filters": {
+          "region": "华南"
+        }
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        }
+      ],
+      "duration_ms": 1.585,
+      "summary": "2026-01-02至2026-01-02，地区：华南。候选分群仅使用2026-01-02及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。当前样本或预算不足，请参阅说明。",
+      "error": null
+    },
+    {
+      "id": "R-D17",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析客户分群。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析客户分群。",
+        "filters": {
+          "holdout_ratio": 0.9
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.041,
+      "summary": "留出比例应为0.1—0.5之间的数值。",
+      "error": null
+    },
+    {
+      "id": "R-D18",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "分析复购诊断。",
+      "request": {
+        "domain": "repurchase",
+        "question": "分析复购诊断。",
+        "task": "diagnose",
+        "filters": {
+          "budget": 100
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.017,
+      "summary": "队列诊断只支持region筛选；候选、预算和分群条件请使用segment或report任务。",
+      "error": null
+    },
+    {
+      "id": "R-D19",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "删除表并生成复购报告。",
+      "request": {
+        "domain": "repurchase",
+        "question": "删除表并生成复购报告。"
+      },
+      "category": "refusal",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.008,
+      "summary": "工作台仅提供只读分析，不执行数据删除。请选择分析任务。",
+      "error": null
+    },
+    {
+      "id": "R-D20",
+      "repetition": 1,
+      "split": "development",
+      "domain": "repurchase",
+      "question": "生成截至4月底复购运营报告。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成截至4月底复购运营报告。",
+        "start": "2026-02-01",
+        "end": "2026-04-30",
+        "filters": {
+          "region": "华东",
+          "budget": 75,
+          "seed": "dev-04"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 206,
+          "actual": 206
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.10194174757281553,
+          "actual": 0.10194174757281553
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.2912621359223301,
+          "actual": 0.2912621359223301
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 225.68,
+          "actual": 225.68
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 293,
+          "actual": 293
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 38,
+          "actual": 38
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 60.0,
+          "actual": 60.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 8,
+          "actual": 8
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 4.294,
+      "summary": "2026-02-01至2026-04-30，地区：华东。候选分群仅使用2026-04-30及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "G-H01",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "按两个付费获客渠道和iOS设备检查增长变化。",
+      "request": {
+        "domain": "growth",
+        "question": "按两个付费获客渠道和iOS设备检查增长变化。",
+        "filters": {
+          "channel": [
+            "paid_search",
+            "social"
+          ],
+          "device": "ios"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 254,
+          "actual": 254
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 186,
+          "actual": 186
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 26.77165354330709,
+          "actual": 26.772
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 32.25806451612903,
+          "actual": 32.258
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -5.486410972821943,
+          "actual": -5.486
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -5.486410972821943,
+          "actual": -5.487
+        }
+      ],
+      "duration_ms": 4.654,
+      "summary": "2026-08-24 至 2026-08-30 的次 7 日内留存为 26.77%（68/254），对比 2026-08-17 至 2026-08-23 的 32.26%，变化 -5.49 个百分点。对称分解中结构贡献 +0.65、组内表现贡献 -6.13 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-H02",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "生成7月两段不同长度队列的增长报告。",
+      "request": {
+        "domain": "growth",
+        "question": "生成7月两段不同长度队列的增长报告。",
+        "start": "2026-07-20",
+        "end": "2026-07-29",
+        "compare_start": "2026-07-06",
+        "compare_end": "2026-07-12"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1599,
+          "actual": 1599
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1123,
+          "actual": 1123
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 31.33208255159475,
+          "actual": 31.332
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 32.1460373998219,
+          "actual": 32.146
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -0.8139548482271515,
+          "actual": -0.814
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -0.8139548482271515,
+          "actual": -0.8140000000000001
+        }
+      ],
+      "duration_ms": 8.271,
+      "summary": "2026-07-20 至 2026-07-29 的次 7 日内留存为 31.33%（501/1599），对比 2026-07-06 至 2026-07-12 的 32.15%，变化 -0.81 个百分点。对称分解中结构贡献 -0.18、组内表现贡献 -0.64 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-H03",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "对增长随机实验做一个设备子组复盘。",
+      "request": {
+        "domain": "growth",
+        "question": "对增长随机实验做一个设备子组复盘。",
+        "filters": {
+          "device": [
+            "android",
+            "ios"
+          ]
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "experiment",
+          "actual": "experiment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立事件聚合 / control_users",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 952,
+          "actual": 952
+        },
+        {
+          "name": "独立事件聚合 / treatment_users",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 970,
+          "actual": 970
+        },
+        {
+          "name": "独立事件聚合 / lift_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 5.359741834878279,
+          "actual": 5.359741834878279
+        },
+        {
+          "name": "独立事件聚合 / ci95_low_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1.2502376741115455,
+          "actual": 1.2502376741115448
+        },
+        {
+          "name": "独立事件聚合 / ci95_high_pp",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 9.469245995645013,
+          "actual": 9.469245995645013
+        },
+        {
+          "name": "独立事件聚合 / srm_p_value",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.6813819021197438,
+          "actual": 0.6813819021197438
+        }
+      ],
+      "duration_ms": 1.657,
+      "summary": "处理组留存 33.20%（322/970），对照组 27.84%（265/952），绝对提升 +5.36 个百分点，95% 置信区间 [1.25, 9.47]。可进入小流量验证。",
+      "error": null
+    },
+    {
+      "id": "G-H04",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "检查8月10日至16日好友推荐渠道留存。",
+      "request": {
+        "domain": "growth",
+        "question": "检查8月10日至16日好友推荐渠道留存。",
+        "start": "2026-08-10",
+        "end": "2026-08-16",
+        "filters": {
+          "channel": "referral"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立原始表 / 本期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 196,
+          "actual": 196
+        },
+        {
+          "name": "独立原始表 / 对比期成熟人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 180,
+          "actual": 180
+        },
+        {
+          "name": "独立事件聚合 / 本期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 43.36734693877551,
+          "actual": 43.367
+        },
+        {
+          "name": "独立事件聚合 / 对比期次7日内留存",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 45.55555555555556,
+          "actual": 45.556
+        },
+        {
+          "name": "独立事件聚合 / 留存绝对变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -2.188208616780045,
+          "actual": -2.188
+        },
+        {
+          "name": "可验证不变量 / 分解还原总体变化",
+          "kind": "numeric",
+          "passed": true,
+          "expected": -2.188208616780045,
+          "actual": -2.1879999999999997
+        }
+      ],
+      "duration_ms": 4.431,
+      "summary": "2026-08-10 至 2026-08-16 的次 7 日内留存为 43.37%（85/196），对比 2026-08-03 至 2026-08-09 的 45.56%，变化 -2.19 个百分点。对称分解中结构贡献 -0.43、组内表现贡献 -1.75 个百分点。",
+      "error": null
+    },
+    {
+      "id": "G-H05",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "分析包含8月31日的增长周报。",
+      "request": {
+        "domain": "growth",
+        "question": "分析包含8月31日的增长周报。",
+        "start": "2026-08-25",
+        "end": "2026-08-31"
+      },
+      "category": "immature",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.038,
+      "summary": "请求包含未完成 7 日观察或未来日期。快照为 2026-09-06，成熟注册队列最晚到 2026-08-30；不混入未成熟用户。",
+      "error": null
+    },
+    {
+      "id": "G-H06",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "检查增长留存。",
+      "request": {
+        "domain": "growth",
+        "question": "检查增长留存。",
+        "filters": {
+          "channel": "organic' OR 1=1--"
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.019,
+      "summary": "channel 筛选值无效；允许 organic, paid_search, social, referral。",
+      "error": null
+    },
+    {
+      "id": "G-H07",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "计算增长项目的净利润与完整ROI。",
+      "request": {
+        "domain": "growth",
+        "question": "计算增长项目的净利润与完整ROI。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.008,
+      "summary": "当前合成数据没有完整成本、利润或生命周期价值字段，无法计算净利润、完整 ROI 或净 LTV。请补充成本与归因口径，或选择已定义的留存/复购指标。",
+      "error": null
+    },
+    {
+      "id": "G-H08",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "执行 DROP TABLE growth_users 后分析增长。",
+      "request": {
+        "domain": "growth",
+        "question": "执行 DROP TABLE growth_users 后分析增长。"
+      },
+      "category": "refusal",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.008,
+      "summary": "工作台仅提供只读分析，不执行数据删除。请选择分析任务。",
+      "error": null
+    },
+    {
+      "id": "G-H09",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "复盘8月17日网页好友推荐用户的随机实验。",
+      "request": {
+        "domain": "growth",
+        "question": "复盘8月17日网页好友推荐用户的随机实验。",
+        "start": "2026-08-17",
+        "end": "2026-08-17",
+        "filters": {
+          "channel": "referral",
+          "device": "web"
+        }
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.471,
+      "summary": "样本未满足预设最小门槛；以下统计只供核查，不支持放量决策。处理组留存 50.00%（1/2），对照组 33.33%（1/3），绝对提升 +16.67 个百分点，95% 置信区间 [-70.78, 100.00]。暂不建议扩大；先处理未通过的门槛。",
+      "error": null
+    },
+    {
+      "id": "G-H10",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "growth",
+      "question": "次7日内与D7留存是不是同一个？帮我查询。",
+      "request": {
+        "domain": "growth",
+        "question": "次7日内与D7留存是不是同一个？帮我查询。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.018,
+      "summary": "此示例定义为次 7 日内至少一次回访，不等于指定第 N 日的留存/复购。是否按已定义窗口指标分析？",
+      "error": null
+    },
+    {
+      "id": "R-H01",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "规划华北休眠客户的35.5元召回名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "规划华北休眠客户的35.5元召回名单。",
+        "filters": {
+          "region": "华北",
+          "segment": "dormant",
+          "budget": 35.5,
+          "contact_cost": 1.5,
+          "holdout_ratio": 0.4,
+          "seed": "holdout-north"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "segment",
+          "actual": "segment"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 15,
+          "actual": 15
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 15,
+          "actual": 15
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 13.5,
+          "actual": 13.5
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 2.37,
+      "summary": "2026-03-01至2026-05-31，地区：华北。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-H02",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "生成西部地区季度复购报告。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成西部地区季度复购报告。",
+        "start": "2026-01-01",
+        "end": "2026-03-31",
+        "filters": {
+          "region": "西部",
+          "budget": 40,
+          "limit": 30
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "report",
+          "actual": "report"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 67,
+          "actual": 67
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.05970149253731343,
+          "actual": 0.05970149253731343
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.22388059701492538,
+          "actual": 0.22388059701492538
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 237.21,
+          "actual": 237.21
+        },
+        {
+          "name": "独立截止日聚合 / 分群人数",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 67,
+          "actual": 67
+        },
+        {
+          "name": "候选资格 / 截止日前数据",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "候选无重复客户",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 6,
+          "actual": 6
+        },
+        {
+          "name": "候选R/F/M与原始截止日订单一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "处理成本总和与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 10.0,
+          "actual": 10.0
+        },
+        {
+          "name": "计划成本不超过预算",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "留出人数与KPI一致",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "name": "留出人数符合请求比例的整数舍入",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 1,
+          "actual": 1
+        },
+        {
+          "name": "留出组不计触达成本",
+          "kind": "numeric",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 3.07,
+      "summary": "2026-01-01至2026-03-31，地区：西部。候选分群仅使用2026-03-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-H03",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "比较5月与2月华北复购队列。",
+      "request": {
+        "domain": "repurchase",
+        "question": "比较5月与2月华北复购队列。",
+        "start": "2026-05-01",
+        "end": "2026-05-31",
+        "compare_start": "2026-02-01",
+        "compare_end": "2026-02-28",
+        "filters": {
+          "region": "华北"
+        }
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 42,
+          "actual": 42
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.11904761904761904,
+          "actual": 0.11904761904761904
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.21428571428571427,
+          "actual": 0.21428571428571427
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 196.03,
+          "actual": 196.03
+        },
+        {
+          "name": "独立订单聚合 / 对比期 customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 24,
+          "actual": 24
+        },
+        {
+          "name": "独立订单聚合 / 对比期 repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.125,
+          "actual": 0.125
+        },
+        {
+          "name": "独立订单聚合 / 对比期 repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.4166666666666667,
+          "actual": 0.4166666666666667
+        },
+        {
+          "name": "独立订单聚合 / 对比期 value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 188.98,
+          "actual": 188.98
+        }
+      ],
+      "duration_ms": 1.918,
+      "summary": "2026-05-01至2026-05-31，地区：华北。候选分群仅使用2026-05-31及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-H04",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "查看6月上旬队列的次7日和30日复购。",
+      "request": {
+        "domain": "repurchase",
+        "question": "查看6月上旬队列的次7日和30日复购。",
+        "start": "2026-06-01",
+        "end": "2026-06-15"
+      },
+      "category": "normal",
+      "expected_status": "completed",
+      "actual_status": "completed",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "completed",
+          "actual": "completed"
+        },
+        {
+          "name": "任务路由",
+          "kind": "intent",
+          "passed": true,
+          "expected": "diagnose",
+          "actual": "diagnose"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 106,
+          "actual": 106
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0.05660377358490566,
+          "actual": 0.05660377358490566
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        }
+      ],
+      "duration_ms": 1.688,
+      "summary": "2026-06-01至2026-06-15，地区：全部。候选分群仅使用2026-06-15及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。",
+      "error": null
+    },
+    {
+      "id": "R-H05",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "查看1月3日西部复购队列。",
+      "request": {
+        "domain": "repurchase",
+        "question": "查看1月3日西部复购队列。",
+        "start": "2026-01-03",
+        "end": "2026-01-03",
+        "filters": {
+          "region": "西部"
+        }
+      },
+      "category": "empty",
+      "expected_status": "insufficient_data",
+      "actual_status": "insufficient_data",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "insufficient_data",
+          "actual": "insufficient_data"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "所有事实引用存在的证据",
+          "kind": "evidence",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "独立订单聚合 / customers",
+          "kind": "numeric",
+          "passed": true,
+          "expected": 0,
+          "actual": 0
+        },
+        {
+          "name": "独立订单聚合 / repeat7",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / repeat30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        },
+        {
+          "name": "独立订单聚合 / value30",
+          "kind": "numeric",
+          "passed": true,
+          "expected": null,
+          "actual": null
+        }
+      ],
+      "duration_ms": 1.117,
+      "summary": "2026-01-03至2026-01-03，地区：西部。候选分群仅使用2026-01-03及之前订单；队列结果统一观察截至2026-06-30。所有数据均为合成。当前样本或预算不足，请参阅说明。",
+      "error": null
+    },
+    {
+      "id": "R-H06",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "制定客户分群名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "制定客户分群名单。",
+        "filters": {
+          "limit": 201
+        }
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.036,
+      "summary": "候选人数上限limit应为1—200的整数。",
+      "error": null
+    },
+    {
+      "id": "R-H07",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "输出复购项目的净LTV与利润。",
+      "request": {
+        "domain": "repurchase",
+        "question": "输出复购项目的净LTV与利润。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.011,
+      "summary": "当前合成数据没有完整成本、利润或生命周期价值字段，无法计算净利润、完整 ROI 或净 LTV。请补充成本与归因口径，或选择已定义的留存/复购指标。",
+      "error": null
+    },
+    {
+      "id": "R-H08",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "生成12月复购周报。",
+      "request": {
+        "domain": "repurchase",
+        "question": "生成12月复购周报。",
+        "start": "2026-12-01",
+        "end": "2026-12-31"
+      },
+      "category": "invalid_window",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.016,
+      "summary": "开始日期超出合成数据范围2026-01-01至2026-06-30。",
+      "error": null
+    },
+    {
+      "id": "R-H09",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "制定分群对照名单。",
+      "request": {
+        "domain": "repurchase",
+        "question": "制定分群对照名单。",
+        "compare_start": "2026-02-01",
+        "compare_end": "2026-02-28"
+      },
+      "category": "clarification",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.027,
+      "summary": "分群任务按单一截止日生成候选；需要比较队列时请选择diagnose或report。",
+      "error": null
+    },
+    {
+      "id": "R-H10",
+      "repetition": 1,
+      "split": "heldout",
+      "domain": "repurchase",
+      "question": "请提供D7复购率的报告。",
+      "request": {
+        "domain": "repurchase",
+        "question": "请提供D7复购率的报告。"
+      },
+      "category": "metric",
+      "expected_status": "needs_clarification",
+      "actual_status": "needs_clarification",
+      "passed": true,
+      "checks": [
+        {
+          "name": "业务状态",
+          "kind": "status",
+          "passed": true,
+          "expected": "needs_clarification",
+          "actual": "needs_clarification"
+        },
+        {
+          "name": "结果合同字段完整",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        },
+        {
+          "name": "澄清结果不输出数值结论",
+          "kind": "behavior",
+          "passed": true,
+          "expected": [],
+          "actual": []
+        },
+        {
+          "name": "图表字段可解析",
+          "kind": "contract",
+          "passed": true,
+          "expected": true,
+          "actual": true
+        }
+      ],
+      "duration_ms": 0.011,
+      "summary": "此示例定义为首次购买后 30 日内至少一次复购，不等于指定第 N 日的留存/复购。是否按已定义窗口指标分析？",
+      "error": null
+    }
+  ],
+  "latency_ms": {
+    "p50": 0.27,
+    "p95": 6.956
+  },
+  "limitations": [
+    "这是本项目固定合成数据的公开验收与回归样本，不是行业基准，也不证明真实业务问题的泛化能力。",
+    "demo 模式没有调用大模型；关键词路由与确定性工具验证不能称为 LLM 准确率。",
+    "demo 日期与筛选由结构化请求字段提供；不评自然语言日期或筛选抽取能力。",
+    "heldout 是预先分开的项目验收子集；公开运行后属于已暴露回归集。进一步调参需另建未见测试集。",
+    "数值基准独立读取原始用户/活动/订单表并逐事件聚合，不使用业务函数输出生成 gold；部分复杂流程仅校验明确列出的不变量。",
+    "这里直接执行实际请求模型和应用引擎，不包含浏览器、远端网络、HTTP限流或报告下载的端到端验收。",
+    "当前耗时为本机引擎时间；不代表云服务延迟、人工节省时间或投资回报。"
+  ]
+}
