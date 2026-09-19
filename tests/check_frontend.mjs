@@ -11,7 +11,7 @@ import assert from 'node:assert/strict';
 import {fileURLToPath} from 'node:url';
 import {spawnSync} from 'node:child_process';
 import * as components from '../web/components.js';
-import {chartHTML,tableHTML} from '../web/ui.js';
+import {chartHTML,tableHTML,label,displayValue} from '../web/ui.js';
 import {evaluationModel,evaluationOverviewHTML} from '../web/evaluation.js';
 
 const root=path.dirname(path.dirname(fileURLToPath(import.meta.url)));
@@ -76,6 +76,72 @@ check('quality state, p-value precision, escaping and long evidence',()=>{
   assert(!components.findingsHTML([{kind:'fact',text:'<script>alert(1)</script>'}]).includes('<script>'));
   assert(tableHTML({rows:[{detail:'证据'.repeat(60)}]}).includes('long-cell'));
   assert(!components.funnelHTML(json('web/demo/onboarding.json').funnel).includes('"step_id"'),'Raw funnel JSON displayed');
+});
+check('static, rules and model request modes remain distinct',()=>{
+  const staticMode=components.analysisMode({online:false,catalog:{model:{configured:true}},mode:'live'});
+  assert.equal(staticMode.kind,'static');assert.equal(staticMode.requestMode,'demo');assert(!staticMode.canCallModel);
+  assert.equal(staticMode.button,'重新载入案例');assert(staticMode.help.includes('不调用模型'));
+  for(const configured of [false,undefined,'true']){
+    const rules=components.analysisMode({online:true,catalog:{model:{configured}},mode:'live'});
+    assert.equal(rules.requestMode,'demo');assert.equal(rules.label,'Python 规则分析');assert.equal(rules.button,'运行规则分析');assert(!rules.canCallModel);
+  }
+  const live=components.analysisMode({online:true,catalog:{model:{configured:true}},mode:'live'});
+  assert.equal(live.requestMode,'live');assert(live.canCallModel);assert.equal(live.button,'调用模型分析');
+  const rules=components.analysisMode({online:true,catalog:{model:{configured:true}},mode:'demo'});
+  assert.equal(rules.requestMode,'demo');assert(rules.help.includes('不调用模型'));assert(rules.help.includes('仅匹配预设任务'));assert(rules.help.includes('日期、渠道、设备以表单为准'));
+  const app=read('web/app.js');
+  assert(app.includes("state.mode=analysisMode(state).requestMode"),'Reconnect must normalize a stale model selection');
+  assert(app.includes("${state.online?'':'readonly'}"),'Static case question must be readonly');
+  assert(app.includes("if(state.mode==='live'&&!analysisMode(state).canCallModel)"),'Model submission must respect configuration');
+  assert(app.includes('updateWorkbenchMode();markChanged()'),'Switching modes must refresh the banner and stale-result notice');
+  assert(app.includes('id="workbench-mode-label"')&&app.includes('id="workbench-mode-description"'));
+});
+check('real model result proof and report provenance',()=>{
+  const verified={mode:'live',model_run:{provider:'OpenAI',model:'contract-model',live_verified:true,usage_status:'complete',rounds:2}};
+  assert.equal(components.resultExecution(verified).kind,'verified_live');
+  for(const data of [
+    {mode:'live'},
+    {mode:'live',model_run:{provider:'OpenAI',provider_verified:true}},
+    {mode:'live',model_run:{provider:'OpenAI',live_verified:'true'}},
+    {mode:'live',model_run:{provider:'test-double',live_verified:true}},
+    {mode:'demo',model_run:{provider:'OpenAI',live_verified:true}}
+  ]){
+    assert.equal(components.resultExecution(data).verifiedLive,false);
+    assert(!components.reportMD(data).includes('已核验模型调用'));
+    assert(!components.reportHTML(data).includes('已核验模型调用'));
+  }
+  const saved=components.resultExecution({...verified,_replay:true});
+  assert.equal(saved.kind,'static');assert(saved.verifiedLive);assert(saved.description.includes('历史记录'));
+  const rawSnapshot={mode:'demo',static_snapshot:true};
+  assert.equal(components.resultExecution(rawSnapshot).kind,'static');
+  assert(components.reportMD(rawSnapshot).includes('未执行新查询或模型调用'));
+  assert(!components.reportHTML(rawSnapshot).includes('本次执行规则路由'));
+  const savedVerified=components.resultExecution({...verified,static_snapshot:true});
+  assert.equal(savedVerified.kind,'static');assert(savedVerified.verifiedLive);assert(savedVerified.description.includes('历史记录'));
+  assert.equal(components.resultExecution({mode:'demo'}).label,'Python 规则分析');
+  assert.equal(components.resultExecution({mode:'live',model_run:{provider:'test-double'}}).label,'测试替身');
+  assert(components.modelRunHTML(verified).includes('contract-model'));
+  assert(components.modelRunHTML(verified).includes('已核验'));
+  const partial={...verified,model_run:{...verified.model_run,usage_status:'partial',usage:{input_tokens:17},raw_response:'not-for-export'}};
+  const metadata=components.modelRunMetadata(partial);
+  assert.equal(metadata.provider,'OpenAI');assert.equal(metadata.live_verified,true);assert.equal(metadata.rounds,2);
+  assert.equal(metadata.usage.input_tokens,null);assert.equal(metadata.usage.output_tokens,null);
+  assert.equal(metadata.known_usage.input_tokens,17);assert.equal(metadata.known_usage.output_tokens,null);
+  const markdown=components.reportMD(partial);assert(markdown.includes('"model_run"'));assert(markdown.includes('"known_usage"'));assert(!markdown.includes('not-for-export'));
+  const unknown=components.modelRunMetadata(verified);assert.equal(unknown.usage_status,'unknown');assert.equal(unknown.usage.input_tokens,null);
+  const complete=components.modelRunMetadata({...verified,model_run:{...verified.model_run,usage:{input_tokens:0,output_tokens:9}}});
+  assert.equal(complete.usage_status,'complete');assert.equal(complete.usage.input_tokens,0);assert.equal(complete.usage.output_tokens,9);
+  assert.equal(components.modelRunMetadata({mode:'demo'}),null);
+  assert(components.reportMD(verified).includes('已核验模型调用'));
+  assert(components.reportHTML({...verified,_replay:true}).includes('本次仅查看保存结果'));
+});
+check('business metric and change-log fields have Chinese labels',()=>{
+  const fields=['previous_successes','current_successes','delta_pp','change_at','change_type','change_id','schema_valid','event_integrity_valid','feed_result_unresolved'];
+  for(const field of fields)assert(/[\u3400-\u9fff]/.test(label(field)),field);
+  for(const value of ['available','not_available','release','acquisition'])assert(/[\u3400-\u9fff]/.test(displayValue('status',value)),value);
+  const html=tableHTML({rows:[{previous_successes:3,current_successes:2,delta_pp:-1,status:'available',change_type:'release'}]});
+  assert(html.includes('对比期指标达成人数'));assert(html.includes('可用'));assert(html.includes('版本发布'));
+  assert(!/>available<|>release</.test(html));
 });
 check('V2 primary evaluation, legacy separation and first run',()=>{
   const legacy=json('evals/results.json'),v2=json('evals/v2-results.json'),first=json('evals/v2-first-run.json'),live=json('evals/v2-live-results.json');

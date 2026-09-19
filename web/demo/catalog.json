@@ -3,7 +3,7 @@
     {
       "id": "onboarding",
       "name": "新用户增长与留存决策",
-      "description": "从真实执行的事件查询开始，识别指标下滑、延迟假象与待验证解释，生成可复算的决策备忘录。",
+      "description": "基于事件查询核对留存变化、数据完整性与用户路径，形成包含证据和验证事项的决策备忘录。",
       "data_source": "固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益",
       "data_range": {
         "start": "2026-06-01",
@@ -355,7 +355,7 @@
           },
           {
             "value": "recovered",
-            "label": "回填快照：重算并恢复分析"
+            "label": "回填快照：数据完整后重算"
           }
         ]
       },
@@ -369,7 +369,7 @@
           "as_of": "2026-09-07 08:00:00"
         },
         "recovered": {
-          "label": "回填快照：重算并恢复分析",
+          "label": "回填快照：数据完整后重算",
           "as_of": "2026-09-08 12:00:00"
         }
       },
@@ -417,7 +417,7 @@
         },
         {
           "name": "onboarding_events",
-          "description": "去重后的产品事件，含源端事件时间与真实可查询的到达时间；查询必须带 ingested_at 截止条件",
+          "description": "去重后的产品事件，含源端事件时间与入库时间；查询必须带 ingested_at 截止条件",
           "columns": [
             "event_id",
             "user_id",
@@ -476,14 +476,14 @@
           "task": "funnel"
         },
         {
-          "question": "如果 9 月 7 日看到留存下降，应先检查哪些数据质量证据？",
+          "question": "检查延迟快照的留存数据质量，列出批次缺口与恢复条件。",
           "task": "quality",
           "filters": {
             "scenario": "late_data"
           }
         },
         {
-          "question": "生成新用户增长决策备忘录，列出事实、竞争解释、待办及复查条件。",
+          "question": "生成新用户增长决策备忘录，列出核验事实、验证事项、后续行动及复查条件。",
           "task": "report"
         }
       ]
@@ -744,7 +744,7 @@
     {
       "id": "repurchase",
       "name": "复购运营 Agent",
-      "description": "从正向订单计算成熟队列复购、时点RFM分群、预算内匿名候选和可复现随机留出建议。",
+      "description": "从正向订单计算成熟队列复购、时点RFM分群、预算内匿名候选和可复现随机留出计划。",
       "data_source": "固定种子合成订单；非真实客户、非实际营销结果",
       "data_range": {
         "start": "2026-01-01",
@@ -984,7 +984,7 @@
           "task": "experiment"
         },
         {
-          "question": "生成增长周报，展示变化、分层证据、假设和下一步建议。",
+          "question": "生成增长周报，展示变化、分层证据、验证事项和后续行动。",
           "task": "report"
         }
       ]
@@ -996,6 +996,6 @@
     "model": "gpt-5-mini",
     "provider": "OpenAI Responses API"
   },
-  "version": "0.2.0",
+  "version": "0.2.1",
   "data_notice": "匿名合成数据；静态回放由 Python 实际查询生成。"
 }

@@ -38,7 +38,7 @@ METRICS = [
 
 
 def metadata() -> dict:
-    return {"id": "repurchase", "name": "复购运营 Agent", "description": "从正向订单计算成熟队列复购、时点RFM分群、预算内匿名候选和可复现随机留出建议。", "data_source": SOURCE, "data_range": {"start": DATA_START, "end": DATA_END}, "default_request": {**DEFAULT, "filters": dict(DEFAULT["filters"])}, "metrics": METRICS, "tables": [
+    return {"id": "repurchase", "name": "复购运营 Agent", "description": "从正向订单计算成熟队列复购、时点RFM分群、预算内匿名候选和可复现随机留出计划。", "data_source": SOURCE, "data_range": {"start": DATA_START, "end": DATA_END}, "default_request": {**DEFAULT, "filters": dict(DEFAULT["filters"])}, "metrics": METRICS, "tables": [
         {"name": "repurchase_customers", "description": "固定种子合成匿名客户", "columns": [{"name": "customer_id", "type": "TEXT", "description": "合成匿名客户ID"}, {"name": "region", "type": "TEXT", "description": "合成地区"}]},
         {"name": "repurchase_orders", "description": "仅含正向交易；不存在真实退款、成本和营销触达记录", "columns": [{"name": "order_id", "type": "TEXT"}, {"name": "customer_id", "type": "TEXT"}, {"name": "order_date", "type": "TEXT"}, {"name": "amount_cents", "type": "INTEGER", "description": "合成CNY分"}]},
     ], "filters": {"region": ["all", *REGIONS], "segment": ["all", *SEGMENTS], "budget": "0—1000000元，默认200", "contact_cost": "每位处理组客户的最大计划成本，默认2元", "holdout_ratio": "0.1—0.5，默认0.2", "seed": "分组种子，默认liuxi-2026", "limit": "候选人数上限，默认100，最多200"}, "examples": [
@@ -139,7 +139,7 @@ CANDIDATE_SQL = RFM_CTE + """SELECT customer_id,region,recency,frequency,window_
 
 
 def _base() -> dict:
-    return {"status": "completed", "title": "复购运营分析", "summary": "", "metric_contract": {"version": VERSION, "data_source": SOURCE, "observation_end": DATA_END, "metrics": METRICS}, "kpis": [], "tables": [], "charts": [], "findings": [], "evidence": [], "trace": [], "limitations": ["数据为固定种子生成的模拟交易，只验证分析流程，不代表真实公司业绩。", "首次观察购买不等于真实首购或广告获客；正向交易额未扣退款、成本，不能写成净LTV、利润或ROI。", "分群是描述性规则，不识别复购原因；候选没有联系方式和营销同意信息。", "随机留出是未来实验分配建议，未执行触达、未观测营销增量。"], "suggestions": []}
+    return {"status": "completed", "title": "复购运营分析", "summary": "", "metric_contract": {"version": VERSION, "data_source": SOURCE, "observation_end": DATA_END, "metrics": METRICS}, "kpis": [], "tables": [], "charts": [], "findings": [], "evidence": [], "trace": [], "limitations": ["数据为固定种子合成交易，不代表真实公司经营结果。", "首次观察购买不等于真实首购或广告获客；正向交易额未扣退款、成本，不属于净LTV、利润或ROI。", "分群是描述性规则，不识别复购原因；候选没有联系方式和营销同意信息。", "随机留出属于实验分配计划；未执行触达、未观测营销增量。"], "suggestions": []}
 
 
 def _clarify(result: dict, message: str, options: list[str] | None = None) -> dict:
@@ -274,7 +274,7 @@ def analyze(request: dict, db_path: Path) -> dict:
                 if previous["customers"] == 0:
                     result["limitations"].append("对照窗口无首次观察购买客户，无法计算有效变化；未将缺失值视为0。")
                 if max(start, compare_start) <= min(end, compare_end):
-                    result["limitations"].append("当前与对照窗口重叠；两者并非独立样本，不作显著性或因果解释。")
+                    result["limitations"].append("当前与对照窗口重叠；两者并非独立样本，不作独立样本检验或因果推断。")
         if task in ("segment", "report"):
             rparams = {"start": start, "end": end, "region": region, "segment": segment}
             segment_rows = query("rp-segments", "截至日RFM分群", SEGMENT_SQL, rparams)
@@ -298,7 +298,7 @@ def analyze(request: dict, db_path: Path) -> dict:
             ])
             result["tables"].extend([
                 {"id": "rp-segments-table", "title": "截止日RFM分群（M为所选窗口金额）", "columns": ["label", "customers", "avg_recency", "avg_frequency", "window_value", "history_value"], "rows": segment_rows_display},
-                {"id": "rp-candidates-table", "title": "匿名候选与随机分配建议（未执行触达）", "columns": ["customer_id", "region", "segment", "recency", "frequency", "window_value", "assignment", "planned_cost"], "rows": allocated},
+                {"id": "rp-candidates-table", "title": "匿名候选与随机分配计划（未执行触达）", "columns": ["customer_id", "region", "segment", "recency", "frequency", "window_value", "assignment", "planned_cost"], "rows": allocated},
             ])
             result["charts"].append({"id": "rp-segment-chart", "title": "截至日客户分群", "type": "bar", "x_key": "label", "y_keys": ["customers"], "data": segment_rows_display, "unit": "count"})
             result["metric_contract"]["allocation"] = {"budget": budget / 100, "contact_cost": cost / 100, "planned_cost": planned_cents / 100, "holdout_ratio_requested": holdout_ratio, "holdout_ratio_actual": holdout_n / len(allocated) if allocated else None, "seed": str(seed), "algorithm": "候选按窗口金额、历史金额、最近购买排序；SHA-256(seed:customer_id)稳定排序后前round(n*ratio)人为留出；只计划处理组计成本", "candidate_limit": limit, "treatment_n": treatment_n, "holdout_n": holdout_n}
@@ -318,6 +318,6 @@ def analyze(request: dict, db_path: Path) -> dict:
             result["limitations"].append("当前队列没有完整观察7日或30日的客户，复购率保持空值。")
     result["title"] = {"segment": "复购分群与预算留出计划", "diagnose": "成熟队列复购诊断", "report": "复购运营报告"}[task]
     result["summary"] = f"{start}至{end}，地区：{'全部' if region=='all' else region}。候选分群仅使用{end}及之前订单；队列结果统一观察截至{DATA_END}。所有数据均为合成。" + ("当前样本或预算不足，请参阅说明。" if result["status"] == "insufficient_data" else "")
-    result["suggestions"] = ["查看真实执行SQL与参数，复核成熟分母和D1—D7/D1—D30口径。", "用相同种子复现留出；改变seed只改变分配，不改变候选历史分群。", "导出报告保存数据快照、口径版本和计划，后续接入经授权的订单再验证。"]
+    result["suggestions"] = ["查看查询 SQL 与参数，复核成熟分母和D1—D7/D1—D30口径。", "用相同种子复现留出；改变seed只改变分配，不改变候选历史分群。", "导出报告保存数据快照、口径版本和计划，后续接入经授权的订单再验证。"]
     result["trace"].append({"tool": "validate_repurchase_output", "status": "completed", "description": "事实来自只读SQL与确定性计算；未生成无证据的营销增量或净LTV。"})
     return result

@@ -66,11 +66,11 @@ def analysis_args(**kw):
     return dict(task='diagnose',start=None,end=None,compare_start=None,compare_end=None,filters={},**kw)
 
 def test_real_loop_dispatch_with_fake_provider(client):
-    mock=fake_client([('get_business_context',{}),('query_readonly_sql',{'sql':'SELECT COUNT(*) AS n FROM growth_users'}),('analyze_business',analysis_args()),('finish_report',{'finding_indices':[0]})])
+    mock=fake_client([('get_business_context',{}),('register_analysis_plan',{'steps':['metric_contract','evidence_report']}),('query_readonly_sql',{'sql':'SELECT COUNT(*) AS n FROM growth_users'}),('analyze_business',analysis_args()),('finish_report',{'finding_indices':[0]})])
     result=live_agent.execute({'domain':'growth','question':'留存下降为什么','mode':'live'},client=mock)
     assert result['status']=='completed'
-    assert result['model_run']['rounds']==4
-    assert result['model_run']['usage']=={'input_tokens':40,'output_tokens':20}
+    assert result['model_run']['rounds']==5
+    assert result['model_run']['usage']=={'input_tokens':50,'output_tokens':25}
     assert result['model_run']['sql_generation']=='model'
     assert result['model_run']['live_verified'] is False
     assert any(e['id']=='AIQ01' for e in result['evidence'])
@@ -78,12 +78,12 @@ def test_real_loop_dispatch_with_fake_provider(client):
     # This verifies protocol only. It is not evidence of a real provider call.
 
 def test_model_cannot_drop_explicit_filters(client):
-    mock=fake_client([('get_business_context',{})]+[('analyze_business',analysis_args())]*3)
+    mock=fake_client([('get_business_context',{}),('register_analysis_plan',{'steps':['metric_contract','evidence_report']})]+[('analyze_business',analysis_args())]*3)
     with pytest.raises(live_agent.ModelUnavailable,match='连续'):
         live_agent.execute({'domain':'growth','question':'留存下降','filters':{'channel':'organic'}},client=mock)
 
 def test_invalid_report_selection_is_rejected(client):
-    mock=fake_client([('get_business_context',{}),('analyze_business',analysis_args())]+[('finish_report',{'finding_indices':[-1]})]*3)
+    mock=fake_client([('get_business_context',{}),('register_analysis_plan',{'steps':['metric_contract','evidence_report']}),('analyze_business',analysis_args())]+[('finish_report',{'finding_indices':[-1]})]*3)
     with pytest.raises(live_agent.ModelUnavailable):live_agent.execute({'domain':'growth','question':'留存下降'},client=mock)
 
 def test_report_escapes_user_question(client):

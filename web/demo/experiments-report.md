@@ -1,17 +1,19 @@
 # 新用户承接实验评审
 
-运行编号：5bdc69d1e82b65f5ab13e3179fde4944 · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
+运行编号：5bdc69d1e82b65f5ab13e3179fde4944 · 模式：静态案例 · 时间：2026-09-19T11:09:20.004583+00:00
+
+本次读取已保存结果，未执行新查询或模型调用。
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
-处理组精确 D7 留存 34.46%，对照组 27.86%；差异 +6.60 pp，95% 区间 [5.17, 8.03] pp。满足预设条件，建议人工评审灰度。质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。
+处理组精确 D7 留存 34.46%，对照组 27.86%；差异 +6.60 pp，95% 区间 [5.17, 8.03] pp。预设条件通过，进入人工灰度评审。质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。
 
 ## 决策备忘录
 
 ```json
 {
   "code": "review_for_gradual_rollout",
-  "label": "满足预设条件，建议人工评审灰度",
+  "label": "预设条件通过，进入人工灰度评审",
   "reason": "质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。",
   "action": "由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。",
   "gates": {
@@ -56,7 +58,7 @@
   "guardrail": "负反馈率越低越好；H0: treatment−control ≥ margin；须单侧置信上界严格小于 margin",
   "guardrail_window": "[registered_at, registered_at+24h)",
   "business_rule": "主要效应区间下界达到预注册最低业务提升；不是只看点估计",
-  "rollout": "只输出人工灰度评审建议，不执行发布"
+  "rollout": "进入人工灰度评审；系统不执行发布"
 }
 ```
 
@@ -116,12 +118,12 @@
 - 处理组精确 D7 留存 34.46%，对照组 27.86%；差异 +6.60 pp，95% 区间 [5.17, 8.03] pp。（证据：experiment-groups, experiment-registry）
 - 负反馈差异 +0.22 pp，非劣评审上界 0.85 pp，预注册容忍界值 1.50 pp。（证据：experiment-groups, experiment-registry）
 
-## 待验证假设
+## 验证事项
 
 
 ## 后续行动
 
-- 满足预设条件，建议人工评审灰度：由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。（证据：experiment-registry, experiment-quality, experiment-changes, experiment-groups）
+- 预设条件通过，进入人工灰度评审：由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。（证据：experiment-registry, experiment-quality, experiment-changes, experiment-groups）
 
 ## 结果表
 
@@ -175,7 +177,7 @@
 
 ### 图表数据：分配人数与预注册期望
 
-原始单位：人；空值表示未成熟/缺失。
+原始单位：人；空值表示未成熟/缺失/校验未通过。
 
 | group | actual_users | expected_users |
 | --- | --- | --- |
@@ -184,7 +186,7 @@
 
 ### 图表数据：ITT 用户结果：留存与负反馈
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | group | d7_retention_pct | negative_feedback_pct |
 | --- | --- | --- |
@@ -279,26 +281,27 @@ FROM users GROUP BY arm ORDER BY arm
 ## 边界与限制
 
 - 固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益
+- 实验日志与增长诊断样本独立生成，不是已实施修复的成效记录。
 - 随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。
 - SRM 通过不证明不存在所有数据问题；完整性只针对本地来源清单与合同核查。
 - 固定窗口设计禁止因每日出现显著结果而提前结束；若需连续决策，应另预注册顺序检验。
 - 负反馈围栏要求差异区间上界低于非劣界值；未发现显著恶化不等于已证明安全。
-- 长期 Holdout 用于不同的长期或组合效应问题，不是所有有效 A/B 的统一上线前提。
+- 长期 Holdout 用于长期或组合效应评估；是否设置取决于预注册的评估目标。
 
 ## 执行记录
 
-- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
+- static_snapshot：静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。
 - query_experiment：实验预注册参数与固定窗口
 - query_experiment：分配、身份、配置、采集覆盖与成熟检查
 - query_experiment：实验配置变更记录
 - query_experiment：ITT 分配人数、暴露与成熟窗口结果
-- evaluate_experiment：满足预设条件，建议人工评审灰度；质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。
+- evaluate_experiment：预设条件通过，进入人工灰度评审；质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。
 
 ## 版本与来源
 
 ```json
 {
-  "application_version": "0.2.0",
+  "application_version": "0.2.1",
   "data_kind": "synthetic",
   "metric_version": "experiments.v2.0",
   "snapshot_sha256": "5bdc69d1e82b65f5ab13e3179fde4944dcd415cf7c50978bcff453d290004226",

@@ -35,7 +35,7 @@ def main():
         fingerprint=hashlib.sha256(json.dumps({'request':request,'contract':result.get('metric_contract'),'kpis':result.get('kpis'),'status':result.get('status')},sort_keys=True,ensure_ascii=False).encode()).hexdigest()
         result.update(domain=request['domain'],mode='demo',request=request,static_snapshot=True,created_at=generated,run_id=fingerprint[:32])
         result['provenance']={'application_version':VERSION,'data_kind':'synthetic','metric_version':result.get('metric_contract',{}).get('version'),'snapshot_sha256':fingerprint,'fingerprint_scope':'request, metric_contract, kpis, status','execution':'Python business tools; no model call'}
-        result['trace']=[{'tool':'static_snapshot','status':'completed','description':'本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。'}]+result.get('trace',[])
+        result['trace']=[{'tool':'static_snapshot','status':'completed','description':'静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。'}]+result.get('trace',[])
         save(name+'.json',result)
         (dest/(name+'-report.html')).write_text(reports.html_report(result))
         (dest/(name+'-report.md')).write_text(reports.markdown_report(result))
@@ -49,7 +49,7 @@ def main():
         monitor.update(static_snapshot=True,source='合成场景的实际检查、阻断与回填记录',scheduler_status='replay_of_executed_batches')
         save('monitoring.json',monitor)
         usage=telemetry.summary(path=Path(tmp)/'usage.sqlite3')
-        usage.update(static_snapshot=True,source='公开版本不预填用户试用结果；部署后从实际任务与自愿反馈汇总')
+        usage.update(static_snapshot=True,source='暂无真实用户试用记录')
         save('usage.json',usage)
     ob=snapshots['onboarding'];exp=snapshots['experiments'];rep=snapshots['repurchase']
     metric_count=sum(len(x.get('metrics',[])) for x in engine.catalog() if x['id'] in {'onboarding','experiments','repurchase'})
@@ -63,7 +63,7 @@ def main():
         cases.append({'id':identifier,'title':title,'context':context,'summary':s['summary'],'decision':s.get('decision'), 'kpis':s.get('kpis',[]),'evidence_count':len(s.get('evidence',[])),'href':target,'report':'demo/'+identifier+'-report.html','data_source':'合成数据方法验证'})
     save('portfolio.json',{
         'title':'刘希 · AI 数据分析','headline':'从增长问题，到有证据的业务决定。','version':VERSION,'generated_at':generated,
-        'data_source':'匿名合成增长与电商数据；原有业务经历与项目单独标注来源',
+        'data_source':'匿名合成增长与电商数据',
         'kpis':[{'label':'可复现分析场景','value':len(snapshots),'unit':'个'}, {'label':'业务分析域','value':3,'unit':'个'}, {'label':'注册指标合同','value':metric_count,'unit':'项'}, {'label':'主要案例SQL证据','value':sum(len(s.get('evidence',[])) for s in [ob,exp,rep]),'unit':'组'}],
         'cases':cases,'primary_result':ob['summary'],
         'capabilities':['指标语义与成熟窗口','事件数据与质量门','有序漏斗与分群诊断','随机实验与围栏评审','受控自然语言工具调用','SQL与报告证据追溯','告警恢复与幂等回填','任务运行与自愿反馈'],

@@ -1,6 +1,8 @@
 # 增长留存诊断
 
-运行编号：4324e8813a77a2f37f9b127cbda5510f · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
+运行编号：4324e8813a77a2f37f9b127cbda5510f · 模式：静态案例 · 时间：2026-09-19T11:09:20.004583+00:00
+
+本次读取已保存结果，未执行新查询或模型调用。
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
@@ -43,9 +45,9 @@
 - 2026-08-24 至 2026-08-30 的次 7 日内留存为 26.85%（294/1095），对比 2026-08-17 至 2026-08-23 的 36.03%，变化 -9.18 个百分点。对称分解中结构贡献 -6.05、组内表现贡献 -3.13 个百分点。（证据：growth-totals, growth-strata）
 - 按渠道 × 设备共同分层，绝对贡献最大的分层是「自然流量 / iOS」，贡献 -5.11 个百分点；这只是总体变化的算术分解。（证据：growth-strata）
 
-## 待验证假设
+## 验证事项
 
-- 分层结构和用户体验可能共同影响总体留存；现有行为数据不足以识别具体原因，需要结合投放记录、版本变更和进一步实验验证。（证据：growth-strata, growth-dimensions）
+- 验证事项包括投放记录、版本变更与产品路径；当前分层计数只能分解变化，不能确定原因。（证据：growth-strata, growth-dimensions）
 
 ## 后续行动
 
@@ -82,7 +84,7 @@
 
 ### 图表数据：成熟队列的次 7 日内留存趋势
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | signup_date | retention_pct |
 | --- | --- |
@@ -103,7 +105,7 @@
 
 ### 图表数据：留存变化来源
 
-原始单位：百分点；空值表示未成熟/缺失。
+原始单位：百分点；空值表示未成熟/缺失/校验未通过。
 
 | component | contribution_pp |
 | --- | --- |
@@ -112,7 +114,7 @@
 
 ### 图表数据：分渠道留存率
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | segment | previous_pct | current_pct |
 | --- | --- | --- |
@@ -123,7 +125,7 @@
 
 ### 图表数据：分设备留存率
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | segment | previous_pct | current_pct |
 | --- | --- | --- |
@@ -214,7 +216,7 @@ WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_d
 
 ## 执行记录
 
-- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
+- static_snapshot：静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。
 - query_metric：两期成熟用户与留存人数
 - query_metric：两期渠道 × 设备成熟留存
 - query_metric：按注册日的成熟队列趋势
@@ -225,7 +227,7 @@ WITH periods AS (SELECT 'current' AS period, :start AS start_date, :end AS end_d
 
 ```json
 {
-  "application_version": "0.2.0",
+  "application_version": "0.2.1",
   "data_kind": "synthetic",
   "metric_version": "growth.v1.0",
   "snapshot_sha256": "4324e8813a77a2f37f9b127cbda5510f41821b3114a782fde8028771544c9b0d",

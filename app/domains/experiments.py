@@ -232,11 +232,12 @@ def srm_test(control_n: int, treatment_n: int, expected_treatment_share: float) 
 def _base() -> dict:
     return {"status": "completed", "title": "新用户承接实验评审", "summary": "", "metric_contract": dict(CONTRACT),
             "kpis": [], "tables": [], "charts": [], "findings": [], "evidence": [], "trace": [], "checks": [],
-            "limitations": [SOURCE, "随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。",
+            "limitations": [SOURCE, "实验日志与增长诊断样本独立生成，不是已实施修复的成效记录。",
+                             "随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。",
                              "SRM 通过不证明不存在所有数据问题；完整性只针对本地来源清单与合同核查。",
                              "固定窗口设计禁止因每日出现显著结果而提前结束；若需连续决策，应另预注册顺序检验。",
                              "负反馈围栏要求差异区间上界低于非劣界值；未发现显著恶化不等于已证明安全。",
-                             "长期 Holdout 用于不同的长期或组合效应问题，不是所有有效 A/B 的统一上线前提。"], "suggestions": []}
+                             "长期 Holdout 用于长期或组合效应评估；是否设置取决于预注册的评估目标。"], "suggestions": []}
 
 
 def _stop(message: str) -> dict:
@@ -263,7 +264,7 @@ def _check(output: dict, name: str, label: str, passed: bool | None, rule: str, 
 def _decision(output: dict, code: str, label: str, reason: str, action: str) -> dict:
     output["decision"] = {"code": code, "label": label, "reason": reason, "action": action,
                           "gates": {item["id"]: item["passed"] for item in output["checks"]}, "executes_rollout": False}
-    output["suggestions"] = [action, "按预注册入组窗口完成观察后复查；新版本和新假设单独登记。"]
+    output["suggestions"] = [action, "按预注册入组窗口完成观察后复查；新的处理方案与检验目标单独登记。"]
     output["findings"].append({"kind": "action", "text": label + "：" + action,
                                "evidence_ids": [item["id"] for item in output["evidence"]]})
     output["tables"].append({"id": "experiment-checks", "title": "实验评审门槛", "columns": ["label", "rule", "observed", "passed"], "rows": output["checks"].copy()})
@@ -400,7 +401,7 @@ def analyze(request: dict, path: Path) -> dict:
         output["metric_contract"].update(snapshot_date=registry["snapshot_date"], data_as_of_exclusive=cutoff, experiment_period=[registry["start_date"], registry["end_date"]])
         output["experiment_contract"] = {**registry, "population": "新注册用户，注册成功后即时随机分配，按分配组 ITT", "design": "单一主指标、单一预注册围栏、固定窗口", "srm_alpha": .001,
                                            "guardrail": "负反馈率越低越好；H0: treatment−control ≥ margin；须单侧置信上界严格小于 margin", "guardrail_window": "[registered_at, registered_at+24h)",
-                                           "business_rule": "主要效应区间下界达到预注册最低业务提升；不是只看点估计", "rollout": "只输出人工灰度评审建议，不执行发布"}
+                                           "business_rule": "主要效应区间下界达到预注册最低业务提升；不是只看点估计", "rollout": "进入人工灰度评审；系统不执行发布"}
         output["plan"] = plan
         quality = _query(con, output, "experiment-quality", "分配、身份、配置、采集覆盖与成熟检查", QUALITY_SQL, params)[0]
         changes = _query(con, output, "experiment-changes", "实验配置变更记录", "SELECT changed_at,field,old_value,new_value,material FROM experiment_changelog WHERE experiment_id=:experiment_id ORDER BY changed_at", params)
@@ -474,7 +475,7 @@ def analyze(request: dict, path: Path) -> dict:
         output["findings"].append({"kind": "fact", "text": fact, "evidence_ids": ["experiment-groups", "experiment-registry"]})
         output["findings"].append({"kind": "fact", "text": f"负反馈差异 {guardrail['lift_pp']:+.2f} pp，非劣评审上界 {guardrail['ci_high_pp']:.2f} pp，预注册容忍界值 {registry['negative_margin']*100:.2f} pp。", "evidence_ids": ["experiment-groups", "experiment-registry"]})
         if guardrail["harm_exceeds_margin"] or primary["ci_high_pp"] < 0:
-            code, label = "stop_or_adjust", "建议停止或调整"
+            code, label = "stop_or_adjust", "停止或调整，暂停放量"
             reason = "负反馈恶化已超过预设界值。" if guardrail["harm_exceeds_margin"] else "主要指标区间整体为负。"
             action = "复查体验机制和受影响人群，调整方案后另登记实验；不进入放量。"
         elif not enough:
@@ -485,9 +486,9 @@ def analyze(request: dict, path: Path) -> dict:
             action = "评估可接受风险与围栏样本规划；保持现有发布范围，形成独立的后续验证计划。"
         elif primary["ci_low_pp"] < registry["min_business_lift"]*100:
             code, label, reason = "insufficient_evidence", "证据不足", "主要效应区间尚未达到预注册最低业务提升要求。"
-            action = "保留当前不确定性与收益范围，结合机制证据调整方案，登记后续实验。"
+            action = "保留当前效应区间与统计不确定性，核对机制记录后调整方案，登记后续实验。"
         else:
-            code, label, reason = "review_for_gradual_rollout", "满足预设条件，建议人工评审灰度", "质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。"
+            code, label, reason = "review_for_gradual_rollout", "预设条件通过，进入人工灰度评审", "质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。"
             action = "由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。"
         output["summary"] = fact + label + "。" + reason
         return _decision(output, code, label, reason, action)

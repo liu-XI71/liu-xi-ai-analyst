@@ -74,7 +74,7 @@ async def headers(request,call_next):
 def health():return {'status':'ok','version':VERSION,'data':'synthetic','model_configured':model_status()['configured']}
 
 @app.get('/api/v1/catalog')
-def catalog():return {'domains':engine.catalog(),'model':model_status(),'version':VERSION,'data_notice':'固定种子合成演示；真实经历案例单独展示。'}
+def catalog():return {'domains':engine.catalog(),'model':model_status(),'version':VERSION,'data_notice':'匿名合成数据；指标由 Python / SQL 计算。'}
 
 @app.post('/api/v1/analyze')
 def analyze(body:AnalysisRequest,request:Request):
@@ -91,7 +91,7 @@ def analyze(body:AnalysisRequest,request:Request):
             finally:live_semaphore.release()
         else:
             result=engine.analyze_domain(payload)
-            result['trace']=[{'tool':'demo_intent_router','status':'completed','description':'演示模式：有限关键词路由与参数化业务查询，未调用大模型。'}]+result.get('trace',[])
+            result['trace']=[{'tool':'demo_intent_router','status':'completed','description':'Python 规则路由：按注册任务和表单参数处理，未调用模型。'}]+result.get('trace',[])
         result.update(run_id=uuid.uuid4().hex,mode=body.mode,created_at=datetime.now(timezone.utc).isoformat(),domain=body.domain,request=payload,duration_ms=round((time.monotonic()-began)*1000,2))
         result['provenance']={'application_version':VERSION,'data_kind':'synthetic','metric_version':result.get('metric_contract',{}).get('version'),'report_policy':'evidence-linked-v2'}
         feedback_token=telemetry.record_run(result)

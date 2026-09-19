@@ -53,7 +53,7 @@ def metadata() -> dict:
         "examples": [
             {"question": "比较最近两周已完成观察的新增队列，次 7 日内留存为什么变化？按渠道和设备检查。", "task": "diagnose"},
             {"question": "复盘 8 月 17—30 日的随机增长实验，检查提升、置信区间、SRM 和成本门槛。", "task": "experiment"},
-            {"question": "生成增长周报，展示变化、分层证据、假设和下一步建议。", "task": "report"},
+            {"question": "生成增长周报，展示变化、分层证据、验证事项和后续行动。", "task": "report"},
         ],
     }
 
@@ -172,7 +172,7 @@ def _dates(request: dict, task: str) -> dict:
         if previous_start > previous_end:
             raise ValueError("对比期开始日期不能晚于结束日期。")
         if not (previous_end < first or previous_start > last):
-            raise ValueError("两期日期不能重叠，否则变化无法按独立队列解释。")
+            raise ValueError("两期日期不能重叠；重叠用户不能作为独立队列比较。")
         if (previous_end - previous_start).days > 365:
             raise ValueError("对比期最多覆盖 366 个自然日。")
         params.update(compare_start=previous_start.isoformat(), compare_end=previous_end.isoformat())
@@ -304,12 +304,12 @@ def _diagnose(con: sqlite3.Connection, params: dict, filters: str, task: str) ->
     output["findings"] = [
         {"kind": "fact", "text": output["summary"], "evidence_ids": ["growth-totals", "growth-strata"]},
         {"kind": "fact", "text": f"按渠道 × 设备共同分层，绝对贡献最大的分层是「{most_material['segment']}」，贡献 {most_material['total_pp']:+.2f} 个百分点；这只是总体变化的算术分解。", "evidence_ids": ["growth-strata"]},
-        {"kind": "hypothesis", "text": "分层结构和用户体验可能共同影响总体留存；现有行为数据不足以识别具体原因，需要结合投放记录、版本变更和进一步实验验证。", "evidence_ids": ["growth-strata", "growth-dimensions"]},
+        {"kind": "hypothesis", "text": "验证事项包括投放记录、版本变更与产品路径；当前分层计数只能分解变化，不能确定原因。", "evidence_ids": ["growth-strata", "growth-dimensions"]},
         {"kind": "action", "text": f"先核对「{most_material['segment']}」的获客来源和产品路径，再对候选改进设定随机实验、次 7 日内留存主指标及成本护栏。", "evidence_ids": ["growth-strata"]},
     ]
     output["trace"].append({"tool": "decompose_change", "status": "completed", "description": f"结构 + 表现 = {mix + performance:+.6f} pp；与总体变化的误差 {abs(mix + performance - delta):.9f} pp。"})
     if (date.fromisoformat(params["end"]) - date.fromisoformat(params["start"])) != (date.fromisoformat(params["compare_end"]) - date.fromisoformat(params["compare_start"])):
-        output["limitations"].append("两期天数不同：留存率可描述性比较，人数差异不能直接解释为增长，星期构成可能不同。")
+        output["limitations"].append("两期天数不同；人数差不具备等时长比较条件，需另核对星期构成。留存率仅作描述性比较。")
     if min(current["users"], previous["users"]) < 200:
         output["limitations"].append("至少一期样本少于 200 人；当前结果是描述性比较，不足以稳定判断趋势。")
     if any(row["new_or_lost"] for row in contributions):
@@ -317,7 +317,7 @@ def _diagnose(con: sqlite3.Connection, params: dict, filters: str, task: str) ->
     output["limitations"].append("渠道和设备分层表存在交叉，不能相加；总变化仅由渠道 × 设备联合分层计算。")
     output["suggestions"] = ["复盘同期随机实验，检查提升是否通过统计与业务门槛。", "更换一个渠道或设备筛选，检查变化是否仍然成立。"]
     if task == "report":
-        output["trace"].append({"tool": "render_report", "status": "completed", "description": "已组织口径、四幅图表、事实/假设/建议和 SQL 证据，可按本次运行导出。"})
+        output["trace"].append({"tool": "render_report", "status": "completed", "description": "报告包含指标口径、四张图表、核验事实、验证事项、后续行动及 SQL 证据。"})
     return output
 
 
@@ -348,7 +348,7 @@ def _experiment(con: sqlite3.Connection, params: dict, filters: str) -> dict:
     incremental_revenue = treatment["revenue_per_user"] - control["revenue_per_user"]
     enough = min(n0, n1) >= 200 and min(control["retained_users"], treatment["retained_users"], n0 - control["retained_users"], n1 - treatment["retained_users"]) >= 10
     passes = {"sample_size": enough, "srm": srm_p >= 0.01, "statistical": low > 0, "business_lift": lift >= .015, "cost": incremental_cost <= .35}
-    decision = "可进入小流量验证" if all(passes.values()) else "暂不建议扩大；先处理未通过的门槛"
+    decision = "进入人工小流量评审" if all(passes.values()) else "不扩大；先处理未通过的门槛"
     output["kpis"] = [
         {"id": "experiment_lift_pp", "label": "实验绝对提升", "value": _round(lift * 100), "unit": "百分点"},
         {"id": "treatment_retention", "label": "处理组留存", "value": _round(r1 * 100), "previous": _round(r0 * 100), "delta": _round(lift * 100), "unit": "%"},
@@ -380,7 +380,7 @@ def _experiment(con: sqlite3.Connection, params: dict, filters: str) -> dict:
         {"kind": "fact", "text": f"样本分配 SRM p={srm_p:.4f}；每用户增量成本 {incremental_cost:.3f} 元，描述性 7 日增量收入 {incremental_revenue:.3f} 元。收入未做显著性检验，不能据此断言盈利。", "evidence_ids": ["growth-experiment"]},
         {"kind": "action", "text": f"{decision}。在真实业务应用前重新预注册最小可检测效应、样本量、成本与长期价值护栏；本演示门槛不替代业务审批。", "evidence_ids": ["growth-experiment"]},
     ]
-    output["limitations"] = [SOURCE, "双侧两比例 z 检验；95% CI 使用未合并标准误的正态近似。小样本或极端概率时不据此放量。", "SRM 使用预设 1:1 分配的卡方检验（1 自由度）；p≥0.01 不是随机化成功的充分证明。", "收入仅覆盖 7 日且不含完整成本；不是 ROI、LTV 或利润。", "点估计超过 1.5 pp 不代表有 95% 把握超过业务门槛。", "本实验模拟随机分配；结果不能移植到真实业务或当成个人经历成果。"]
+    output["limitations"] = [SOURCE, "双侧两比例 z 检验；95% CI 使用未合并标准误的正态近似。小样本或极端概率时不据此放量。", "SRM 使用预设 1:1 分配的卡方检验（1 自由度）；p≥0.01 不是随机化成功的充分证明。", "收入仅覆盖 7 日且不含完整成本；不是 ROI、LTV 或利润。", "点估计超过 1.5 pp 不代表有 95% 把握超过业务门槛。", "模拟随机分配结果仅适用于该样本与观察窗口，不代表真实经营收益。"]
     if filters:
         output["limitations"].append("当前是筛选后的探索性子组实验分析，未做多重比较校正；不能替代预注册的总体实验结论。")
     if params["start"] != EXPERIMENT_START or params["end"] != EXPERIMENT_END:

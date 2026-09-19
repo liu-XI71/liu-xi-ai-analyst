@@ -35,7 +35,7 @@ MAIN_METRICS = ("new_user_retention_d1", "new_user_retention_d7", "return_within
 SCENARIOS = {
     "business_drop": {"label": "完整数据：新用户留存诊断", "as_of": "2026-09-19 08:00:00"},
     "late_data": {"label": "延迟快照：先检查数据质量", "as_of": "2026-09-07 08:00:00"},
-    "recovered": {"label": "回填快照：重算并恢复分析", "as_of": "2026-09-08 12:00:00"},
+    "recovered": {"label": "回填快照：数据完整后重算", "as_of": "2026-09-08 12:00:00"},
 }
 DEFAULT_DATES = {"start": "2026-08-24", "end": "2026-08-30", "compare_start": "2026-08-17", "compare_end": "2026-08-23"}
 EVENT_COLUMNS = ["event_id", "user_id", "event_name", "event_time", "ingested_at", "event_date", "channel", "device", "app_version", "batch_id", "schema_version", "request_id", "duration_seconds"]
@@ -47,7 +47,7 @@ def _contract(metric_id: str) -> dict:
 
 def metadata() -> dict:
     return {
-        "id": "onboarding", "name": "新用户增长与留存决策", "description": "从真实执行的事件查询开始，识别指标下滑、延迟假象与待验证解释，生成可复算的决策备忘录。",
+        "id": "onboarding", "name": "新用户增长与留存决策", "description": "基于事件查询核对留存变化、数据完整性与用户路径，形成包含证据和验证事项的决策备忘录。",
         "data_source": SOURCE, "data_range": {"start": DATA_START, "end": DATA_END},
         "default_request": {"domain": "onboarding", "task": "diagnose", **DEFAULT_DATES, "filters": {"metric": "new_user_retention_d7", "scenario": "business_drop"}},
         "metrics": [_contract(key) for key in METRICS],
@@ -61,7 +61,7 @@ def metadata() -> dict:
         "scenarios": copy.deepcopy(SCENARIOS), "funnel_contract": copy.deepcopy(REGISTRY["funnel"]),
         "tables": [
             {"name": "onboarding_users", "description": "稳定匿名 UID 的注册 cohort；每用户一行，不跨设备合并", "columns": ["user_id", "signup_at", "signup_date", "channel", "device", "app_version"]},
-            {"name": "onboarding_events", "description": "去重后的产品事件，含源端事件时间与真实可查询的到达时间；查询必须带 ingested_at 截止条件", "columns": EVENT_COLUMNS},
+            {"name": "onboarding_events", "description": "去重后的产品事件，含源端事件时间与入库时间；查询必须带 ingested_at 截止条件", "columns": EVENT_COLUMNS},
             {"name": "onboarding_ingest_batches", "description": "源端日 × 设备批次清单，用于可见事件计数校验与连续水位；不含诊断答案", "columns": ["batch_id", "event_date", "device", "expected_events", "manifest_available_at"]},
             {"name": "onboarding_changes", "description": "版本和投放变更日志，供诊断检索；同期变更不等于因果证据", "columns": ["change_id", "change_at", "device", "app_version", "change_type", "description"]},
             {"name": "onboarding_snapshots", "description": "演示快照的可见时间截止，三种场景查询同一份事件", "columns": ["scenario", "as_of"]},
@@ -69,8 +69,8 @@ def metadata() -> dict:
         "examples": [
             {"question": "最近两个成熟注册周的精确 D7 为什么变化？结合渠道、端、版本与注册后漏斗，给出下一步验证。", "task": "diagnose"},
             {"question": "检查注册后 24 小时有序漏斗，定位本期最大的转化损失。", "task": "funnel"},
-            {"question": "如果 9 月 7 日看到留存下降，应先检查哪些数据质量证据？", "task": "quality", "filters": {"scenario": "late_data"}},
-            {"question": "生成新用户增长决策备忘录，列出事实、竞争解释、待办及复查条件。", "task": "report"},
+            {"question": "检查延迟快照的留存数据质量，列出批次缺口与恢复条件。", "task": "quality", "filters": {"scenario": "late_data"}},
+            {"question": "生成新用户增长决策备忘录，列出核验事实、验证事项、后续行动及复查条件。", "task": "report"},
         ],
     }
 
@@ -201,7 +201,7 @@ def build_database(path: Path) -> None:
 
 
 def _base(metric_id: str = "new_user_retention_d7") -> dict:
-    return {"status": "completed", "title": "新用户增长诊断", "summary": "", "metric_contract": _contract(metric_id), "kpis": [], "tables": [], "charts": [], "findings": [], "evidence": [], "trace": [], "limitations": [SOURCE, "渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。", "使用稳定匿名 UID；未实现企业跨设备身份合并。"], "suggestions": [], "plan": [], "hypotheses": []}
+    return {"status": "completed", "title": "新用户增长诊断", "summary": "", "metric_contract": _contract(metric_id), "kpis": [], "tables": [], "charts": [], "findings": [], "evidence": [], "trace": [], "limitations": [SOURCE, "渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。", "身份范围限定为稳定匿名 UID，不跨设备合并。"], "suggestions": [], "plan": [], "hypotheses": []}
 
 
 def _stop(status: str, message: str) -> dict:
@@ -492,7 +492,7 @@ def _quality(con: sqlite3.Connection, out: dict, params: dict, filters: str, met
     relationship_ok = validation["invalid_event_relationships"] == 0 and validation["duplicate_event_ids"] == 0
     status = "passed" if observation_mature and watermark_ok and schema_ok and relationship_ok else ("insufficient_data" if not observation_mature else "blocked")
     checks = [
-        {"id": "observation_mature", "name": "完整观察窗口", "status": "passed" if observation_mature else "blocked", "observed": params["as_of"], "expected": required, "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。", "evidence_ids": ["onboarding-cohort-scope"]},
+        {"id": "observation_mature", "name": "完整观察窗口", "status": "passed" if observation_mature else "blocked", "observed": params["as_of"], "expected": required, "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。", "evidence_ids": ["onboarding-cohort-scope"]},
         {"id": "continuous_watermark", "name": "连续数据水位", "status": "passed" if watermark_ok else "blocked", "observed": watermark, "expected": required, "detail": "水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。", "evidence_ids": ["onboarding-batch-watermark"]},
         {"id": "source_manifest", "name": "源端清单计数", "status": "passed" if not affected_batches and watermark_ok else "blocked", "observed": len(affected_batches), "expected": 0, "detail": "按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。", "evidence_ids": ["onboarding-batch-watermark"]},
         {"id": "schema_version", "name": "事件版本兼容", "status": "passed" if schema_ok else "blocked", "observed": validation["unsupported_schema_events"], "expected": 0, "detail": "只接受版本化指标合同支持的埋点 schema。", "evidence_ids": ["onboarding-event-validation"]},
@@ -532,7 +532,7 @@ def analyze(request: dict, db_path: Path) -> dict:
         {"step": 2, "tool": "check_data_quality", "purpose": "验证实际到达批次、连续水位和事件版本", "status": "pending"},
         {"step": 3, "tool": "query_cohort_metrics", "purpose": "用同一 cohort 计算精确留存和有序漏斗", "status": "pending"},
         {"step": 4, "tool": "decompose_change", "purpose": "区分结构变化、分层表现与版本关联", "status": "pending"},
-        {"step": 5, "tool": "build_evidence_report", "purpose": "组织证据、竞争解释、行动和复查条件", "status": "pending"},
+        {"step": 5, "tool": "build_evidence_report", "purpose": "汇总证据、验证事项、行动和复查条件", "status": "pending"},
     ]
     with sqlite3.connect(f"file:{Path(db_path).resolve()}?mode=ro", uri=True, timeout=30) as con:
         con.row_factory = sqlite3.Row
@@ -552,7 +552,7 @@ def analyze(request: dict, db_path: Path) -> dict:
             out["findings"] = [{"kind": "fact", "text": out["summary"], "evidence_ids": refs}, {"kind": "action", "text": "没有通过门禁的留存值不显示为 0，也不支持调整获客预算或产品放量。", "evidence_ids": refs}]
             if quality.get("affected_batches"):
                 out["tables"].append({"id": "incomplete-batches", "title": "需要回填的分区", "columns": ["event_date", "device", "expected_events", "observed_events", "latest_arrival"], "rows": quality["affected_batches"]})
-            out["suggestions"] = ["切换回填快照 recovered，保持分析日期不变，检查水位与结果是否恢复。", "如分析较早 cohort 或已完成的 D1，请更换指标后重新进行质量检查。"]
+            out["suggestions"] = ["在回填快照 recovered 中保持原分析日期，核对水位和批次完整性后重算；数据可用不等于留存回升。", "如分析较早 cohort 或已完成的 D1，请更换指标后重新进行质量检查。"]
             return out
         if task == "quality":
             out["summary"] = quality["message"] + f" 当前连续水位 {quality['watermark']}，查询快照 {quality['as_of']}。"
@@ -658,24 +658,24 @@ def _diagnose(con: sqlite3.Connection, out: dict, params: dict, filters: str, me
     current_versions = [row for row in version_rows if row["period"] == "current" and row["first_feed_failure_pct"] is not None]
     focus_version = max(current_versions, key=lambda row: row["first_feed_failure_pct"], default={"segment": "当前筛选的人群"})["segment"]
     out["hypotheses"] = [
-        {"id": "mix", "title": "获客结构变化影响总体指标", "status": "descriptive_support" if abs(mix) >= .1 else "limited_support", "supporting_evidence_ids": ["onboarding-strata", "onboarding-change-log"], "observation": f"对称分解的结构项为 {mix:+.3f} pp。", "counter_evidence": f"控制在联合分层内仍有 {performance:+.3f} pp 表现项；纯结构解释不能覆盖这部分变化。", "next_test": "对比预算和渠道质量记录，并以固定渠道 × 端权重追踪后续成熟 cohort；不将重新加权当作因果估计。"},
-        {"id": "experience", "title": "引导或首屏体验变化影响后续回访", "status": "needs_validation", "supporting_evidence_ids": ["onboarding-version-slices", "onboarding-totals", "onboarding-change-log"], "observation": f"本期激活 {_rate(current,'activated'):.2f}%，前期 {_rate(previous,'activated'):.2f}%；存在可检索的端与版本切片。", "counter_evidence": "版本发布与渠道结构同时变化；未随机分配版本，用户选择和其他同期变化仍可能解释差异。", "next_test": f"优先核对当前筛选下「{focus_version}」的首屏请求错误与性能日志，预注册候选路径修复实验；D7 为主要结果，24h 激活为早期信号，负反馈与性能为围栏。"},
-        {"id": "ingestion", "title": "数据延迟造成表面下降", "status": "not_supported_in_scope", "supporting_evidence_ids": quality_ids, "observation": "本次主指标与有序漏斗涉及的连续水位、源端清单及事件版本通过检查；旁路指标独立判断。", "counter_evidence": "现有已知批次未发现缺口；源端清单自身未知漏报仍不在可验证范围内。", "next_test": "下一批次继续核对源端计数、到达时间和 schema；新分区不能沿用旧快照的通过状态。"},
+        {"id": "mix", "title": "验证事项：核对获客结构与组内变化", "status": "descriptive_support" if abs(mix) >= .1 else "limited_support", "supporting_evidence_ids": ["onboarding-strata", "onboarding-change-log"], "observation": f"对称分解的结构项为 {mix:+.3f} pp。", "counter_evidence": f"联合分层的组内表现项为 {performance:+.3f} pp；总体变化包含结构项和组内表现项，不能全部归入结构项。", "next_test": "对比预算和渠道质量记录，并以固定渠道 × 端权重追踪后续成熟 cohort；不将重新加权当作因果估计。"},
+        {"id": "experience", "title": "验证事项：核对首屏路径与回访的关系", "status": "needs_validation", "supporting_evidence_ids": ["onboarding-version-slices", "onboarding-totals", "onboarding-change-log"], "observation": f"本期激活 {_rate(current,'activated'):.2f}%，前期 {_rate(previous,'activated'):.2f}%；端与版本切片使用相同注册队列。", "counter_evidence": "版本未随机分配，且发布与渠道结构同期变化；现有结果未识别各因素的独立因果效应。", "next_test": f"优先核对当前筛选下「{focus_version}」的首屏请求错误与性能日志，预注册候选路径修复实验；D7 为主要结果，24h 激活为早期信号，负反馈与性能为围栏。"},
+        {"id": "ingestion", "title": "验证事项：核对到数缺口", "status": "not_supported_in_scope", "supporting_evidence_ids": quality_ids, "observation": "本次主指标与有序漏斗涉及的连续水位、源端清单及事件版本通过检查；旁路指标独立判断。", "counter_evidence": "现有已知批次未发现缺口；源端清单自身未知漏报仍不在可验证范围内。", "next_test": "下一批次继续核对源端计数、到达时间和 schema；新分区不能沿用旧快照的通过状态。"},
     ]
     out["findings"].extend([
-        {"kind": "hypothesis", "text": "将获客结构、产品路径和数据可用性作为竞争解释；版本与留存的同期关联仍需实验或额外证据区分。", "evidence_ids": ["onboarding-strata", "onboarding-version-slices", "onboarding-change-log", *quality_ids]},
-        {"kind": "action", "text": f"优先复核 {most_material['segment']} 的用户路径与版本错误记录，保持当前指标口径；验证候选修复后再按预注册实验评审决定是否扩大。", "evidence_ids": ["onboarding-strata", "onboarding-totals", "onboarding-version-slices"]},
+        {"kind": "hypothesis", "text": "验证事项包括投放来源、产品路径和源端完整性；版本与留存的同期关联不构成因果结论，需通过随机实验或补充记录核验。", "evidence_ids": ["onboarding-strata", "onboarding-version-slices", "onboarding-change-log", *quality_ids]},
+        {"kind": "action", "text": f"复核 {most_material['segment']} 的来源和人群构成，并核对「{focus_version}」的首屏请求日志；保持原指标口径，以独立预注册实验评审候选干预。", "evidence_ids": ["onboarding-strata", "onboarding-totals", "onboarding-version-slices"]},
     ])
-    out["decision"] = {"status": "investigate_then_experiment", "label": "先定位路径问题，再验证修复增量" if delta < 0 else "保持观察，验证变化是否可复现", "actions": [f"复核 {most_material['segment']} 的来源、端与版本关联。", f"检查「{loss_step['step']}」路径的首屏请求和用户反馈。", "预注册修复实验、D7 主要结果、样本量与负反馈/性能围栏，再评审增量。"], "review_trigger": "下一批完整成熟 cohort；如进入实验，等待预注册观察窗口与样本条件", "owner": "待分配", "evidence_ids": ["onboarding-strata", "onboarding-version-slices", "onboarding-totals"]}
+    out["decision"] = {"status": "investigate_then_experiment", "label": "核查用户路径，登记干预验证" if delta < 0 else "保持观察，验证变化是否可复现", "actions": [f"复核 {most_material['segment']} 的来源、端与版本关联。", f"检查「{loss_step['step']}」路径的首屏请求和用户反馈。", "预注册候选干预、D7 主要结果、样本量与负反馈/性能围栏；完成观察后评审效应。"], "review_trigger": "下一批完整成熟 cohort；如进入实验，等待预注册观察窗口与样本条件", "owner": "待分配", "evidence_ids": ["onboarding-strata", "onboarding-version-slices", "onboarding-totals"]}
     out["plan"][2:5] = [{**row, "status": "completed"} for row in out["plan"][2:5]]
     out["trace"].append({"tool": "decompose_change", "status": "completed", "description": f"结构项 + 表现项 = {mix+performance:+.8f} pp，总体变化 {delta:+.8f} pp；闭合误差 {abs(mix+performance-delta):.10f} pp。"})
     if out["data_quality"]["affected_metrics"]:
         out["limitations"].append("旁路指标因各自的成熟、水位或事件校验未通过而留空：" + "、".join(METRICS[key]["name"] for key in out["data_quality"]["affected_metrics"]) + "。")
     if current["feed_result_unresolved"] or previous["feed_result_unresolved"]:
         out["limitations"].append("存在首次 Feed 请求结果缺失、冲突或 request_id 无法唯一关联；受影响分组的首次请求失败率保持不可用，不记作 0%。")
-    out["limitations"].extend(["精确 D1、精确 D7 和次 1—7 日回访使用不同指标 ID；未成熟或不完整的旁路指标显示不可用。", "24h 漏斗保持同一 cohort 与事件顺序，D1/D7 是并列后续结果；跨日活跃人数不能直接相加为去重用户。", "分层缺失时沿用该分层可观察期的比率作为分解约定，该部分只记入结构项，不估计缺失期表现。", "当前是描述性问题定位，尚未执行真实修复实验，不报告业务增量或收益。"])
+    out["limitations"].extend(["精确 D1、精确 D7 和次 1—7 日回访使用不同指标 ID；未成熟或不完整的旁路指标显示不可用。", "24h 漏斗保持同一 cohort 与事件顺序，D1/D7 是并列后续结果；跨日活跃人数不能直接相加为去重用户。", "分层缺失时沿用该分层可观察期的比率作为分解约定，该部分只记入结构项，不估计缺失期表现。", "诊断仅提供描述性变化与关联证据；未执行真实干预，未观测经营增量或收益。"])
     if (date.fromisoformat(params["end"])-date.fromisoformat(params["start"])) != (date.fromisoformat(params["compare_end"])-date.fromisoformat(params["compare_start"])):
         out["limitations"].append("两期长度不相同：比率可以描述性比较，注册人数差不能直接作为增长结论；还需核对星期构成。")
     if min(current["users"],previous["users"]) < 200:
         out["limitations"].append("至少一期少于 200 人；切片与趋势不稳定，仅用于探索，不据此判断变化可复现。")
-    out["suggestions"] = ["切换延迟快照 late_data，检查系统是否停止受影响的经营结论。", "在同样日期下切换回填快照 recovered，验证可用性恢复且重新计算。", "按 Android 或版本筛选，核对路径关联；对候选修复进入独立实验评审。"]
+    out["suggestions"] = ["核对延迟快照 late_data 的缺失批次和水位；缺数期间暂停受影响指标的经营判断。", "用回填快照 recovered 重算原日期队列；分别复核数据完整性与留存变化。", "按 Android 或版本筛选，核对路径关联；对候选修复进入独立实验评审。"]

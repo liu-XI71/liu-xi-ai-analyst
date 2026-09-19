@@ -117,6 +117,9 @@ def execute(request:dict,client=None)->dict:
                     e={'id':f'AIQ{len(sql_evidence)+1:02d}','label':'模型生成 SQL 的辅助核验','sql':args['sql'],'parameters':{},'rows':payload['rows'],'source':payload['source'],'metric_version':'query-v1'}
                     sql_evidence.append(e);desc=f"实际只读查询返回 {payload['row_count']} 行"+('（结果截断）' if payload['truncated'] else '')
                 elif call.name=='analyze_business':
+                    if not registered_plan:raise ValueError('请先登记分析计划，再执行业务分析。')
+                    if request.get('task') and args.get('task')!=request['task']:
+                        raise ValueError('模型修改了用户指定的分析任务，必须保留原任务或追问。')
                     filters={k:v for k,v in args.get('filters',{}).items() if v is not None}
                     candidate={k:v for k,v in args.items() if v is not None};candidate['filters']=filters
                     candidate.update(domain=domain,question=request['question'])

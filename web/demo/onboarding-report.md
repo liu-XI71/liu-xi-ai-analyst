@@ -1,6 +1,8 @@
 # 新用户留存诊断
 
-运行编号：d5c20f7afe9d6c92d05b3890be8777c2 · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
+运行编号：d5c20f7afe9d6c92d05b3890be8777c2 · 模式：静态案例 · 时间：2026-09-19T11:09:20.004583+00:00
+
+本次读取已保存结果，未执行新查询或模型调用。
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
@@ -11,11 +13,11 @@
 ```json
 {
   "status": "investigate_then_experiment",
-  "label": "先定位路径问题，再验证修复增量",
+  "label": "核查用户路径，登记干预验证",
   "actions": [
     "复核 自然流量 / iOS 的来源、端与版本关联。",
     "检查「首屏加载成功」路径的首屏请求和用户反馈。",
-    "预注册修复实验、D7 主要结果、样本量与负反馈/性能围栏，再评审增量。"
+    "预注册候选干预、D7 主要结果、样本量与负反馈/性能围栏；完成观察后评审效应。"
   ],
   "review_trigger": "下一批完整成熟 cohort；如进入实验，等待预注册观察窗口与样本条件",
   "owner": "待分配",
@@ -47,7 +49,7 @@
       "status": "passed",
       "observed": "2026-09-19 08:00:00",
       "expected": "2026-09-07 00:00:00",
-      "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+      "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
       "evidence_ids": [
         "onboarding-cohort-scope"
       ]
@@ -186,38 +188,38 @@
 }
 ```
 
-## 假设与验证
+## 验证事项
 
 ```json
 [
   {
     "id": "mix",
-    "title": "获客结构变化影响总体指标",
+    "title": "验证事项：核对获客结构与组内变化",
     "status": "descriptive_support",
     "supporting_evidence_ids": [
       "onboarding-strata",
       "onboarding-change-log"
     ],
     "observation": "对称分解的结构项为 -0.916 pp。",
-    "counter_evidence": "控制在联合分层内仍有 -5.034 pp 表现项；纯结构解释不能覆盖这部分变化。",
+    "counter_evidence": "联合分层的组内表现项为 -5.034 pp；总体变化包含结构项和组内表现项，不能全部归入结构项。",
     "next_test": "对比预算和渠道质量记录，并以固定渠道 × 端权重追踪后续成熟 cohort；不将重新加权当作因果估计。"
   },
   {
     "id": "experience",
-    "title": "引导或首屏体验变化影响后续回访",
+    "title": "验证事项：核对首屏路径与回访的关系",
     "status": "needs_validation",
     "supporting_evidence_ids": [
       "onboarding-version-slices",
       "onboarding-totals",
       "onboarding-change-log"
     ],
-    "observation": "本期激活 43.54%，前期 62.50%；存在可检索的端与版本切片。",
-    "counter_evidence": "版本发布与渠道结构同时变化；未随机分配版本，用户选择和其他同期变化仍可能解释差异。",
+    "observation": "本期激活 43.54%，前期 62.50%；端与版本切片使用相同注册队列。",
+    "counter_evidence": "版本未随机分配，且发布与渠道结构同期变化；现有结果未识别各因素的独立因果效应。",
     "next_test": "优先核对当前筛选下「Android / 1.9.0」的首屏请求错误与性能日志，预注册候选路径修复实验；D7 为主要结果，24h 激活为早期信号，负反馈与性能为围栏。"
   },
   {
     "id": "ingestion",
-    "title": "数据延迟造成表面下降",
+    "title": "验证事项：核对到数缺口",
     "status": "not_supported_in_scope",
     "supporting_evidence_ids": [
       "onboarding-batch-watermark",
@@ -261,7 +263,7 @@
   {
     "step": 5,
     "tool": "build_evidence_report",
-    "purpose": "组织证据、竞争解释、行动和复查条件",
+    "purpose": "汇总证据、验证事项、行动和复查条件",
     "status": "completed"
   }
 ]
@@ -315,13 +317,13 @@
 - 本期有序漏斗在「首屏加载成功」这一步流失人数最多：181 人。人数损失与环节转化率变化需要分别观察。（证据：onboarding-totals）
 - 相对前期，环节转化率变化最小的步骤为「首屏加载成功」，变化 -18.111 pp。（证据：onboarding-totals）
 
-## 待验证假设
+## 验证事项
 
-- 将获客结构、产品路径和数据可用性作为竞争解释；版本与留存的同期关联仍需实验或额外证据区分。（证据：onboarding-strata, onboarding-version-slices, onboarding-change-log, onboarding-batch-watermark, onboarding-event-validation）
+- 验证事项包括投放来源、产品路径和源端完整性；版本与留存的同期关联不构成因果结论，需通过随机实验或补充记录核验。（证据：onboarding-strata, onboarding-version-slices, onboarding-change-log, onboarding-batch-watermark, onboarding-event-validation）
 
 ## 后续行动
 
-- 优先复核 自然流量 / iOS 的用户路径与版本错误记录，保持当前指标口径；验证候选修复后再按预注册实验评审决定是否扩大。（证据：onboarding-strata, onboarding-totals, onboarding-version-slices）
+- 复核 自然流量 / iOS 的来源和人群构成，并核对「Android / 1.9.0」的首屏请求日志；保持原指标口径，以独立预注册实验评审候选干预。（证据：onboarding-strata, onboarding-totals, onboarding-version-slices）
 
 ## 结果表
 
@@ -331,7 +333,7 @@
 
 | name | status | observed | expected | detail |
 | --- | --- | --- | --- | --- |
-| 完整观察窗口 | passed | 2026-09-19 08:00:00 | 2026-09-07 00:00:00 | 快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。 |
+| 完整观察窗口 | passed | 2026-09-19 08:00:00 | 2026-09-07 00:00:00 | 快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。 |
 | 连续数据水位 | passed | 2026-09-19 00:00:00 | 2026-09-07 00:00:00 | 水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。 |
 | 源端清单计数 | passed | 0 | 0 | 按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。 |
 | 事件版本兼容 | passed | 0 | 0 | 只接受版本化指标合同支持的埋点 schema。 |
@@ -395,7 +397,7 @@
 | change_at | device | app_version | change_type | description |
 | --- | --- | --- | --- | --- |
 | 2026-08-17 00:00:00 | android | 1.9.0 | release | Android 1.9.0 开始分阶段发布，调整新用户引导与首屏推荐接口。 |
-| 2026-08-24 00:00:00 | 未成熟/缺失 | 未成熟/缺失 | acquisition | 获客预算分配调整，提高付费搜索与社交渠道的配置比例。 |
+| 2026-08-24 00:00:00 | 未成熟/缺失/校验未通过 | 未成熟/缺失/校验未通过 | acquisition | 获客预算分配调整，提高付费搜索与社交渠道的配置比例。 |
 | 2026-08-24 00:00:00 | android | 1.9.0 | release | Android 1.9.0 扩大发布覆盖；需要结合版本、端和用户结构评估效果。 |
 ### 注册后 24 小时有序漏斗
 
@@ -410,7 +412,7 @@
 
 ### 图表数据：日活跃背景（全注册样本，逐日去重）
 
-原始单位：人；空值表示未成熟/缺失。
+原始单位：人；空值表示未成熟/缺失/校验未通过。
 
 | event_date | active_users |
 | --- | --- |
@@ -431,7 +433,7 @@
 
 ### 图表数据：精确 D7 留存率：成熟 cohort 趋势
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | signup_date | metric_pct |
 | --- | --- |
@@ -452,7 +454,7 @@
 
 ### 图表数据：总体变化的算术分解
 
-原始单位：百分点；空值表示未成熟/缺失。
+原始单位：百分点；空值表示未成熟/缺失/校验未通过。
 
 | component | contribution_pp |
 | --- | --- |
@@ -461,7 +463,7 @@
 
 ### 图表数据：同 cohort 的 24 小时路径
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | step | previous_cohort_pct | current_cohort_pct |
 | --- | --- | --- |
@@ -472,7 +474,7 @@
 
 ### 图表数据：本期端 × 版本主指标
 
-原始单位：%；空值表示未成熟/缺失。
+原始单位：%；空值表示未成熟/缺失/校验未通过。
 
 | segment | metric_pct | activation_pct |
 | --- | --- | --- |
@@ -922,15 +924,15 @@ SELECT change_id,change_at,device,app_version,change_type,description FROM onboa
 
 - 固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益
 - 渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。
-- 使用稳定匿名 UID；未实现企业跨设备身份合并。
+- 身份范围限定为稳定匿名 UID，不跨设备合并。
 - 精确 D1、精确 D7 和次 1—7 日回访使用不同指标 ID；未成熟或不完整的旁路指标显示不可用。
 - 24h 漏斗保持同一 cohort 与事件顺序，D1/D7 是并列后续结果；跨日活跃人数不能直接相加为去重用户。
 - 分层缺失时沿用该分层可观察期的比率作为分解约定，该部分只记入结构项，不估计缺失期表现。
-- 当前是描述性问题定位，尚未执行真实修复实验，不报告业务增量或收益。
+- 诊断仅提供描述性变化与关联证据；未执行真实干预，未观测经营增量或收益。
 
 ## 执行记录
 
-- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
+- static_snapshot：静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。
 - query_metric：注册 cohort 范围、人数与最晚注册时间
 - query_metric：当前筛选实际涉及的设备分区
 - query_metric：源端批次清单与快照可见事件，计算连续设备水位
@@ -948,7 +950,7 @@ SELECT change_id,change_at,device,app_version,change_type,description FROM onboa
 
 ```json
 {
-  "application_version": "0.2.0",
+  "application_version": "0.2.1",
   "data_kind": "synthetic",
   "metric_version": "onboarding.v2.0.0",
   "snapshot_sha256": "d5c20f7afe9d6c92d05b3890be8777c2cde5238c09cd9805f4029c294135d974",

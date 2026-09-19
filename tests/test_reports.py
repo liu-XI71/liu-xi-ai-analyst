@@ -1,4 +1,7 @@
+import html
+import json
 import re
+import pytest
 from app import reports
 from app.domains import growth, repurchase
 
@@ -74,6 +77,69 @@ def test_bar_keeps_null_distinct_from_real_zero():
     chart = {"title": "空值与零", "type": "bar", "x_key": "item", "y_keys": ["value"], "data": [{"item": "空", "value": None}, {"item": "零", "value": 0}, {"item": "负", "value": -2}]}
     svg = chart_svg(reports.html_report({"charts": [chart]}), "空值与零")
     assert svg.count('<rect data-series="value"') == 2
-    assert 'font-size="11">未成熟/缺失</text>' in svg
+    assert 'font-size="11">未成熟/缺失/校验未通过</text>' in svg
     assert 'font-size="11">0</text>' in svg
     assert 'font-size="11">-2</text>' in svg
+
+
+def test_report_keeps_unverified_actions_separate_from_evidenced_facts():
+    run = {"findings": [
+        {"kind": "fact", "text": "批次清单有一处分区缺口。", "evidence_ids": ["batch-manifest"]},
+        {"kind": "hypothesis", "text": "核对源端是否还有未登记分区。", "evidence_ids": []},
+        {"kind": "action", "text": "补齐后重新核对原队列。", "evidence_ids": []},
+    ]}
+    markdown = reports.markdown_report(run)
+    assert "批次清单有一处分区缺口。（证据：batch-manifest）" in markdown
+    assert "补齐后重新核对原队列。（未关联结果证据）" in markdown
+    assert "证据：流程建议" not in markdown
+    assert "## 验证事项" in markdown and "## 后续行动" in markdown
+    html = reports.html_report(run)
+    assert "<b>核验事实</b>" in html and "<b>验证事项</b>" in html and "<b>后续行动</b>" in html
+
+
+@pytest.mark.parametrize("run,label,verified", [
+    ({"static_snapshot": True, "mode": "demo"}, "静态案例", False),
+    ({"static_snapshot": True, "mode": "live", "model_run": {"provider": "OpenAI", "live_verified": True}}, "静态案例", True),
+    ({"mode": "demo", "model_run": {"provider": "OpenAI", "live_verified": True}}, "Python 规则分析", False),
+    ({"mode": "live", "model_run": {"provider": "OpenAI", "live_verified": True}}, "已核验模型调用", True),
+    ({"mode": "live", "model_run": {"provider": "test-double", "live_verified": True}}, "测试替身", False),
+    ({"mode": "live", "model_run": {"provider": "OpenAI", "live_verified": "true"}}, "模型调用未核验", False),
+    ({"mode": "live"}, "模型调用未核验", False),
+])
+def test_execution_labels_require_provider_evidence_and_respect_static_replay(run, label, verified):
+    execution = reports.result_execution(run)
+    assert execution["label"] == label and execution["verifiedLive"] is verified
+    for document in (reports.markdown_report(run), reports.html_report(run)):
+        assert label in document
+        if run.get("static_snapshot"):
+            assert "未执行新查询或模型调用" in document
+        if label == "Python 规则分析":
+            assert "未调用模型" in document
+
+
+@pytest.mark.parametrize("status,usage,expected_status,expected_total,known", [
+    ("unknown", {"input_tokens": 0, "output_tokens": 0}, "unknown", {"input_tokens": None, "output_tokens": None}, None),
+    ("partial", {"input_tokens": 17, "output_tokens": 9}, "partial", {"input_tokens": None, "output_tokens": None}, {"input_tokens": 17, "output_tokens": 9}),
+    ("complete", {"input_tokens": 0, "output_tokens": 0}, "complete", {"input_tokens": 0, "output_tokens": 0}, None),
+    ("complete", {"input_tokens": 17}, "partial", {"input_tokens": None, "output_tokens": None}, {"input_tokens": 17, "output_tokens": None}),
+])
+def test_report_preserves_usage_completeness_without_turning_unknown_into_zero(status, usage, expected_status, expected_total, known):
+    run = {"mode": "live", "model_run": {"provider": "OpenAI", "live_verified": True, "model": "recorded-model", "rounds": 3, "duration_ms": 450, "usage_status": status, "usage": usage}}
+    record = reports.model_run_metadata(run)
+    assert record["usage_status"] == expected_status
+    assert record["usage"] == expected_total and record.get("known_usage") == known
+    assert record["model"] == "recorded-model" and record["rounds"] == 3 and record["duration_ms"] == 450
+    encoded = json.dumps(record, ensure_ascii=False, indent=2)
+    assert encoded in reports.markdown_report(run)
+    document = reports.html_report(run)
+    assert "<details><summary>模型调用记录</summary>" in document
+    assert html.escape(encoded, quote=True) in document
+
+
+@pytest.mark.parametrize("mode,model_run", [("live", {"provider": "OpenAI", "live_verified": True}), ("live", {"provider": "test-double", "live_verified": False})])
+def test_model_metadata_is_escaped_without_changing_model_verification(mode, model_run):
+    run = {"mode": mode, "model_run": {**model_run, "model": "<script>provider-label</script>", "usage_status": "unknown"}}
+    document = reports.html_report(run)
+    assert "<script>provider-label</script>" not in document
+    assert "&lt;script&gt;provider-label&lt;/script&gt;" in document
+    assert reports.model_run_metadata(run)["usage"] == {"input_tokens": None, "output_tokens": None}

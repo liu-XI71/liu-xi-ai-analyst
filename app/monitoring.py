@@ -52,7 +52,7 @@ def run_check(scenario='business_drop', *, path: Path | None = None) -> dict:
     if scenario not in {'business_drop', 'late_data', 'recovered'}:
         raise ValueError('未知监控场景。')
     from app import engine
-    req = {'domain': 'onboarding', 'question': '检查增长留存、批次质量及恢复状态',
+    req = {'domain': 'onboarding', 'question': '检查增长留存、批次质量及数据完整性恢复状态',
            'task': 'diagnose', 'filters': {'scenario': scenario, 'metric': 'new_user_retention_d7'}}
     result = engine.analyze_domain(req, infer=False)
     return persist_check(result, scenario, path=path)
@@ -94,12 +94,12 @@ def persist_check(result, scenario, *, path: Path | None = None):
                         'open' if delta <= -2 else 'resolved', now, job_key,
                         {'note': f'本期与对比期差异 {delta:.3f} 个百分点。', 'delta_pp': delta,
                          'threshold_pp': -2, 'rule_type': 'fixed_demo_threshold',
-                         'evidence_ids': evidence, 'interpretation': '阈值用于演示预警流程，不代表统计显著或企业生产阈值。'})
+                         'evidence_ids': evidence, 'interpretation': '固定阈值不构成显著性检验，亦非企业生产阈值。'})
         payload = {'run_id': uuid.uuid4().hex, 'job_key': job_key, 'scenario': scenario,
                    'policy_version': 'monitoring.v2.1',
                    'created_at': now, 'status': 'completed' if is_ready else 'data_waiting',
                    'reused': False, 'analysis_status': result['status'], 'summary': result.get('summary'),
-                   'data_quality': quality, 'source': '固定种子合成事件的实际批次检查',
+                   'data_quality': quality, 'source': '基于固定种子合成事件的批次检查记录',
                    'data_as_of': quality.get('as_of'), 'evidence_ids': evidence}
         con.execute('INSERT INTO monitor_job VALUES (?,?,?,?,?,?)',
                     (job_key, payload['run_id'], now, scenario, payload['status'], json.dumps(payload, ensure_ascii=False)))
@@ -115,11 +115,11 @@ def summary(*, path: Path | None = None):
             value = dict(row); value['details'] = json.loads(value.pop('payload')); alerts.append(value)
         jobs = [json.loads(row[0]) for row in con.execute('SELECT payload FROM monitor_job ORDER BY created_at DESC LIMIT 20')]
         transitions = [dict(row) for row in con.execute('SELECT * FROM alert_transition ORDER BY id DESC LIMIT 30')]
-    return {'status': 'observed_batches' if jobs else 'no_runs', 'title': '增长监控与告警恢复',
+    return {'status': 'observed_batches' if jobs else 'no_runs', 'title': '增长监控与告警状态',
             'cadence': '日级批次；可手动触发或由调度器调用',
             'scheduler_status': 'external_scheduler_required',
             'data_source': '固定种子合成增长数据', 'jobs': jobs, 'alerts': alerts, 'transitions': transitions,
-            'rules': [{'id': 'data_quality', 'description': '质量检查失败时暂停受影响业务判断，完整后回填恢复'},
+            'rules': [{'id': 'data_quality', 'description': '缺数时暂停受影响指标；回填完整后重算，业务告警独立判定。'},
                       {'id': 'retention_change', 'description': '成熟 D7 与对比期差异不高于 -2 个百分点时生成业务告警'}],
             'limitations': ['批次检查记录可复现；不代表真实企业实时监控。',
-                            '数据恢复不自动消除真实业务下滑，业务告警独立复核。']}
+                            '数据可用性恢复不等于留存回升；回填后按原队列重算并单独判定业务告警。']}

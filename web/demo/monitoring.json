@@ -1,16 +1,16 @@
 {
   "status": "observed_batches",
-  "title": "增长监控与告警恢复",
+  "title": "增长监控与告警状态",
   "cadence": "日级批次；可手动触发或由调度器调用",
   "scheduler_status": "replay_of_executed_batches",
   "data_source": "固定种子合成增长数据",
   "jobs": [
     {
-      "run_id": "7d04d6fb55d948c4970583ca49a9ba66",
-      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "run_id": "230f4f69455d4fffb279084b89d1a33a",
+      "job_key": "07183dcca4afcc880ef113edc13e9728c98312d79913137b9b39522a3d62b55f",
       "scenario": "recovered",
       "policy_version": "monitoring.v2.1",
-      "created_at": "2026-09-19T09:24:38.509437+00:00",
+      "created_at": "2026-09-19T11:09:21.785010+00:00",
       "status": "completed",
       "reused": false,
       "analysis_status": "completed",
@@ -32,7 +32,7 @@
             "status": "passed",
             "observed": "2026-09-08 12:00:00",
             "expected": "2026-09-07 00:00:00",
-            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
             "evidence_ids": [
               "onboarding-cohort-scope"
             ]
@@ -169,7 +169,7 @@
         ],
         "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
       },
-      "source": "固定种子合成事件的实际批次检查",
+      "source": "基于固定种子合成事件的批次检查记录",
       "data_as_of": "2026-09-08 12:00:00",
       "evidence_ids": [
         "onboarding-cohort-scope",
@@ -186,11 +186,11 @@
       ]
     },
     {
-      "run_id": "9f03c960b7e9450b9da4a178fa609326",
-      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "run_id": "6ded5b3b1879496ba2abd22d19ee228a",
+      "job_key": "53a4c746611f6792cbd9d563a8ba29800692a6ffce6c4ad40260e90f5914f09a",
       "scenario": "late_data",
       "policy_version": "monitoring.v2.1",
-      "created_at": "2026-09-19T09:24:38.508164+00:00",
+      "created_at": "2026-09-19T11:09:21.783292+00:00",
       "status": "data_waiting",
       "reused": false,
       "analysis_status": "data_quality_blocked",
@@ -212,7 +212,7 @@
             "status": "passed",
             "observed": "2026-09-07 08:00:00",
             "expected": "2026-09-07 00:00:00",
-            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
             "evidence_ids": [
               "onboarding-cohort-scope"
             ]
@@ -374,7 +374,7 @@
         ],
         "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
       },
-      "source": "固定种子合成事件的实际批次检查",
+      "source": "基于固定种子合成事件的批次检查记录",
       "data_as_of": "2026-09-07 08:00:00",
       "evidence_ids": [
         "onboarding-cohort-scope",
@@ -385,11 +385,11 @@
       ]
     },
     {
-      "run_id": "36479e0bbebb4a619f46d338c644c083",
-      "job_key": "829117ce26f6f75bd7a559bcde662af88c0b268da580f6aa80c8111c5e551959",
+      "run_id": "b8d3f1fd51cf4d6d9812c6a74d122210",
+      "job_key": "ae860695567fcb044dc414814ee74030e562c7524e5ab5b2fb11b30fde14d1b2",
       "scenario": "business_drop",
       "policy_version": "monitoring.v2.1",
-      "created_at": "2026-09-19T09:24:38.506372+00:00",
+      "created_at": "2026-09-19T11:09:21.781150+00:00",
       "status": "completed",
       "reused": false,
       "analysis_status": "completed",
@@ -411,7 +411,7 @@
             "status": "passed",
             "observed": "2026-09-19 08:00:00",
             "expected": "2026-09-07 00:00:00",
-            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+            "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
             "evidence_ids": [
               "onboarding-cohort-scope"
             ]
@@ -548,7 +548,7 @@
         ],
         "provenance": "源端日 × 设备批次清单 + 可见 ingested_at；质量门禁按相关设备分区保守检查，不证明未知源端漏数不存在。"
       },
-      "source": "固定种子合成事件的实际批次检查",
+      "source": "基于固定种子合成事件的批次检查记录",
       "data_as_of": "2026-09-19 08:00:00",
       "evidence_ids": [
         "onboarding-cohort-scope",
@@ -571,8 +571,8 @@
       "category": "business",
       "title": "成熟 D7 留存变化",
       "status": "open",
-      "first_seen": "2026-09-19T09:24:38.506372+00:00",
-      "last_seen": "2026-09-19T09:24:38.509437+00:00",
+      "first_seen": "2026-09-19T11:09:21.781150+00:00",
+      "last_seen": "2026-09-19T11:09:21.785010+00:00",
       "resolved_at": null,
       "occurrences": 3,
       "details": {
@@ -593,7 +593,7 @@
           "onboarding-daily-active",
           "onboarding-change-log"
         ],
-        "interpretation": "阈值用于演示预警流程，不代表统计显著或企业生产阈值。"
+        "interpretation": "固定阈值不构成显著性检验，亦非企业生产阈值。"
       }
     },
     {
@@ -601,9 +601,9 @@
       "category": "data_quality",
       "title": "增长数据批次完整性",
       "status": "resolved",
-      "first_seen": "2026-09-19T09:24:38.508164+00:00",
-      "last_seen": "2026-09-19T09:24:38.509437+00:00",
-      "resolved_at": "2026-09-19T09:24:38.509437+00:00",
+      "first_seen": "2026-09-19T11:09:21.783292+00:00",
+      "last_seen": "2026-09-19T11:09:21.785010+00:00",
+      "resolved_at": "2026-09-19T11:09:21.785010+00:00",
       "occurrences": 2,
       "details": {
         "note": "水位与批次校验通过，允许重新计算成熟指标。",
@@ -637,7 +637,7 @@
               "status": "passed",
               "observed": "2026-09-08 12:00:00",
               "expected": "2026-09-07 00:00:00",
-              "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+              "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
               "evidence_ids": [
                 "onboarding-cohort-scope"
               ]
@@ -781,53 +781,53 @@
     {
       "id": 5,
       "alert_key": "onboarding:d7:8c39e0bedc9b",
-      "occurred_at": "2026-09-19T09:24:38.509437+00:00",
+      "occurred_at": "2026-09-19T11:09:21.785010+00:00",
       "previous_status": "data_waiting",
       "status": "open",
-      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "job_key": "07183dcca4afcc880ef113edc13e9728c98312d79913137b9b39522a3d62b55f",
       "note": "本期与对比期差异 -5.950 个百分点。"
     },
     {
       "id": 4,
       "alert_key": "onboarding:quality:8c39e0bedc9b",
-      "occurred_at": "2026-09-19T09:24:38.509437+00:00",
+      "occurred_at": "2026-09-19T11:09:21.785010+00:00",
       "previous_status": "open",
       "status": "resolved",
-      "job_key": "84e854952b733ecb0d06ea31ae0696ec1112335e7b2d449f62576b22979f9f0a",
+      "job_key": "07183dcca4afcc880ef113edc13e9728c98312d79913137b9b39522a3d62b55f",
       "note": "水位与批次校验通过，允许重新计算成熟指标。"
     },
     {
       "id": 3,
       "alert_key": "onboarding:d7:8c39e0bedc9b",
-      "occurred_at": "2026-09-19T09:24:38.508164+00:00",
+      "occurred_at": "2026-09-19T11:09:21.783292+00:00",
       "previous_status": "open",
       "status": "data_waiting",
-      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "job_key": "53a4c746611f6792cbd9d563a8ba29800692a6ffce6c4ad40260e90f5914f09a",
       "note": "本次未取得可用的完整数据，保留原业务告警，等待成熟或回填后复核。"
     },
     {
       "id": 2,
       "alert_key": "onboarding:quality:8c39e0bedc9b",
-      "occurred_at": "2026-09-19T09:24:38.508164+00:00",
+      "occurred_at": "2026-09-19T11:09:21.783292+00:00",
       "previous_status": null,
       "status": "open",
-      "job_key": "0c43636730fad853020ddd3e3cd0306230ae6f46aa0d2e2b4ca14db99216b19b",
+      "job_key": "53a4c746611f6792cbd9d563a8ba29800692a6ffce6c4ad40260e90f5914f09a",
       "note": "相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。"
     },
     {
       "id": 1,
       "alert_key": "onboarding:d7:8c39e0bedc9b",
-      "occurred_at": "2026-09-19T09:24:38.506372+00:00",
+      "occurred_at": "2026-09-19T11:09:21.781150+00:00",
       "previous_status": null,
       "status": "open",
-      "job_key": "829117ce26f6f75bd7a559bcde662af88c0b268da580f6aa80c8111c5e551959",
+      "job_key": "ae860695567fcb044dc414814ee74030e562c7524e5ab5b2fb11b30fde14d1b2",
       "note": "本期与对比期差异 -5.950 个百分点。"
     }
   ],
   "rules": [
     {
       "id": "data_quality",
-      "description": "质量检查失败时暂停受影响业务判断，完整后回填恢复"
+      "description": "缺数时暂停受影响指标；回填完整后重算，业务告警独立判定。"
     },
     {
       "id": "retention_change",
@@ -836,7 +836,7 @@
   ],
   "limitations": [
     "批次检查记录可复现；不代表真实企业实时监控。",
-    "数据恢复不自动消除真实业务下滑，业务告警独立复核。"
+    "数据可用性恢复不等于留存回升；回填后按原队列重算并单独判定业务告警。"
   ],
   "static_snapshot": true,
   "source": "合成场景的实际检查、阻断与回填记录"

@@ -1,7 +1,7 @@
 {
   "status": "completed",
   "title": "新用户承接实验评审",
-  "summary": "处理组精确 D7 留存 33.30%，对照组 28.31%；差异 +4.98 pp，95% 区间 [3.60, 6.35] pp。满足预设条件，建议人工评审灰度。质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。",
+  "summary": "处理组精确 D7 留存 33.30%，对照组 28.31%；差异 +4.98 pp，95% 区间 [3.60, 6.35] pp。预设条件通过，进入人工灰度评审。质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。",
   "metric_contract": {
     "id": "experiment_new_user_retention_d7",
     "name": "实验新用户精确 D7 留存率",
@@ -428,7 +428,7 @@
     },
     {
       "kind": "action",
-      "text": "满足预设条件，建议人工评审灰度：由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。",
+      "text": "预设条件通过，进入人工灰度评审：由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。",
       "evidence_ids": [
         "experiment-registry",
         "experiment-quality",
@@ -552,36 +552,36 @@
     {
       "tool": "static_snapshot",
       "status": "completed",
-      "description": "本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。"
+      "description": "静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。"
     },
     {
       "tool": "query_experiment",
       "status": "completed",
       "description": "实验预注册参数与固定窗口",
-      "duration_ms": 0.078
+      "duration_ms": 0.069
     },
     {
       "tool": "query_experiment",
       "status": "completed",
       "description": "分配、身份、配置、采集覆盖与成熟检查",
-      "duration_ms": 77.446
+      "duration_ms": 79.457
     },
     {
       "tool": "query_experiment",
       "status": "completed",
       "description": "实验配置变更记录",
-      "duration_ms": 0.025
+      "duration_ms": 0.029
     },
     {
       "tool": "query_experiment",
       "status": "completed",
       "description": "ITT 分配人数、暴露与成熟窗口结果",
-      "duration_ms": 46.778
+      "duration_ms": 48.027
     },
     {
       "tool": "evaluate_experiment",
       "status": "completed",
-      "description": "满足预设条件，建议人工评审灰度；质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。"
+      "description": "预设条件通过，进入人工灰度评审；质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。"
     }
   ],
   "checks": [
@@ -716,15 +716,16 @@
   ],
   "limitations": [
     "固定种子 7109 的合成实验日志；用于方法验证，不代表真实企业收益",
+    "实验日志与增长诊断样本独立生成，不是已实施修复的成效记录。",
     "随机化与采集合同成立时，ITT 估计该入组人群和观察窗口的平均因果效应；结果不能外推为长期 LTV 或全平台收益。",
     "SRM 通过不证明不存在所有数据问题；完整性只针对本地来源清单与合同核查。",
     "固定窗口设计禁止因每日出现显著结果而提前结束；若需连续决策，应另预注册顺序检验。",
     "负反馈围栏要求差异区间上界低于非劣界值；未发现显著恶化不等于已证明安全。",
-    "长期 Holdout 用于不同的长期或组合效应问题，不是所有有效 A/B 的统一上线前提。"
+    "长期 Holdout 用于长期或组合效应评估；是否设置取决于预注册的评估目标。"
   ],
   "suggestions": [
     "由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。",
-    "按预注册入组窗口完成观察后复查；新版本和新假设单独登记。"
+    "按预注册入组窗口完成观察后复查；新的处理方案与检验目标单独登记。"
   ],
   "experiment_contract": {
     "experiment_id": "unequal_allocation",
@@ -748,7 +749,7 @@
     "guardrail": "负反馈率越低越好；H0: treatment−control ≥ margin；须单侧置信上界严格小于 margin",
     "guardrail_window": "[registered_at, registered_at+24h)",
     "business_rule": "主要效应区间下界达到预注册最低业务提升；不是只看点估计",
-    "rollout": "只输出人工灰度评审建议，不执行发布"
+    "rollout": "进入人工灰度评审；系统不执行发布"
   },
   "plan": {
     "control_required": 3712,
@@ -806,7 +807,7 @@
   },
   "decision": {
     "code": "review_for_gradual_rollout",
-    "label": "满足预设条件，建议人工评审灰度",
+    "label": "预设条件通过，进入人工灰度评审",
     "reason": "质量、成熟、设计样本、业务效应区间与体验非劣围栏均通过。",
     "action": "由业务与实验负责人复核适用人群、实施成本和发布风险，再决定灰度范围及回滚阈值；本系统不执行推全。",
     "gates": {
@@ -836,10 +837,10 @@
     "mode": "demo"
   },
   "static_snapshot": true,
-  "created_at": "2026-09-19T09:24:37.144573+00:00",
+  "created_at": "2026-09-19T11:09:20.004583+00:00",
   "run_id": "cd3be8fc13fcec07ce14c68fb491cebc",
   "provenance": {
-    "application_version": "0.2.0",
+    "application_version": "0.2.1",
     "data_kind": "synthetic",
     "metric_version": "experiments.v2.0",
     "snapshot_sha256": "cd3be8fc13fcec07ce14c68fb491cebc5dadae25156c4a620813943fae6a251e",

@@ -162,7 +162,7 @@
     },
     {
       "id": "rp-candidates-table",
-      "title": "匿名候选与随机分配建议（未执行触达）",
+      "title": "匿名候选与随机分配计划（未执行触达）",
       "columns": [
         "customer_id",
         "region",
@@ -2263,7 +2263,7 @@
     {
       "tool": "static_snapshot",
       "status": "completed",
-      "description": "本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。"
+      "description": "静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。"
     },
     {
       "tool": "validate_repurchase_request",
@@ -2297,13 +2297,13 @@
     }
   ],
   "limitations": [
-    "数据为固定种子生成的模拟交易，只验证分析流程，不代表真实公司业绩。",
-    "首次观察购买不等于真实首购或广告获客；正向交易额未扣退款、成本，不能写成净LTV、利润或ROI。",
+    "数据为固定种子合成交易，不代表真实公司经营结果。",
+    "首次观察购买不等于真实首购或广告获客；正向交易额未扣退款、成本，不属于净LTV、利润或ROI。",
     "分群是描述性规则，不识别复购原因；候选没有联系方式和营销同意信息。",
-    "随机留出是未来实验分配建议，未执行触达、未观测营销增量。"
+    "随机留出属于实验分配计划；未执行触达、未观测营销增量。"
   ],
   "suggestions": [
-    "查看真实执行SQL与参数，复核成熟分母和D1—D7/D1—D30口径。",
+    "查看查询 SQL 与参数，复核成熟分母和D1—D7/D1—D30口径。",
     "用相同种子复现留出；改变seed只改变分配，不改变候选历史分群。",
     "导出报告保存数据快照、口径版本和计划，后续接入经授权的订单再验证。"
   ],
@@ -2321,10 +2321,10 @@
     "mode": "demo"
   },
   "static_snapshot": true,
-  "created_at": "2026-09-19T09:24:37.144573+00:00",
+  "created_at": "2026-09-19T11:09:20.004583+00:00",
   "run_id": "1ef3bb3529b008714531bdafce111554",
   "provenance": {
-    "application_version": "0.2.0",
+    "application_version": "0.2.1",
     "data_kind": "synthetic",
     "metric_version": "repurchase-1.0.0",
     "snapshot_sha256": "1ef3bb3529b008714531bdafce1115542139665ed39404f67b1d3959c64e2a61",

@@ -9,3 +9,5 @@ var/
 *.sqlite*
 .DS_Store
 .coverage
+
+/work/

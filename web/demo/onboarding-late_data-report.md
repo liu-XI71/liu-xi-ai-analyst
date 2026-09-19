@@ -1,6 +1,8 @@
 # 新用户留存诊断
 
-运行编号：8bee9a91b87130945b9f3cd30c7f8b34 · 模式：demo · 时间：2026-09-19T09:24:37.144573+00:00
+运行编号：8bee9a91b87130945b9f3cd30c7f8b34 · 模式：静态案例 · 时间：2026-09-19T11:09:20.004583+00:00
+
+本次读取已保存结果，未执行新查询或模型调用。
 
 **数据说明：合成演示数据，不代表任何企业真实经营结果。**
 
@@ -40,7 +42,7 @@
       "status": "passed",
       "observed": "2026-09-07 08:00:00",
       "expected": "2026-09-07 00:00:00",
-      "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。",
+      "detail": "快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。",
       "evidence_ids": [
         "onboarding-cohort-scope"
       ]
@@ -235,7 +237,7 @@
   {
     "step": 5,
     "tool": "build_evidence_report",
-    "purpose": "组织证据、竞争解释、行动和复查条件",
+    "purpose": "汇总证据、验证事项、行动和复查条件",
     "status": "pending"
   }
 ]
@@ -286,7 +288,7 @@
 
 - 相关事件分区不完整或口径校验失败，暂停受影响业务结论，先完成回填与重算。（证据：onboarding-cohort-scope, onboarding-cohort-devices, onboarding-batch-watermark, onboarding-event-validation, onboarding-event-validation-new_user_retention_d1）
 
-## 待验证假设
+## 验证事项
 
 
 ## 后续行动
@@ -301,7 +303,7 @@
 
 | name | status | observed | expected | detail |
 | --- | --- | --- | --- | --- |
-| 完整观察窗口 | passed | 2026-09-07 08:00:00 | 2026-09-07 00:00:00 | 快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不截掉未成熟用户后继续解释原请求。 |
+| 完整观察窗口 | passed | 2026-09-07 08:00:00 | 2026-09-07 00:00:00 | 快照时间必须覆盖完整自然日或实际注册时间 + 24 小时；不得删除未成熟用户后沿用原请求结论。 |
 | 连续数据水位 | blocked | 2026-09-04 00:00:00 | 2026-09-07 00:00:00 | 水位为所有相关设备分区已完整到达事件时间的排他上界；缺一日不能跳过。 |
 | 源端清单计数 | blocked | 3 | 0 | 按已知源端批次 expected_events 比较已到达去重事件；缺少清单也无法通过连续水位。 |
 | 事件版本兼容 | passed | 0 | 0 | 只接受版本化指标合同支持的埋点 schema。 |
@@ -322,9 +324,9 @@
 
 | event_date | device | expected_events | observed_events | latest_arrival |
 | --- | --- | --- | --- | --- |
-| 2026-09-04 | android | 579 | 0 | 未成熟/缺失 |
-| 2026-09-05 | android | 601 | 0 | 未成熟/缺失 |
-| 2026-09-06 | android | 517 | 0 | 未成熟/缺失 |
+| 2026-09-04 | android | 579 | 0 | 未成熟/缺失/校验未通过 |
+| 2026-09-05 | android | 601 | 0 | 未成熟/缺失/校验未通过 |
+| 2026-09-06 | android | 517 | 0 | 未成熟/缺失/校验未通过 |
 
 ## SQL 与证据
 
@@ -439,11 +441,11 @@ SELECT COUNT(*) AS visible_events,
 
 - 固定种子 710919 的匿名合成产品事件；用于复现增长分析方法，不代表真实企业经营收益
 - 渠道、端、版本与漏斗的拆解是描述性证据；版本同期变化不能直接证明因果。
-- 使用稳定匿名 UID；未实现企业跨设备身份合并。
+- 身份范围限定为稳定匿名 UID，不跨设备合并。
 
 ## 执行记录
 
-- static_snapshot：本案例由 Python 分析引擎实际执行并保存；静态页面不执行自由输入问题。
+- static_snapshot：静态案例：读取已保存的 Python / SQL 计算结果，未调用模型。
 - query_metric：注册 cohort 范围、人数与最晚注册时间
 - query_metric：当前筛选实际涉及的设备分区
 - query_metric：源端批次清单与快照可见事件，计算连续设备水位
@@ -454,7 +456,7 @@ SELECT COUNT(*) AS visible_events,
 
 ```json
 {
-  "application_version": "0.2.0",
+  "application_version": "0.2.1",
   "data_kind": "synthetic",
   "metric_version": "onboarding.v2.0.0",
   "snapshot_sha256": "8bee9a91b87130945b9f3cd30c7f8b34eea41d26aa368134b891f0660b22ce10",
